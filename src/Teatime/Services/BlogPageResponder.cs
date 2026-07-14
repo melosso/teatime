@@ -82,6 +82,17 @@ public sealed class BlogPageResponder
         var rssDiscoveryHtml = $"<link rel=\"alternate\" type=\"application/rss+xml\" title=\"{LayoutProvider.HtmlEncode(config?.Brand ?? config?.Title ?? "RSS Feed")}\" href=\"{LayoutProvider.HtmlEncode(feedUrl)}\">";
 
         var seg = view.CanonicalPath.Trim('/');
+        var activeNav = seg switch
+        {
+            "" => "posts",
+            "tags" => "tags",
+            "archive" => "archive",
+            "about" => "about",
+            _ when seg.StartsWith("page/", StringComparison.Ordinal) => "posts",
+            _ when seg.StartsWith("posts/", StringComparison.Ordinal) => "posts",
+            _ when seg.StartsWith("tags/", StringComparison.Ordinal) => "tags",
+            _ => null
+        };
         var pageSegment = seg.Length == 0 ? string.Empty : $"{seg}/";
         var rawPath = $"{basePath}/{pageSegment}".TrimStart('/');
         var canonicalUrl = $"{context.Request.Scheme}://{context.Request.Host}/{rawPath}";
@@ -116,7 +127,8 @@ public sealed class BlogPageResponder
             hasMath: view.ContentHtml.Contains("class=\"katex\"", StringComparison.Ordinal),
             hasMermaid: view.ContentHtml.Contains("class=\"mermaid\"", StringComparison.Ordinal),
             rssDiscoveryHtml: rssDiscoveryHtml,
-            isArticle: view.IsArticle);
+            isArticle: view.IsArticle,
+            activeNav: activeNav);
 
         context.Response.ContentType = "text/html; charset=utf-8";
         await context.Response.WriteAsync(fullHtml);

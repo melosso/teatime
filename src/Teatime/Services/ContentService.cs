@@ -284,7 +284,10 @@ public sealed partial class ContentService : IHostedService, IDisposable
                     continue;
 
                 var resolved = ResolveHref(page.Path, href);
-                if (resolved.Length == 0 || pageMap.ContainsKey(resolved))
+                if (resolved.Length == 0
+                    || pageMap.ContainsKey(resolved)
+                    || pageMap.ContainsKey($"pages/{resolved}")
+                    || IsKnownRoute(resolved))
                     continue;
 
                 deadSources.Add(page.Path);

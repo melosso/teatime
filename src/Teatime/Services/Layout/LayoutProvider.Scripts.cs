@@ -90,7 +90,7 @@ public static partial class LayoutProvider
                 }});
             }}
 
-            if (sidebarLeft) {{
+            if (sidebarLeft && menuToggle) {{
                 function closeSidebar() {{
                     sidebarLeft.classList.remove('open');
                     sidebarOverlay.classList.remove('open');

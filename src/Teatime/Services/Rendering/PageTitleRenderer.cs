@@ -12,6 +12,9 @@ public static class PageTitleRenderer
         var template = config?.TitleTemplate;
         var siteName = config?.Title;
 
+        if (string.IsNullOrEmpty(pageTitle))
+            return siteName ?? "Teatime";
+
         if (template is not null)
         {
             return TokenPattern.Replace(template, m => m.Value switch

@@ -1437,16 +1437,17 @@ public static partial class LayoutProvider
             }}
         }}
 
-        /* ===== Reading Room (2026) ===== */
         h1, h2, h3, h4, h5, h6 {{ font-family: var(--font-display); letter-spacing: -0.015em; }}
 
         .topbar {{
             position: sticky; top: 0; z-index: 1002;
-            display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 0.8rem;
+            height: auto; min-height: 0;
             padding: 1.5rem clamp(1.25rem, 5vw, 2.75rem) 1.25rem;
             background: color-mix(in srgb, var(--bg-color) 86%, transparent);
             -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
             border-bottom: 1px solid var(--border);
+            -webkit-user-select: none; user-select: none;
         }}
         .masthead-actions {{
             position: absolute; top: 1.35rem; right: clamp(1.25rem, 5vw, 2.75rem);
@@ -1462,21 +1463,30 @@ public static partial class LayoutProvider
             display: flex; flex-wrap: wrap; justify-content: center;
             gap: 1.75rem; font-size: 0.9rem;
         }}
-        .site-nav a {{ color: var(--text-muted); text-decoration: none; padding: 0.15rem 0; transition: color 0.15s ease; }}
+        .site-nav a {{ color: var(--text-muted); text-decoration: none; padding: 0.35rem 0; box-shadow: inset 0 -2px 0 transparent; transition: color 0.15s ease, box-shadow 0.15s ease; }}
         .site-nav a:hover {{ color: var(--text-color); }}
+        .site-nav a.here {{ color: var(--text-color); box-shadow: inset 0 -2px 0 var(--accent); }}
 
         .sidebar-left, .sidebar-right, .sidebar-overlay {{ display: none !important; }}
-        .layout, .layout.no-left-sidebar {{ display: block; }}
-        .main-container {{ max-width: var(--measure-wide); margin: 0 auto; padding: 0 clamp(1.25rem, 5vw, 2.75rem); }}
+        .layout, .layout.no-left-sidebar {{ display: block; min-height: 0; }}
+        .main-container {{ max-width: var(--measure-wide); margin: 0 auto; padding: 2.5rem clamp(1.25rem, 5vw, 2.75rem) 0; min-height: 0; }}
         .content {{ max-width: none; margin: 0; padding: 0; }}
-        .content.reading {{ max-width: var(--measure); margin: 0 auto; font-size: 1.075rem; line-height: 1.75; }}
+        .content > :first-child, .content.reading > :first-child {{ margin-top: 0; }}
+        .list-heading {{ margin-top: 0; }}
+        .content.reading {{ max-width: var(--measure); margin: 0 auto; font-size: 1.125rem; line-height: 1.8; }}
+        .content.reading p {{ margin: 0 0 1.6rem; }}
+        .content.reading h1, .content.reading h2, .content.reading h3, .content.reading h4 {{ font-family: var(--font-display); font-weight: 600; border-bottom: none; padding-bottom: 0; }}
+        .content.reading h2 {{ font-size: 1.6rem; line-height: 1.3; letter-spacing: -0.015em; margin: 2.75rem 0 1rem; }}
+        .content.reading h3 {{ font-size: 1.3rem; line-height: 1.35; margin: 2.25rem 0 0.75rem; }}
+        .content.reading a {{ text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }}
 
         #scroll-indicator {{
             height: 2px;
             background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), var(--accent));
         }}
 
-        .list-heading {{ font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; margin: 2.5rem 0 0.5rem; }}
+        .list-heading {{ font-family: var(--font-display); font-size: clamp(1.7rem, 1.2rem + 1.5vw, 2.1rem); font-weight: 600; letter-spacing: -0.02em; margin: 2.5rem 0 0.4rem; }}
+        .list-intro {{ color: var(--text-muted); margin: 0 0 2rem; font-size: 1.05rem; max-width: 60ch; }}
         .list-empty {{ color: var(--text-muted); padding: 2rem 0; }}
         .post-card {{ display: block; padding: 2.15rem 0; border-bottom: 1px solid var(--border); text-decoration: none; }}
         .post-card-title {{ font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.015em; margin: 0.45rem 0 0.4rem; }}
@@ -1520,6 +1530,8 @@ public static partial class LayoutProvider
         .archive-list time {{ color: var(--text-muted); font-size: 0.85rem; min-width: 4.5rem; font-variant-numeric: tabular-nums; }}
         .archive-list a {{ color: var(--text-color); text-decoration: none; }}
         .archive-list a:hover {{ color: var(--accent); }}
+        .post-card:last-child, .lead:last-child {{ border-bottom: none; }}
+        .archive-year:last-child .archive-list li:last-child {{ border-bottom: none; }}
 
         .lead {{ display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(1.75rem, 4vw, 3.5rem); align-items: center; padding: 3.5rem 0 3rem; border-bottom: 1px solid var(--border); }}
         .lead-cover {{ display: block; order: 2; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--accent-light); }}
@@ -1538,6 +1550,18 @@ public static partial class LayoutProvider
         .byline-author {{ color: var(--text-color); font-weight: 500; }}
         .avatar {{ width: 26px; height: 26px; border-radius: 50%; object-fit: cover; display: inline-grid; place-items: center; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, var(--sidebar-bg)), var(--accent)); color: var(--bg-color); font-size: 0.72rem; font-weight: 700; }}
         .post-cover {{ display: block; width: 100%; border-radius: 12px; border: 1px solid var(--border); margin: 1.75rem 0 0; }}
+
+        .brand-mark {{ font-size: 1.15rem; line-height: 1; }}
+        .site-footer {{
+            max-width: var(--measure-wide); margin: 5.5rem auto 3rem;
+            padding: 1.75rem clamp(1.25rem, 5vw, 2.75rem) 0;
+            border-top: 1px solid var(--border);
+            display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.2rem;
+            font-size: 0.82rem; color: var(--text-muted);
+        }}
+        .site-footer a {{ color: var(--accent); text-decoration: none; }}
+        .site-footer a:hover {{ text-decoration: underline; }}
+        .site-footer-note {{ margin-left: auto; }}
 
         @media (max-width: 620px) {{
             .site-nav {{ gap: 1.1rem; font-size: 0.85rem; }}

@@ -11,6 +11,7 @@ public static class ArchiveRenderer
     {
         var sb = new StringBuilder();
         sb.Append("<h1 class=\"list-heading\">Archive</h1>");
+        sb.Append("<p class=\"list-intro\">Every post, newest first.</p>");
 
         if (years.Count == 0)
         {

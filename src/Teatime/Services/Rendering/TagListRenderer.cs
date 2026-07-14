@@ -9,6 +9,7 @@ public static class TagListRenderer
     {
         var sb = new StringBuilder();
         sb.Append("<h1 class=\"list-heading\">Tags</h1>");
+        sb.Append("<p class=\"list-intro\">Browse writing by topic.</p>");
 
         if (tags.Count == 0)
         {
