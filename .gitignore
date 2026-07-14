@@ -1,0 +1,12 @@
+.env
+.*/
+*.md
+!/.github/
+!README.md
+!CONTRIBUTING.md
+!CHANGELOG.md
+!content/**/*.md
+*.db
+*.db*
+[Bb]in/
+[Oo]bj/
