@@ -1,5 +1,6 @@
 ---
 title: On Writing in Markdown
+author: murdock
 date: 2026-07-08
 tags: [writing, markdown]
 summary: Why plain text outlives every proprietary editor.

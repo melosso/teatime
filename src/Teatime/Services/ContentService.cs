@@ -15,6 +15,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
     private readonly DocsOptions _options;
     private readonly MarkdownService _markdown;
     private readonly ILogger<ContentService> _logger;
+    private readonly string _basePathSegment;
     private FileSystemWatcher? _watcher;
     private FileSystemWatcher? _configWatcher;
     private readonly CancellationTokenSource _shutdownCts = new();
@@ -48,6 +49,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
         _options = options;
         _markdown = markdown;
         _logger = logger;
+        _basePathSegment = _options.BasePath?.Trim('/').ToLowerInvariant() ?? "";
     }
 
     public Config? SiteConfig => _snapshot.Config;
@@ -236,7 +238,8 @@ public sealed partial class ContentService : IHostedService, IDisposable
                 Slug: parsed.Slug,
                 Summary: parsed.Summary,
                 Cover: parsed.Cover,
-                Author: parsed.Author
+                Author: parsed.Author,
+                Enabled: parsed.Enabled
             );
 
             pageMap[pagePath] = page;
@@ -284,7 +287,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
                 if (ShouldSkipHref(href))
                     continue;
 
-                var resolved = ResolveHref(page.Path, href);
+                var resolved = ResolveHref(page.Path, href, _basePathSegment);
                 if (resolved.Length == 0
                     || pageMap.ContainsKey(resolved)
                     || pageMap.ContainsKey($"pages/{resolved}")
@@ -302,13 +305,22 @@ public sealed partial class ContentService : IHostedService, IDisposable
         }
     }
 
-    private static string ResolveHref(string pagePath, string href)
+    private static string ResolveHref(string pagePath, string href, string basePathSegment)
     {
         var fragIdx = href.IndexOf('#');
         var pathOnly = fragIdx >= 0 ? href[..fragIdx] : href;
 
         if (pathOnly.StartsWith('/'))
-            return pathOnly.Trim('/').ToLowerInvariant();
+        {
+            var abs = pathOnly.Trim('/').ToLowerInvariant();
+            if (basePathSegment.Length > 0)
+            {
+                if (abs == basePathSegment) return "";
+                if (abs.StartsWith($"{basePathSegment}/", StringComparison.Ordinal))
+                    abs = abs[(basePathSegment.Length + 1)..];
+            }
+            return abs;
+        }
 
         var basePath = pagePath == "index" ? "" : pagePath;
         var combined = $"{basePath}/{pathOnly}";
@@ -327,8 +339,9 @@ public sealed partial class ContentService : IHostedService, IDisposable
     }
 
     private static bool IsKnownRoute(string resolved) =>
-        resolved is "tags" or "archive" or "feed.xml" or "sitemap.xml" or "robots.txt" or "llms.txt"
+        resolved is "tags" or "archive" or "authors" or "feed.xml" or "sitemap.xml" or "robots.txt" or "llms.txt"
         || resolved.StartsWith("tags/", StringComparison.Ordinal)
+        || resolved.StartsWith("authors/", StringComparison.Ordinal)
         || resolved.StartsWith("page/", StringComparison.Ordinal);
 
     private static bool ShouldSkipHref(string href)

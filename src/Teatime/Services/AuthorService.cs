@@ -45,7 +45,7 @@ public sealed class AuthorService
     {
         if (string.IsNullOrWhiteSpace(id)) return null;
         Ensure();
-        return _byId.TryGetValue(id.Trim().ToLowerInvariant(), out var a) ? a : null;
+        return _byId.TryGetValue(id.Trim(), out var a) ? a : null;
     }
 
     public Author? GetBySlug(string slug)
@@ -64,7 +64,7 @@ public sealed class AuthorService
         }
 
         var authors = Load();
-        var byId = authors.ToDictionary(a => a.Id);
+        var byId = authors.ToDictionary(a => a.Id, StringComparer.OrdinalIgnoreCase);
 
         lock (_gate)
         {

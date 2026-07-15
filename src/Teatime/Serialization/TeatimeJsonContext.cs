@@ -9,5 +9,6 @@ namespace Teatime.Serialization;
 [JsonSerializable(typeof(BuildVersionResponse))]
 [JsonSerializable(typeof(IReadOnlyList<SearchResult>))]
 [JsonSerializable(typeof(SearchResult[]))]
+[JsonSerializable(typeof(GroupedSearchResponse))]
 [JsonSerializable(typeof(SearchIndexExport))]
 internal sealed partial class TeatimeJsonContext : JsonSerializerContext;

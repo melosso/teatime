@@ -20,7 +20,8 @@ public sealed record DocumentationPage(
     string? Slug = null,
     string? Summary = null,
     string? Cover = null,
-    string? Author = null
+    string? Author = null,
+    bool? Enabled = null
 )
 {
     public DocumentationPage(

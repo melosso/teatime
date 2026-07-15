@@ -129,7 +129,7 @@ public static partial class LayoutProvider
     {faviconHtml}
     {headTagsHtml}
     {themeCss}
-    {GetStyles(darkModeMediaQuery, nonce)}
+    {GetStyles(darkModeMediaQuery, basePath, nonce)}
     {(hasMath ? $"<link rel=\"stylesheet\" href=\"{basePath}/css/katex.min.css\">" : "")}
     {(hasMermaid ? $"<script defer src=\"{basePath}/js/mermaid.min.js\"></script>" : "")}
 </head>

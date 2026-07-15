@@ -55,11 +55,12 @@ public sealed class PostService
     }
 
     public async Task<(IReadOnlyList<Post> Posts, int TotalPages)> GetPageAsync(
-        int page, int pageSize, CancellationToken cancellationToken = default)
+        int page, int pageSize, CancellationToken cancellationToken = default, int? limit = null)
     {
         var view = await GetViewAsync(cancellationToken);
-        var total = Math.Max(1, (int)Math.Ceiling(view.Posts.Count / (double)pageSize));
-        var slice = view.Posts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        var count = limit is > 0 ? Math.Min(view.Posts.Count, limit.Value) : view.Posts.Count;
+        var total = Math.Max(1, (int)Math.Ceiling(count / (double)pageSize));
+        var slice = view.Posts.Take(count).Skip((page - 1) * pageSize).Take(pageSize).ToList();
         return (slice, total);
     }
 

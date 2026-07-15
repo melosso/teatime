@@ -19,7 +19,8 @@ public sealed record MarkdownParseResult(
     string? Slug = null,
     string? Summary = null,
     string? Cover = null,
-    string? Author = null)
+    string? Author = null,
+    bool? Enabled = null)
 {
     public void Deconstruct(out string html, out string? title, out string? description, out List<HeadingInfo> headings)
     {

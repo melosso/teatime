@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Serilog;
 using System.Threading.RateLimiting;
@@ -34,9 +35,11 @@ try
         // switch search to the prebuilt static index instead of baking in dead endpoint calls.
         docsOptions = docsOptions with { EnableHotReload = false, IsStaticExport = true };
 
+    var basePath = NormalizeBasePath(cliArgs.BasePath ?? docsOptions.BasePath);
+    docsOptions = docsOptions with { BasePath = basePath };
+
     builder.Services.AddSingleton(docsOptions);
 
-    var basePath = NormalizeBasePath(cliArgs.BasePath ?? docsOptions.BasePath);
     var docsRootAbsolute = Path.GetFullPath(docsOptions.RootPath).Replace(Path.DirectorySeparatorChar, '/');
 
     // appsettings.json's Docs:Themes wins if present; theme.json is the file-only alternative.
@@ -156,13 +159,36 @@ try
     }
 
     // Serve user-hosted files from content/assets/ at /assets/ (covers, downloads, etc.).
+    // Restrict to a media/document allowlist: only these extensions get a content type, and
+    // ServeUnknownFileTypes stays false, so anything else (scripts, html, archives, ...) 404s.
     var assetsDir = Path.Combine(Path.GetFullPath(docsOptions.RootPath), "assets");
     if (Directory.Exists(assetsDir))
     {
+        var assetContentTypes = new FileExtensionContentTypeProvider(
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                [".webp"] = "image/webp",
+                [".png"] = "image/png",
+                [".jpg"] = "image/jpeg",
+                [".jpeg"] = "image/jpeg",
+                [".gif"] = "image/gif",
+                [".svg"] = "image/svg+xml",
+                [".avif"] = "image/avif",
+                [".ico"] = "image/x-icon",
+                [".pdf"] = "application/pdf",
+                [".txt"] = "text/plain",
+                [".woff2"] = "font/woff2",
+                [".woff"] = "font/woff",
+                [".mp4"] = "video/mp4",
+                [".webm"] = "video/webm",
+                [".mp3"] = "audio/mpeg",
+            });
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(assetsDir),
-            RequestPath = "/assets"
+            RequestPath = "/assets",
+            ContentTypeProvider = assetContentTypes,
+            ServeUnknownFileTypes = false
         });
     }
 

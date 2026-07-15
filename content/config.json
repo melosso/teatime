@@ -2,7 +2,7 @@
   "title": "Teatime",
   "description": "A personal blog published with Teatime.",
   "lang": "en",
-  "author": "Melosso",
+  "author": "Murdock",
   "favicon": "🍵",
   "scrollIndicator": true,
   "footer": "© {year} {author}. Brewed with [Teatime](https://github.com/melosso/teatime){target=\"_blank\" rel=\"noopener\"}.",
@@ -14,7 +14,7 @@
     {
       "title": "More",
       "items": [
-        { "title": "Now", "path": "/now/" },
+        { "title": "Guide", "path": "/guide/" },
         { "title": "GitHub", "path": "https://github.com/melosso/teatime" }
       ]
     }

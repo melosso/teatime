@@ -48,9 +48,10 @@ internal static class SeoEndpoints
         return TypedResults.Text(sb.ToString(), "text/plain", Encoding.UTF8);
     }
 
-    internal static async Task<ContentHttpResult> GetSitemap(PostService posts, ContentService content, PageRequestSettings settings, HttpContext context)
+    internal static async Task<ContentHttpResult> GetSitemap(PostService posts, ContentService content, AuthorService authorService, PageRequestSettings settings, HttpContext context)
     {
         var basePath = settings.BasePath;
+        var config = content.SiteConfig;
         var view = await posts.GetViewAsync(context.RequestAborted);
         var pages = await content.GetAllPagesAsync(context.RequestAborted);
 
@@ -73,8 +74,18 @@ internal static class SeoEndpoints
             sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, slug)}</loc><lastmod>{lastMod}</lastmod><priority>0.5</priority></url>");
         }
 
-        sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "tags")}</loc><priority>0.3</priority></url>");
-        sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "archive")}</loc><priority>0.3</priority></url>");
+        var authors = authorService.GetAll();
+        if (authors.Count > 0)
+        {
+            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "authors")}</loc><priority>0.3</priority></url>");
+            foreach (var author in authors)
+                sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, author.Url)}</loc><priority>0.3</priority></url>");
+        }
+
+        if (config?.Tags != false)
+            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "tags")}</loc><priority>0.3</priority></url>");
+        if (config?.Archive != false)
+            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "archive")}</loc><priority>0.3</priority></url>");
         sb.AppendLine("</urlset>");
         return TypedResults.Text(sb.ToString(), "application/xml", Encoding.UTF8);
     }

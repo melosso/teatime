@@ -8,11 +8,11 @@ internal static class BlogEndpoints
 {
     public static IEndpointRouteBuilder MapBlogEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/", (HttpContext ctx, PostService posts, BlogPageResponder responder, DocsOptions options) =>
-            RenderHome(ctx, posts, responder, options, 1));
+        app.MapGet("/", (HttpContext ctx, PostService posts, BlogPageResponder responder, DocsOptions options, ContentService content) =>
+            RenderHome(ctx, posts, responder, options, 1, content));
 
-        app.MapGet("/page/{n:int}", (int n, HttpContext ctx, PostService posts, BlogPageResponder responder, DocsOptions options) =>
-            RenderHome(ctx, posts, responder, options, n));
+        app.MapGet("/page/{n:int}", (int n, HttpContext ctx, PostService posts, BlogPageResponder responder, DocsOptions options, ContentService content) =>
+            RenderHome(ctx, posts, responder, options, n, content));
 
         app.MapGet("/posts/{slug}", RenderPost);
         app.MapGet("/tags", RenderTagIndex);
@@ -49,7 +49,7 @@ internal static class BlogEndpoints
             CanonicalPath: author.Url));
     }
 
-    private static async Task RenderHome(HttpContext ctx, PostService posts, BlogPageResponder responder, DocsOptions options, int page)
+    private static async Task RenderHome(HttpContext ctx, PostService posts, BlogPageResponder responder, DocsOptions options, int page, ContentService contentService)
     {
         if (page < 1)
         {
@@ -57,7 +57,7 @@ internal static class BlogEndpoints
             return;
         }
 
-        var (slice, totalPages) = await posts.GetPageAsync(page, options.PageSize, ctx.RequestAborted);
+        var (slice, totalPages) = await posts.GetPageAsync(page, options.PageSize, ctx.RequestAborted, contentService.SiteConfig?.HomeLimit);
         if (page > totalPages && page > 1)
         {
             await responder.Write404Async(ctx);
@@ -103,7 +103,7 @@ internal static class BlogEndpoints
         var basePath = responder.BasePath;
         var config = content.SiteConfig;
         var author = authors.GetById(post.AuthorId);
-        var authorName = author?.Name ?? config?.Author;
+        var authorName = author?.Name ?? post.AuthorId ?? config?.Author;
         var authorImage = author?.Image ?? config?.AuthorImage;
         var (older, newer) = await posts.GetPrevNextAsync(post.Slug, ctx.RequestAborted);
         var tocHtml = post.ShowToc && post.Headings.Count > 0
@@ -129,6 +129,11 @@ internal static class BlogEndpoints
         var view = await posts.GetViewAsync(ctx.RequestAborted);
         var basePath = responder.BasePath;
         var custom = await LookupCustom(content, "tags", ctx.RequestAborted);
+        if (content.SiteConfig?.Tags == false || custom?.Enabled == false)
+        {
+            await responder.Write404Async(ctx);
+            return;
+        }
 
         var html = custom is not null
             ? Inject(custom.HtmlContent, TagListRenderer.BuildCloud(view.Tags, basePath), "tags")
@@ -141,19 +146,19 @@ internal static class BlogEndpoints
             CanonicalPath: "tags"));
     }
 
-    private static async Task RenderTag(string tag, HttpContext ctx, PostService posts, BlogPageResponder responder)
+    private static async Task RenderTag(string tag, HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content)
     {
         var matches = await posts.GetByTagAsync(tag, ctx.RequestAborted);
-        if (matches.Count == 0)
+        if (content.SiteConfig?.Tags == false || matches.Count == 0)
         {
             await responder.Write404Async(ctx);
             return;
         }
 
-        var content = PostListRenderer.BuildList(matches, responder.BasePath, heading: $"Tagged “{tag}”");
+        var html = PostListRenderer.BuildList(matches, responder.BasePath, heading: $"Tagged “{tag}”");
         await responder.WriteAsync(ctx, new BlogPageView(
             Title: $"Tagged {tag}",
-            ContentHtml: content,
+            ContentHtml: html,
             CanonicalPath: $"tags/{Models.PagePath.SlugifySegment(tag)}"));
     }
 
@@ -162,6 +167,11 @@ internal static class BlogEndpoints
         var years = await posts.GetArchiveAsync(ctx.RequestAborted);
         var basePath = responder.BasePath;
         var custom = await LookupCustom(content, "archive", ctx.RequestAborted);
+        if (content.SiteConfig?.Archive == false || custom?.Enabled == false)
+        {
+            await responder.Write404Async(ctx);
+            return;
+        }
 
         var html = custom is not null
             ? Inject(custom.HtmlContent, ArchiveRenderer.BuildYears(years, basePath), "archive")

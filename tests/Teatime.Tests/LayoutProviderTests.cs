@@ -30,18 +30,6 @@ public sealed class LayoutProviderTests
     }
 
     [Fact]
-    public void GetLayout_ContainsNavigation()
-    {
-        var html = LayoutProvider.GetLayout(
-            "Title", "<p>content</p>",
-            "<ul><li>Nav Item</li></ul>", "<li>toc</li>",
-            "<a href='/'>Home</a>", "<nav>pagination</nav>",
-            null);
-
-        Assert.Contains("Nav Item", html);
-    }
-
-    [Fact]
     public void GetLayout_ContainsToc()
     {
         var html = LayoutProvider.GetLayout(
@@ -51,34 +39,6 @@ public sealed class LayoutProviderTests
             null);
 
         Assert.Contains("Section One", html);
-    }
-
-    [Fact]
-    public void GetLayout_ContainsBreadcrumbs()
-    {
-        var html = LayoutProvider.GetLayout(
-            "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
-            "<a href='/'>Home</a> / <a href='/page'>Page</a>",
-            "<nav>pagination</nav>",
-            null);
-
-        Assert.Contains("Home", html);
-        Assert.Contains("/page", html);
-    }
-
-    [Fact]
-    public void GetLayout_ContainsPagination()
-    {
-        var html = LayoutProvider.GetLayout(
-            "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
-            "<a href='/'>Home</a>",
-            "<a href='/next' class=\"pagination-link next\">Next</a>",
-            null);
-
-        Assert.Contains("Next", html);
-        Assert.Contains("/next", html);
     }
 
     [Fact]

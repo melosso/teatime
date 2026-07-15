@@ -17,12 +17,17 @@ internal static class ApiEndpoints
         return app;
     }
 
-    internal static Ok<IReadOnlyList<SearchResult>> Search(string? q, ContentService docs)
+    internal static async Task<Ok<GroupedSearchResponse>> Search(
+        string? q, ContentService docs, AuthorService authors, PostService posts,
+        PageRequestSettings settings, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(q) || q.Length < 2)
-            return TypedResults.Ok<IReadOnlyList<SearchResult>>(Array.Empty<SearchResult>());
+            return TypedResults.Ok(GroupedSearchResponse.Empty);
 
-        return TypedResults.Ok(docs.Search(q));
+        var postHits = docs.Search(q);
+        var view = await posts.GetViewAsync(cancellationToken);
+        var grouped = GroupedSearch.Build(q, postHits, authors.GetAll(), view.Tags, settings.BasePath);
+        return TypedResults.Ok(grouped);
     }
 
     // Public page metadata only; no OriginalRelativePath or other server file paths

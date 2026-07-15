@@ -50,4 +50,7 @@ public sealed record FrontMatter
 
     /// <summary>Author id referencing a file in <c>content/authors/</c>. Falls back to the site author.</summary>
     public string? Author { get; init; }
+
+    /// <summary>Set <c>false</c> on a custom <c>tags</c>/<c>archive</c> page to disable that surface (404).</summary>
+    public bool? Enabled { get; init; }
 }

@@ -1,5 +1,6 @@
 ---
 title: Why Teatime Ships Under the EUPL 1.2
+author: murdock
 date: 2026-07-15
 tags: [license, open-source]
 summary: A short look at the European Union Public Licence, and why it feels like a comfortable home for a small project.

@@ -2,13 +2,13 @@ namespace Teatime.Services.Layout;
 
 public static partial class LayoutProvider
 {
-    private static string GetStyles(string darkModeMediaQuery, string? nonce = null) => $@"    <style{GetNonceAttr(nonce)}>
+    private static string GetStyles(string darkModeMediaQuery, string basePath, string? nonce = null) => $@"    <style{GetNonceAttr(nonce)}>
         @font-face {{
             font-family: ""Inter"";
             font-style: normal;
             font-weight: 100 900;
             font-display: swap;
-            src: url(""/fonts/Inter.woff2"") format(""woff2"");
+            src: url(""{basePath}/fonts/Inter.woff2"") format(""woff2"");
         }}
         :root {{
             color-scheme: light;
@@ -255,9 +255,6 @@ public static partial class LayoutProvider
             font-family: inherit; font-size: 0.85rem; cursor: pointer;
             transition: border-color 0.15s ease, color 0.15s ease;
         }}
-        .search-trigger-mobile {{
-            display: none;
-        }}
         .search-trigger:hover {{
             border-color: var(--search-hover-border);
             color: var(--text-color);
@@ -347,6 +344,30 @@ public static partial class LayoutProvider
             padding: 1rem;
             text-align: center;
         }}
+        .search-group + .search-group {{
+            border-top: 1px solid var(--border); margin-top: 0.25rem; padding-top: 0.25rem;
+        }}
+        .search-group-label {{
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+            color: var(--text-muted); font-weight: 600; padding: 0.5rem 0.9rem 0.25rem;
+        }}
+        .search-hit-media {{
+            display: flex; align-items: center; gap: 0.65rem;
+        }}
+        .search-hit-media .search-result-title {{
+            flex: 1; min-width: 0;
+        }}
+        .search-hit-avatar {{
+            width: 30px; height: 30px; border-radius: 50%; object-fit: cover;
+            flex-shrink: 0; font-size: 0.8rem;
+        }}
+        .search-hit-tag {{
+            display: inline-grid; place-items: center; width: 30px; height: 30px; flex-shrink: 0;
+            border-radius: 8px; background: var(--accent-light); color: var(--accent); font-weight: 700;
+        }}
+        .search-hit-count {{
+            flex-shrink: 0; font-size: 0.78rem; color: var(--text-muted); font-variant-numeric: tabular-nums;
+        }}
         .DocSearch-Commands {{
             display: flex; gap: 1.25rem; padding: 0.6rem 1.25rem; margin: 0; list-style: none;
             border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-muted);
@@ -371,12 +392,6 @@ public static partial class LayoutProvider
             line-height: 1;
         }}
         @media (max-width: 768px) {{
-            .search-trigger {{
-                display: none;
-            }}
-            .search-trigger-mobile {{
-                display: inline-flex;
-            }}
             .search-modal-close {{
                 width: 44px;
                 height: 44px;
@@ -1101,8 +1116,12 @@ public static partial class LayoutProvider
                 width: 40px;
                 height: 40px;
             }}
-            .nav-item a, .toc-item a {{
+            .toc-item a {{
                 min-height: 44px; display: flex; align-items: center;
+            }}
+            .theme-toggle::after {{
+                content: ""; position: absolute; left: 0; right: 0;
+                top: 50%; transform: translateY(-50%); height: 44px;
             }}
             .code-block-buttons {{
                 opacity: 1;
@@ -1145,79 +1164,11 @@ public static partial class LayoutProvider
             }}
         }}
         @media (max-width: 768px) {{
-            .layout {{
-                grid-template-columns: 1fr;
-            }}
-            .teatime-home-layout .sidebar-left {{
-                display: block;
-            }}
-            .main-container {{
-                padding: 2rem 1.5rem;
-            }}
-            .teatime-hero-name {{ 
-                font-size: 2rem; 
-            }}
-            .teatime-hero-text {{ 
-                font-size: 1.4rem; 
-            }}
-            .teatime-hero-tagline {{ 
-                font-size: 1rem; 
-            }}
-            .menu-toggle {{
-                display: inline-flex;
-            }}
-            .top-nav {{
-                display: none;
-            }}
-            .mobile-top-nav {{
-                display: block; margin-bottom: 1.25rem; padding-bottom: 1.25rem;
-                border-bottom: 1px solid var(--border);
-            }}
-            .mobile-top-nav-link {{
-                display: block; padding: 0.5rem 0; font-size: 0.95rem;
-                font-weight: 500; color: var(--text-color); text-decoration: none;
-            }}
-            .mobile-top-nav-link.active {{
-                color: var(--accent);
-            }}
-            .mobile-top-nav-group summary {{
-                padding: 0.5rem 0; font-size: 0.95rem; font-weight: 500;
-                color: var(--text-color); cursor: pointer; list-style: none;
-            }}
-            .mobile-top-nav-group .mobile-top-nav-link {{
-                padding-left: 1rem;
-                font-weight: 400;
-            }}
-            .sidebar-left {{
-                position: fixed; top: var(--topbar-height); left: 0;
-                height: calc(100dvh - var(--topbar-height)); width: 280px;
-                max-width: 85vw; z-index: 1003;
-                transform: translateX(-100%);
-                transition: transform 0.2s ease;
-            }}
-            .sidebar-left.open {{
-                transform: translateX(0);
-            }}
-            .sidebar-overlay.open {{
-                display: block; position: fixed; top: var(--topbar-height); left: 0; right: 0; bottom: 0;
-                background: var(--overlay-bg); z-index: 1001;
-            }}
-            .nav-item a, .toc-item a {{
-                min-height: 44px; display: flex; align-items: center;
-            }}
             .search-result-title {{
                 font-size: 0.95rem;
             }}
             .search-result-excerpt {{
                 font-size: 0.8rem;
-            }}
-            .topbar-right .social-links {{
-                display: none;
-            }}
-            .sidebar-social-links {{
-                display: flex; flex-wrap: wrap; gap: 0.25rem;
-                padding: 1.25rem 0 0.25rem;
-                border-top: 1px solid var(--border);
             }}
         }}
         @media (prefers-reduced-motion: reduce) {{
@@ -1257,7 +1208,7 @@ public static partial class LayoutProvider
         }}
         .site-nav a {{ color: var(--text-muted); text-decoration: none; padding: 0.35rem 0; box-shadow: inset 0 -2px 0 transparent; transition: color 0.15s ease, box-shadow 0.15s ease; }}
         .site-nav a:hover {{ color: var(--text-color); }}
-        .site-nav a.here {{ color: var(--text-color); box-shadow: inset 0 -2px 0 var(--accent); }}
+        .site-nav a.here {{ color: var(--text-color); }}
         .site-nav .top-nav-item {{ position: relative; display: inline-flex; align-items: center; height: auto; }}
         .site-nav .top-nav-link {{ padding: 0.35rem 0; font-size: 0.9rem; font-weight: 400; color: var(--text-muted); }}
         .site-nav .top-nav-link:hover {{ color: var(--text-color); }}
@@ -1346,6 +1297,7 @@ public static partial class LayoutProvider
         .archive-year {{ margin-top: 2.5rem; }}
         .archive-year h2 {{ font-size: 1.2rem; color: var(--text-muted); font-variant-numeric: tabular-nums; margin-bottom: 0.75rem; }}
         .archive-list {{ list-style: none; padding: 0; margin: 0; }}
+        .content .archive-list, .content .tag-cloud, .content .author-grid {{ padding-left: 0; }}
         .archive-list li {{ display: flex; gap: 1rem; align-items: baseline; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }}
         .archive-list time {{ color: var(--text-muted); font-size: 0.85rem; min-width: 4.5rem; font-variant-numeric: tabular-nums; }}
         .archive-list a {{ color: var(--text-color); text-decoration: none; }}
@@ -1415,8 +1367,19 @@ public static partial class LayoutProvider
         }}
 
         @media (max-width: 620px) {{
-            .site-nav {{ gap: 1.1rem; font-size: 0.85rem; }}
+            .topbar {{ align-items: flex-start; }}
+            .site-nav {{ gap: 1.1rem; font-size: 0.85rem; justify-content: flex-start; align-items: flex-start; }}
             .brand {{ font-size: 1.3rem; }}
+            .site-nav .top-nav-item.has-dropdown {{ flex-direction: column; align-items: flex-start; }}
+            .site-nav .top-nav-dropdown-menu {{
+                position: static; display: none; opacity: 1; visibility: visible;
+                transform: none; margin: 0.4rem 0 0; box-shadow: none; min-width: 150px;
+            }}
+            .site-nav .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
+            .site-nav .top-nav-item.has-dropdown:focus-within .top-nav-dropdown-menu {{ display: block; }}
+            .post-nav {{ flex-direction: column; gap: 0.75rem; }}
+            .post-nav-newer {{ text-align: left; margin-left: 0; }}
+            .site-footer-note {{ margin-right: 0; flex-basis: 100%; }}
             .lead {{ grid-template-columns: 1fr; }}
             .lead-cover {{ order: 1; }}
             .lead-body {{ order: 2; }}

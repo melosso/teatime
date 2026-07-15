@@ -25,5 +25,15 @@ public class Config
     /// <summary>Top reading-progress bar. Defaults to on; set false to hide it.</summary>
     public bool? ScrollIndicator { get; set; }
 
+    /// <summary>Cap the total posts shown across the paginated home feed. Null/0 shows all.
+    /// Archive and tag pages still list every post.</summary>
+    public int? HomeLimit { get; set; }
+
+    /// <summary>Set false to disable the tag index and tag pages entirely (they return 404).</summary>
+    public bool? Tags { get; set; }
+
+    /// <summary>Set false to disable the archive page entirely (it returns 404).</summary>
+    public bool? Archive { get; set; }
+
     public List<SocialLink>? SocialLinks { get; set; }
 }

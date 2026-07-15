@@ -4,7 +4,11 @@ namespace Teatime.Models;
 public sealed record SearchIndexExport(
     IReadOnlyList<SearchDocEntry> Docs,
     IReadOnlyDictionary<string, IReadOnlyList<SearchPosting>> Terms,
-    IReadOnlyDictionary<string, IReadOnlyList<string>> Trigrams);
+    IReadOnlyDictionary<string, IReadOnlyList<string>> Trigrams)
+{
+    public IReadOnlyList<AuthorSearchHit> Authors { get; init; } = [];
+    public IReadOnlyList<TagSearchHit> Tags { get; init; } = [];
+}
 
 public sealed record SearchDocEntry(string Path, string Title, string? Description, string Text);
 

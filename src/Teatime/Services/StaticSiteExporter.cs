@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Teatime.Configuration;
+using Teatime.Models;
 using Teatime.Serialization;
 
 namespace Teatime.Services;
@@ -46,10 +47,24 @@ public static class StaticSiteExporter
             if (slug.Length > 0) routes.Add(($"/{slug}", slug));
         }
 
-        routes.Add(("/tags", "tags"));
-        foreach (var tag in view.Tags)
-            routes.Add(($"/tags/{tag.Slug}", $"tags/{tag.Slug}"));
-        routes.Add(("/archive", "archive"));
+        var config = docs.SiteConfig;
+        if (config?.Tags != false)
+        {
+            routes.Add(("/tags", "tags"));
+            foreach (var tag in view.Tags)
+                routes.Add(($"/tags/{tag.Slug}", $"tags/{tag.Slug}"));
+        }
+        if (config?.Archive != false)
+            routes.Add(("/archive", "archive"));
+
+        var authorService = app.Services.GetRequiredService<AuthorService>();
+        var authors = authorService.GetAll();
+        if (authors.Count > 0)
+        {
+            routes.Add(("/authors", "authors"));
+            foreach (var author in authors)
+                routes.Add(($"/{author.Url}", author.Url));
+        }
 
         foreach (var (request, dir) in routes)
         {
@@ -76,7 +91,14 @@ public static class StaticSiteExporter
         await File.WriteAllTextAsync(Path.Combine(outputDir, "404.html"), notFoundHtml, cancellationToken);
 
         // Search has no server on a static host, so ship the prebuilt index the client queries directly.
-        var searchIndex = docs.GetSearchIndexExport();
+        var basePath = app.Services.GetRequiredService<PageRequestSettings>().BasePath;
+        var authorHits = authors
+            .Select(a => new AuthorSearchHit(a.Name, a.Url, Layout.LayoutProvider.ResolveAssetUrl(a.Image, basePath)))
+            .ToList();
+        var tagHits = view.Tags
+            .Select(t => new TagSearchHit(t.Name, $"tags/{t.Slug}", t.Count))
+            .ToList();
+        var searchIndex = docs.GetSearchIndexExport() with { Authors = authorHits, Tags = tagHits };
         var searchJson = JsonSerializer.Serialize(searchIndex, TeatimeJsonContext.Default.SearchIndexExport);
         await File.WriteAllTextAsync(Path.Combine(outputDir, "search-index.json"), searchJson, cancellationToken);
         app.Logger.LogInformation(

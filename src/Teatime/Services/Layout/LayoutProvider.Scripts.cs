@@ -52,9 +52,6 @@ public static partial class LayoutProvider
             var tocIndicator = document.querySelector('.toc-indicator');
             var tocListWrapper = document.querySelector('.toc-list-wrapper');
             var scrollIndicator = document.getElementById('scroll-indicator');
-            var menuToggle = document.getElementById('menu-toggle');
-            var sidebarLeft = document.getElementById('sidebar-left');
-            var sidebarOverlay = document.getElementById('sidebar-overlay');
             var themeToggle = document.getElementById('theme-toggle');
 
             if ({(enableLiveReload ? "true" : "false")}) {{
@@ -88,48 +85,6 @@ public static partial class LayoutProvider
                         location.reload();
                     }}
                 }});
-            }}
-
-            if (sidebarLeft && menuToggle) {{
-                function closeSidebar() {{
-                    sidebarLeft.classList.remove('open');
-                    sidebarOverlay.classList.remove('open');
-                    menuToggle.setAttribute('aria-expanded', 'false');
-                    document.documentElement.style.overflow = '';
-                }}
-
-                function openSidebar() {{
-                    sidebarLeft.classList.add('open');
-                    sidebarOverlay.classList.add('open');
-                    menuToggle.setAttribute('aria-expanded', 'true');
-                    // Drawer is position:fixed; without this, touch-scroll on it scrolls <body> underneath.
-                    document.documentElement.style.overflow = 'hidden';
-                }}
-
-                menuToggle.addEventListener('click', function() {{
-                    if (sidebarLeft.classList.contains('open')) {{ closeSidebar(); }} else {{ openSidebar(); }}
-                }});
-                sidebarOverlay.addEventListener('click', closeSidebar);
-                document.addEventListener('keydown', function(e) {{
-                    if (e.key === 'Escape') closeSidebar();
-                }});
-                sidebarLeft.querySelectorAll('.nav-item a').forEach(function(link) {{
-                    link.addEventListener('click', closeSidebar);
-                }});
-
-                var touchStartX = null;
-                sidebarLeft.addEventListener('touchstart', function(e) {{
-                    touchStartX = e.touches[0].clientX;
-                }}, {{ passive: true }});
-                sidebarLeft.addEventListener('touchmove', function(e) {{
-                    if (touchStartX === null) return;
-                    var deltaX = e.touches[0].clientX - touchStartX;
-                    if (deltaX < -40) {{
-                        closeSidebar();
-                        touchStartX = null;
-                    }}
-                }}, {{ passive: true }});
-                sidebarLeft.addEventListener('touchend', function() {{ touchStartX = null; }});
             }}
 
             function updateScrollProgress() {{
@@ -292,23 +247,41 @@ public static partial class LayoutProvider
                 }});
             }}
 
+            function teatimeGroupNameMatches(list, query, max) {{
+                var q = query.trim().toLowerCase();
+                if (!q) return [];
+                return (list || []).filter(function(x) {{ return x.name.toLowerCase().indexOf(q) >= 0; }})
+                    .sort(function(a, b) {{
+                        var ra = a.name.toLowerCase().indexOf(q) === 0 ? 0 : 1;
+                        var rb = b.name.toLowerCase().indexOf(q) === 0 ? 0 : 1;
+                        return ra - rb || (b.count || 0) - (a.count || 0) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+                    }})
+                    .slice(0, max);
+            }}
+
             function teatimeSearchStatic(index, query) {{
+                var authors = teatimeGroupNameMatches(index.authors, query, 5);
+                var tags = teatimeGroupNameMatches(index.tags, query, 8);
                 if (query.length > BARK_MAX_QUERY_LENGTH) query = query.slice(0, BARK_MAX_QUERY_LENGTH);
                 var terms = teatimeTokenize(query);
-                if (!terms.length) return [];
-                if (terms.length > BARK_MAX_QUERY_TERMS) terms = terms.slice(0, BARK_MAX_QUERY_TERMS);
-                var scores = {{}};
-                terms.forEach(function(term) {{
-                    var key = term.toLowerCase();
-                    if (index.terms[key]) {{ teatimeAccumulate(index, scores, index.terms[key], term, 1); return; }}
-                    teatimeFindFuzzy(index, key).forEach(function(cand) {{
-                        if (index.terms[cand]) teatimeAccumulate(index, scores, index.terms[cand], cand, 2);
+                var posts = [];
+                if (terms.length) {{
+                    if (terms.length > BARK_MAX_QUERY_TERMS) terms = terms.slice(0, BARK_MAX_QUERY_TERMS);
+                    var scores = {{}};
+                    terms.forEach(function(term) {{
+                        var key = term.toLowerCase();
+                        if (index.terms[key]) {{ teatimeAccumulate(index, scores, index.terms[key], term, 1); return; }}
+                        teatimeFindFuzzy(index, key).forEach(function(cand) {{
+                            if (index.terms[cand]) teatimeAccumulate(index, scores, index.terms[cand], cand, 2);
+                        }});
                     }});
-                }});
-                return Object.keys(scores).map(function(k) {{
-                    var doc = index.docs[k];
-                    return {{ path: doc.path, title: doc.title, description: doc.description, excerpt: scores[k].excerpt, score: scores[k].score }};
-                }}).sort(function(a, b) {{ return b.score - a.score || (a.path < b.path ? -1 : a.path > b.path ? 1 : 0); }});
+                    posts = Object.keys(scores).map(function(k) {{
+                        var doc = index.docs[k];
+                        return {{ path: doc.path, title: doc.title, description: doc.description, excerpt: scores[k].excerpt, score: scores[k].score }};
+                    }}).filter(function(r) {{ return r.path.indexOf('authors/') !== 0; }})
+                      .sort(function(a, b) {{ return b.score - a.score || (a.path < b.path ? -1 : a.path > b.path ? 1 : 0); }});
+                }}
+                return {{ authors: authors, tags: tags, posts: posts }};
             }}
 
             function teatimeRunSearch(query) {{
@@ -392,10 +365,6 @@ public static partial class LayoutProvider
             if (searchTrigger) {{
                 searchTrigger.addEventListener('click', openSearchModal);
             }}
-            var searchTriggerMobile = document.getElementById('search-trigger-mobile');
-            if (searchTriggerMobile) {{
-                searchTriggerMobile.addEventListener('click', openSearchModal);
-            }}
             searchModalClose.addEventListener('click', closeSearchModal);
             searchOverlay.addEventListener('mousedown', function(e) {{
                 if (e.target === searchOverlay) closeSearchModal();
@@ -467,20 +436,53 @@ public static partial class LayoutProvider
                     teatimeRunSearch(query)
                         .then(function(data) {{
                             if (requestId !== searchRequestId) return; // a newer keystroke superseded this request
-                            if (data.length === 0) {{
+                            var authors = data.authors || [];
+                            var tags = data.tags || [];
+                            var posts = data.posts || [];
+                            var total = authors.length + tags.length + posts.length;
+                            if (total === 0) {{
                                 searchModalResults.innerHTML = '<div class=""search-result-empty"" role=""status"">No results found.</div>';
                                 searchModalStatus.textContent = 'No results found.';
                             }} else {{
                                 var terms = query.split(/\s+/).filter(Boolean);
                                 var html = '';
-                                data.forEach(function(r, i) {{
-                                    html += '<a href=""{basePath}/' + r.path + '/"" class=""search-result-item"" role=""option"" id=""search-result-' + i + '"" aria-selected=""false"" tabindex=""-1"">' +
-                                        '<div class=""search-result-title"">' + highlightMatches(r.title, terms) + '</div>' +
-                                        (r.excerpt ? '<div class=""search-result-excerpt"">' + highlightMatches(r.excerpt, terms) + '</div>' : '') +
-                                        '</a>';
-                                }});
+                                var i = 0;
+                                if (authors.length) {{
+                                    html += '<div class=""search-group""><h3 class=""search-group-label"">Authors</h3>';
+                                    authors.forEach(function(a) {{
+                                        var avatar = a.image
+                                            ? '<img class=""search-hit-avatar"" src=""' + escapeHtml(a.image) + '"" alt="""" loading=""lazy"">'
+                                            : '<span class=""search-hit-avatar avatar-initial"">' + escapeHtml((a.name || '?').slice(0, 1)) + '</span>';
+                                        html += '<a href=""{basePath}/' + a.url + '/"" class=""search-result-item search-hit-media"" role=""option"" id=""search-result-' + i + '"" aria-selected=""false"" tabindex=""-1"">' +
+                                            avatar + '<span class=""search-result-title"">' + highlightMatches(a.name, terms) + '</span></a>';
+                                        i++;
+                                    }});
+                                    html += '</div>';
+                                }}
+                                if (tags.length) {{
+                                    html += '<div class=""search-group""><h3 class=""search-group-label"">Tags</h3>';
+                                    tags.forEach(function(t) {{
+                                        html += '<a href=""{basePath}/' + t.url + '/"" class=""search-result-item search-hit-media"" role=""option"" id=""search-result-' + i + '"" aria-selected=""false"" tabindex=""-1"">' +
+                                            '<span class=""search-hit-tag"" aria-hidden=""true"">#</span>' +
+                                            '<span class=""search-result-title"">' + highlightMatches(t.name, terms) + '</span>' +
+                                            '<span class=""search-hit-count"">' + t.count + '</span></a>';
+                                        i++;
+                                    }});
+                                    html += '</div>';
+                                }}
+                                if (posts.length) {{
+                                    html += '<div class=""search-group""><h3 class=""search-group-label"">Posts</h3>';
+                                    posts.forEach(function(r) {{
+                                        html += '<a href=""{basePath}/' + r.path + '/"" class=""search-result-item"" role=""option"" id=""search-result-' + i + '"" aria-selected=""false"" tabindex=""-1"">' +
+                                            '<div class=""search-result-title"">' + highlightMatches(r.title, terms) + '</div>' +
+                                            (r.excerpt ? '<div class=""search-result-excerpt"">' + highlightMatches(r.excerpt, terms) + '</div>' : '') +
+                                            '</a>';
+                                        i++;
+                                    }});
+                                    html += '</div>';
+                                }}
                                 searchModalResults.innerHTML = html;
-                                searchModalStatus.textContent = data.length + (data.length === 1 ? ' result found.' : ' results found.');
+                                searchModalStatus.textContent = total + (total === 1 ? ' result found.' : ' results found.');
                             }}
                             searchModalInput.setAttribute('aria-expanded', 'true');
                         }})

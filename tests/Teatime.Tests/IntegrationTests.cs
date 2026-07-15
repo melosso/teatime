@@ -135,9 +135,12 @@ public sealed class IntegrationTests : IClassFixture<TeatimeWebApplicationFactor
 
         var hit = await client.GetStringAsync("/api/search?q=installation");
         Assert.Contains("posts/hello-world", hit);
+        Assert.Contains("\"posts\":", hit);
 
         var shortQuery = await client.GetStringAsync("/api/search?q=a");
-        Assert.Equal("[]", shortQuery);
+        Assert.Contains("\"authors\":[]", shortQuery);
+        Assert.Contains("\"tags\":[]", shortQuery);
+        Assert.Contains("\"posts\":[]", shortQuery);
     }
 
     [Fact]
