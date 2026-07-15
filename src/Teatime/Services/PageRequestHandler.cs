@@ -24,7 +24,9 @@ public sealed class PageRequestHandler
     public async Task HandleAsync(string? path, HttpContext context)
     {
         var normalized = (path ?? string.Empty).Trim('/').ToLowerInvariant();
-        if (normalized.Length == 0 || normalized.StartsWith("posts/", StringComparison.Ordinal))
+        if (normalized.Length == 0
+            || normalized.StartsWith("posts/", StringComparison.Ordinal)
+            || normalized.StartsWith("authors/", StringComparison.Ordinal))
         {
             await _responder.Write404Async(context);
             return;
@@ -33,7 +35,9 @@ public sealed class PageRequestHandler
         var page = await _content.GetPageAsync($"pages/{normalized}", context.RequestAborted)
                    ?? await _content.GetPageAsync(normalized, context.RequestAborted);
 
-        if (page is null || page.Path.StartsWith("posts/", StringComparison.Ordinal))
+        if (page is null
+            || page.Path.StartsWith("posts/", StringComparison.Ordinal)
+            || page.Path.StartsWith("authors/", StringComparison.Ordinal))
         {
             await _responder.Write404Async(context);
             return;

@@ -69,6 +69,14 @@ public sealed class PostService
         return view.ByTagSlug.TryGetValue(PagePath.SlugifySegment(tagSlug), out var posts) ? posts : [];
     }
 
+    public async Task<IReadOnlyList<Post>> GetByAuthorAsync(string authorId, CancellationToken cancellationToken = default)
+    {
+        var view = await GetViewAsync(cancellationToken);
+        return view.Posts
+            .Where(p => string.Equals(p.AuthorId, authorId, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
     public async Task<(Post? Older, Post? Newer)> GetPrevNextAsync(string slug, CancellationToken cancellationToken = default)
     {
         var normalized = PagePath.SlugifySegment(slug);

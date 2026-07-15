@@ -1368,7 +1368,22 @@ public static partial class LayoutProvider
 
         .byline {{ gap: 0.55rem; }}
         .byline-author {{ color: var(--text-color); font-weight: 500; }}
+        .byline-link {{ display: inline-flex; align-items: center; gap: 0.55rem; color: inherit; text-decoration: none; }}
+        .byline-link:hover .byline-author {{ color: var(--accent); }}
         .avatar {{ width: 26px; height: 26px; border-radius: 50%; object-fit: cover; display: inline-grid; place-items: center; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, var(--sidebar-bg)), var(--accent)); color: var(--bg-color); font-size: 0.72rem; font-weight: 700; }}
+        .avatar-initial {{ display: inline-grid; place-items: center; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, var(--sidebar-bg)), var(--accent)); color: var(--bg-color); font-weight: 700; }}
+        .author-header {{ text-align: center; padding: 0.5rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }}
+        .author-header-avatar {{ width: 76px; height: 76px; border-radius: 50%; object-fit: cover; margin: 0 auto 1rem; }}
+        .author-header-avatar.avatar-initial {{ font-size: 1.9rem; }}
+        .author-name {{ font-family: var(--font-display); font-size: clamp(1.8rem, 1.2rem + 2.5vw, 2.6rem); font-weight: 600; letter-spacing: -0.02em; margin: 0 0 0.6rem; }}
+        .author-bio {{ color: var(--text-muted); max-width: 52ch; margin: 0 auto; }}
+        .author-bio p {{ margin: 0; }}
+        .author-grid {{ list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem; }}
+        .author-card {{ display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.85rem; border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: var(--text-color); transition: border-color 0.15s ease; }}
+        .author-card:hover {{ border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }}
+        .author-card-avatar {{ width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }}
+        .author-card-avatar.avatar-initial {{ font-size: 1.1rem; }}
+        .author-card-name {{ font-weight: 500; }}
         .post-cover {{ display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); background: var(--sidebar-bg); margin: 1.75rem 0 0; }}
         .content.reading img {{ max-width: 100%; height: auto; border-radius: 10px; background: var(--sidebar-bg); }}
         .content.reading p > img:only-child {{ display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--border); border-radius: 12px; background: var(--sidebar-bg); margin: 1.75rem 0; }}

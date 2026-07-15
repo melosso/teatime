@@ -10,13 +10,16 @@ public static class TagListRenderer
         var sb = new StringBuilder();
         sb.Append("<h1 class=\"list-heading\">Tags</h1>");
         sb.Append("<p class=\"list-intro\">Browse writing by topic.</p>");
+        sb.Append(BuildCloud(tags, basePath));
+        return sb.ToString();
+    }
 
+    public static string BuildCloud(IReadOnlyList<TagInfo> tags, string basePath)
+    {
         if (tags.Count == 0)
-        {
-            sb.Append("<p class=\"list-empty\">No tags yet.</p>");
-            return sb.ToString();
-        }
+            return "<p class=\"list-empty\">No tags yet.</p>";
 
+        var sb = new StringBuilder();
         sb.Append("<ul class=\"tag-cloud\">");
         foreach (var tag in tags)
         {

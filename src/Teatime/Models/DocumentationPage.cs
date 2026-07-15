@@ -19,7 +19,8 @@ public sealed record DocumentationPage(
     bool Draft = false,
     string? Slug = null,
     string? Summary = null,
-    string? Cover = null
+    string? Cover = null,
+    string? Author = null
 )
 {
     public DocumentationPage(

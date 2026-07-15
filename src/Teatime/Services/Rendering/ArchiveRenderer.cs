@@ -12,13 +12,16 @@ public static class ArchiveRenderer
         var sb = new StringBuilder();
         sb.Append("<h1 class=\"list-heading\">Archive</h1>");
         sb.Append("<p class=\"list-intro\">Every post, newest first.</p>");
+        sb.Append(BuildYears(years, basePath));
+        return sb.ToString();
+    }
 
+    public static string BuildYears(IReadOnlyList<(int Year, IReadOnlyList<Post> Posts)> years, string basePath)
+    {
         if (years.Count == 0)
-        {
-            sb.Append("<p class=\"list-empty\">No posts yet.</p>");
-            return sb.ToString();
-        }
+            return "<p class=\"list-empty\">No posts yet.</p>";
 
+        var sb = new StringBuilder();
         foreach (var (year, posts) in years)
         {
             sb.Append("<section class=\"archive-year\"><h2>").Append(year).Append("</h2><ul class=\"archive-list\">");

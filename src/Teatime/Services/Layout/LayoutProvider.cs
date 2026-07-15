@@ -50,50 +50,13 @@ public static partial class LayoutProvider
             ? $"<meta name=\"description\" content=\"{HtmlEncode(description)}\">"
             : "";
 
-        var hasLeftNav = !string.IsNullOrWhiteSpace(navigationHtml);
-        var layoutClass = isHomePage
-            ? "layout teatime-home-layout"
-            : hasLeftNav ? "layout" : "layout no-left-sidebar";
-        var mobileSocialHtml = !string.IsNullOrWhiteSpace(socialLinksHtml)
-            ? $@"<div class=""sidebar-social-links"">{socialLinksHtml}</div>"
-            : "";
-        var sidebarLeftHtml = $@"
-        <aside class=""sidebar-left"" id=""sidebar-left"" aria-label=""Documentation navigation"">
-            {mobileTopNavHtml}
-            {navigationHtml}
-            {mobileSocialHtml}
-        </aside>";
-        var breadcrumbAndTocHtml = isHomePage ? "" : $@"
-            <nav class=""breadcrumb"" aria-label=""Breadcrumb"">
-                {breadcrumbHtml}
-                {pageControlsHtml}
-            </nav>
-            {(tocHtml is null ? "" : $@"<details class=""toc-inline"">
+        var contentClass = isArticle ? "content reading" : "content";
+        var tocDetailsHtml = tocHtml is null ? "" : $@"<details class=""toc-inline"">
                 <summary>On this page</summary>
                 <ul class=""toc-list"">
                     {tocHtml}
                 </ul>
-            </details>")}";
-        var sidebarRightHtml = isHomePage || string.IsNullOrWhiteSpace(tocHtml)
-            ? ""
-            : $@"
-        <aside class=""sidebar-right"" aria-label=""Table of contents"">
-            <div class=""toc-title"">On This Page</div>
-            <div class=""toc-list-wrapper"">
-                <div class=""toc-indicator"" aria-hidden=""true""></div>
-                <ul class=""toc-list"">
-                    {tocHtml}
-                </ul>
-            </div>
-        </aside>";
-        var contentClass = isArticle ? "content reading" : "content";
-        // Home pages never show "last updated" or prev/next pagination, regardless of caller input.
-        var paginationBlock = isHomePage ? "" : paginationHtml;
-        var lastUpdatedBlock = isHomePage ? "" : lastUpdatedHtml;
-        var editLinkBlock = isHomePage ? "" : editLinkHtml;
-        var pageMetaBlock = string.IsNullOrEmpty(editLinkBlock) && string.IsNullOrEmpty(lastUpdatedBlock)
-            ? ""
-            : $@"<div class=""page-meta""><div class=""page-meta-left"">{editLinkBlock}</div><div class=""page-meta-right"">{lastUpdatedBlock}</div></div>";
+            </details>";
 
         const string darkVars = @"
                 color-scheme: dark;
@@ -190,13 +153,13 @@ public static partial class LayoutProvider
     </header>
     <div class=""search-overlay"" id=""search-overlay"" hidden>
         <div class=""search-modal"" id=""search-modal"" role=""dialog"" aria-modal=""true"" aria-labelledby=""search-modal-label"">
-            <h2 id=""search-modal-label"" class=""sr-only"">Search documentation</h2>
+            <h2 id=""search-modal-label"" class=""sr-only"">Search posts, tags and authors</h2>
             <div class=""search-modal-header"">
                 <svg viewBox=""0 0 24 24"" fill=""none"" stroke=""currentColor"" stroke-width=""2"" stroke-linecap=""round"" aria-hidden=""true""><circle cx=""11"" cy=""11"" r=""7""/><path d=""M21 21l-4.3-4.3""/></svg>
                 <input type=""search"" class=""search-modal-input"" id=""search-modal-input""
-                       placeholder=""Search documentation..."" autocomplete=""off"" enterkeyhint=""search""
+                       placeholder=""Search posts, tags and authors..."" autocomplete=""off"" enterkeyhint=""search""
                        role=""combobox"" aria-expanded=""false"" aria-controls=""search-modal-results""
-                       aria-autocomplete=""list"" aria-label=""Search documentation"">
+                       aria-autocomplete=""list"" aria-label=""Search posts, tags and authors"">
                 <button type=""button"" class=""search-modal-close icon-btn"" id=""search-modal-close"" aria-label=""Close search"">
                     <svg viewBox=""0 0 24 24"" fill=""none"" stroke=""currentColor"" stroke-width=""2"" stroke-linecap=""round"" aria-hidden=""true""><path d=""M18 6L6 18M6 6l12 12""/></svg>
                 </button>
@@ -220,20 +183,12 @@ public static partial class LayoutProvider
             </ul>
         </div>
     </div>
-    <div class=""sidebar-overlay"" id=""sidebar-overlay""></div>
-    <div class=""{layoutClass}"">
-        {sidebarLeftHtml}
-        <main class=""main-container"" id=""main-content"" tabindex=""-1"">
-            {breadcrumbAndTocHtml}
-            <article class=""{contentClass}"">
-                {content}
-                {pageMetaBlock}
-                {paginationBlock}
-                {footerHtml}
-            </article>
-        </main>
-        {sidebarRightHtml}
-    </div>
+    <main class=""main-container"" id=""main-content"" tabindex=""-1"">
+        {tocDetailsHtml}
+        <article class=""{contentClass}"">
+            {content}
+        </article>
+    </main>
     <footer class=""site-footer"">
         <span class=""site-footer-note"">{(!string.IsNullOrEmpty(footerText) ? footerText : $"© {DateTime.UtcNow.Year} {HtmlEncode(brandText ?? "Teatime")}")}</span>
         <a href=""{basePath}/feed.xml"">RSS</a>

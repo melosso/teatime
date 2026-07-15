@@ -47,4 +47,7 @@ public sealed record FrontMatter
 
     /// <summary>Feature image URL for the post (byline area + home lead card).</summary>
     public string? Cover { get; init; }
+
+    /// <summary>Author id referencing a file in <c>content/authors/</c>. Falls back to the site author.</summary>
+    public string? Author { get; init; }
 }

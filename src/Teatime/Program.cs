@@ -59,6 +59,7 @@ try
     builder.Services.AddSingleton<ContentService>();
     builder.Services.AddHostedService(sp => sp.GetRequiredService<ContentService>());
     builder.Services.AddSingleton<PostService>();
+    builder.Services.AddSingleton<AuthorService>();
 
     var customCspRaw = builder.Configuration["Docs:ContentSecurityPolicy"];
     var customCsp = string.IsNullOrWhiteSpace(customCspRaw) ? null : customCspRaw;

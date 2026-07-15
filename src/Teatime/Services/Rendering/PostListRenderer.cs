@@ -41,7 +41,7 @@ public static class PostListRenderer
         return $"<nav class=\"pager\" aria-label=\"Pagination\">{newer}<span class=\"pager-status\">Page {currentPage} of {totalPages}</span>{older}</nav>";
     }
 
-    public static string BuildPostHeader(Post post, string basePath, string? author, string? authorImage)
+    public static string BuildPostHeader(Post post, string basePath, string? author, string? authorImage, string? authorUrl)
     {
         var sb = new StringBuilder();
         sb.Append("<header class=\"post-header\">");
@@ -49,8 +49,13 @@ public static class PostListRenderer
         sb.Append("<div class=\"post-meta byline\">");
         if (author is { Length: > 0 })
         {
-            sb.Append(Avatar(author, authorImage, basePath));
-            sb.Append("<span class=\"byline-author\">").Append(LayoutProvider.HtmlEncode(author)).Append("</span> · ");
+            var inner = Avatar(author, authorImage, basePath)
+                + $"<span class=\"byline-author\">{LayoutProvider.HtmlEncode(author)}</span>";
+            if (authorUrl is { Length: > 0 })
+                sb.Append("<a class=\"byline-link\" href=\"").Append(UrlPaths.Href(basePath, authorUrl)).Append("\">").Append(inner).Append("</a>");
+            else
+                sb.Append(inner);
+            sb.Append(" · ");
         }
         sb.Append(MetaLine(post, basePath));
         sb.Append("</div>");
@@ -73,9 +78,9 @@ public static class PostListRenderer
         var sb = new StringBuilder();
         sb.Append("<article class=\"lead\">").Append(cover);
         sb.Append("<div class=\"lead-body\">");
-        sb.Append("<div class=\"post-meta\">").Append(MetaLine(post, basePath)).Append("</div>");
         sb.Append("<h2 class=\"lead-title\"><a href=\"").Append(href).Append("\">")
           .Append(LayoutProvider.HtmlEncode(post.Title)).Append("</a></h2>");
+        sb.Append("<div class=\"post-meta\">").Append(MetaLine(post, basePath)).Append("</div>");
         if (post.Excerpt is { Length: > 0 })
             sb.Append("<p class=\"lead-excerpt\">").Append(LayoutProvider.HtmlEncode(post.Excerpt)).Append("</p>");
         sb.Append("<a class=\"readmore\" href=\"").Append(href).Append("\">Keep reading <span>→</span></a>");

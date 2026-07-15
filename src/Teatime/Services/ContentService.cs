@@ -235,7 +235,8 @@ public sealed partial class ContentService : IHostedService, IDisposable
                 Draft: parsed.Draft,
                 Slug: parsed.Slug,
                 Summary: parsed.Summary,
-                Cover: parsed.Cover
+                Cover: parsed.Cover,
+                Author: parsed.Author
             );
 
             pageMap[pagePath] = page;

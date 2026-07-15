@@ -15,7 +15,8 @@ public sealed partial record Post(
     IReadOnlyList<HeadingInfo> Headings,
     bool ShowToc,
     int ReadingMinutes,
-    string? Cover)
+    string? Cover,
+    string? AuthorId)
 {
     public static Post FromPage(DocumentationPage page)
     {
@@ -37,7 +38,8 @@ public sealed partial record Post(
             Headings: page.Headings ?? [],
             ShowToc: page.ShowToc,
             ReadingMinutes: Math.Max(1, (int)Math.Ceiling(words / 200.0)),
-            Cover: page.Cover);
+            Cover: page.Cover,
+            AuthorId: page.Author);
     }
 
     public string Url => $"posts/{Slug}";

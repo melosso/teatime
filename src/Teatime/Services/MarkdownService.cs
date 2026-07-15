@@ -108,7 +108,8 @@ public sealed partial class MarkdownService
             frontMatter?.Draft ?? false,
             frontMatter?.Slug,
             frontMatter?.Summary is { Length: > 0 } s ? ToPlainText(s) : null,
-            frontMatter?.Cover);
+            frontMatter?.Cover,
+            frontMatter?.Author);
     }
 
     private static string AddHeadingAnchors(string html) =>
