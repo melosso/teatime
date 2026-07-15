@@ -89,6 +89,7 @@ public sealed partial class MarkdownService
         var html = UnescapeBraces(AddHeadingAnchors(Markdown.ToHtml(markdown, _pipeline)));
         html = PrefixBodyContent(html, _basePath);
         html = AddExternalLinkAttributes(html);
+        html = AddLazyLoading(html);
 
         return new MarkdownParseResult(
             html,
@@ -211,6 +212,16 @@ public sealed partial class MarkdownService
 
     [GeneratedRegex(@"<a\s[^>]*href=""https?://[^""]*""[^>]*>", RegexOptions.IgnoreCase)]
     private static partial Regex ExternalLinkRegex();
+
+    // Content images default to lazy loading and async decoding unless the author set loading explicitly.
+    private static string AddLazyLoading(string html) =>
+        ImgTagRegex().Replace(html, m =>
+            m.Value.Contains("loading=", StringComparison.OrdinalIgnoreCase)
+                ? m.Value
+                : m.Value.Insert(4, " loading=\"lazy\" decoding=\"async\""));
+
+    [GeneratedRegex(@"<img\b[^>]*>", RegexOptions.IgnoreCase)]
+    private static partial Regex ImgTagRegex();
 
     // Renders inline markdown to plain text: strips links/bold/italic/code tags so
     // frontmatter descriptions are searchable and safe for <meta name="description">.

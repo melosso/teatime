@@ -54,6 +54,11 @@ public static partial class LayoutProvider
                into a scroll container and breaking position: sticky on the sidebars. */
             overflow-x: clip;
         }}
+        html {{
+            /* Reserve the scrollbar gutter so centered content does not shift between
+               pages that scroll and pages that do not. */
+            scrollbar-gutter: stable;
+        }}
         body {{
             font-family: var(--font-sans);
             background-color: var(--bg-color);
@@ -107,45 +112,6 @@ public static partial class LayoutProvider
             width: 18px;
             height: 18px;
         }}
-        .promo-bar {{
-            display: grid; grid-template-rows: 1fr;
-            background-color: var(--promo-bg); color: var(--promo-text);
-            box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--promo-text) 14%, transparent);
-            font-size: 0.875rem; line-height: 1.4; text-align: center;
-            transition: grid-template-rows 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease-out;
-        }}
-        .promo-bar-inner {{
-            position: relative; overflow: hidden; min-height: 0;
-            display: flex; align-items: center; justify-content: center;
-        }}
-        .promo-bar-content {{ padding: 0.5rem 3rem; }}
-        .promo-bar-content p {{ margin: 0; display: inline; }}
-        .promo-bar-content a {{
-            color: inherit; text-decoration: underline;
-            text-underline-offset: 2px; font-weight: 600;
-        }}
-        .promo-bar-content a:hover {{ text-decoration-thickness: 2px; }}
-        .promo-bar-content code {{
-            background-color: color-mix(in srgb, var(--promo-text) 16%, transparent);
-            color: inherit; padding: 0.1em 0.35em; border-radius: 4px;
-            font-family: var(--font-mono); font-size: 0.85em;
-        }}
-        .promo-bar-close {{
-            position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
-            color: inherit; opacity: 0.75;
-            transition: opacity 0.15s ease, background-color 0.15s ease;
-        }}
-        .promo-bar-close:hover {{
-            color: inherit; opacity: 1;
-            background-color: color-mix(in srgb, var(--promo-text) 15%, transparent);
-        }}
-        .promo-bar-close:focus-visible {{
-            outline-color: var(--promo-text); opacity: 1;
-        }}
-        .promo-bar.promo-bar-hiding {{
-            grid-template-rows: 0fr; opacity: 0;
-        }}
-        .promo-dismissed .promo-bar {{ display: none; }}
         .topbar {{
             display: flex; align-items: center; justify-content: space-between;
             height: var(--topbar-height); padding: 0 1.5rem;
@@ -202,13 +168,6 @@ public static partial class LayoutProvider
         }}
         .top-nav-dropdown-link:hover {{
             background-color: var(--code-bg); color: var(--accent);
-        }}
-        .external-link-icon {{
-            display: inline-block; width: 12px; height: 12px; flex-shrink: 0;
-            opacity: 0.6; vertical-align: -1px; margin-left: 0.25rem;
-        }}
-        .mobile-top-nav {{
-            display: none;
         }}
         .layout {{
             display: grid;
@@ -550,169 +509,6 @@ public static partial class LayoutProvider
             padding: 3rem 4rem;
             max-width: 800px; justify-self: center; width: 100%;
             min-width: 0;
-        }}
-        .teatime-home-layout {{
-            grid-template-columns: 1fr;
-        }}
-        .teatime-home-layout .sidebar-left {{
-            display: none;
-        }}
-        .teatime-home-layout .main-container {{
-            max-width: 100%;
-            padding: 0;
-        }}
-        .teatime-home-content {{
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }}
-        .teatime-hero {{
-            text-align: center;
-            padding: 4.5rem 1.5rem 3.5rem;
-        }}
-        .teatime-hero-image {{
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            line-height: 1;
-        }}
-        .teatime-hero-image img {{
-            max-width: 200px;
-            max-height: 200px;
-        }}
-        .teatime-hero-name {{
-            font-size: 2.75rem; font-weight: 700; letter-spacing: -0.02em;
-            color: var(--accent); margin-bottom: 0.5rem;
-        }}
-        .teatime-hero-text {{
-            font-size: 2rem; font-weight: 600; color: var(--text-color);
-            letter-spacing: -0.02em; margin-bottom: 1rem;
-        }}
-        .teatime-hero-tagline {{
-            font-size: 1.15rem; color: var(--text-muted); max-width: 540px;
-            margin: 0 auto 2rem;
-        }}
-        .teatime-hero-actions {{
-            display: flex;
-            justify-content: center;
-            gap: 0.9rem;
-            flex-wrap: wrap;
-        }}
-        .teatime-hero-action {{
-            display: inline-flex; align-items: center; padding: 0.65rem 1.4rem;
-            border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none;
-            transition: opacity 0.15s ease, background-color 0.15s ease;
-        }}
-        .teatime-hero-action.brand {{
-            background-color: var(--accent);
-            color: var(--bg-color);
-        }}
-        .teatime-hero-action.brand:hover {{
-            opacity: 0.85;
-        }}
-        .teatime-hero-action.alt {{
-            border: 1px solid var(--border); color: var(--text-color); background: transparent;
-        }}
-        .teatime-hero-action.alt:hover {{
-            background-color: var(--accent-light);
-        }}
-        .teatime-features {{
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.25rem; padding: 1rem 1.5rem 4rem;
-        }}
-        .teatime-feature {{
-            display: block; padding: 1.5rem; border: 1px solid var(--border);
-            border-radius: 10px; background-color: var(--sidebar-bg);
-            text-decoration: none; color: inherit; transition: border-color 0.15s ease;
-        }}
-        a.teatime-feature:hover {{
-            border-color: var(--accent);
-        }}
-        .teatime-feature-icon {{
-            font-size: 1.75rem;
-            margin-bottom: 0.75rem;
-        }}
-        .teatime-feature-icon img {{ 
-            width: 1.75rem; height: 1.75rem; object-fit: contain; 
-        }}
-        .teatime-feature-icon svg {{   
-            width: 1.75rem; height: 1.75rem; 
-        }}
-        .teatime-icon-dark {{ 
-            display: none; 
-        }}
-        @media (prefers-color-scheme: dark) {{
-            :root:not([data-theme=""light""]) .teatime-icon-light {{ display: none; }}
-            :root:not([data-theme=""light""]) .teatime-icon-dark  {{ display: inline; }}
-        }}
-        :root[data-theme=""dark""] .teatime-icon-light {{ 
-            display: none; 
-        }}
-        :root[data-theme=""dark""] .teatime-icon-dark  {{ 
-            display: inline; 
-        }}
-        .teatime-feature-title {{
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 0.4rem;
-        }}
-        .teatime-feature-details {{
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }}
-        .page-controls {{ 
-            position: relative; margin-left: auto; flex-shrink: 0; 
-        }}
-        .page-controls-toggle {{ 
-            color: var(--text-muted); 
-        }}
-        .page-controls-toggle:hover {{ 
-            color: var(--text-color); 
-        }}
-        .page-controls-menu {{
-            position: absolute; top: calc(100% + 4px); right: 0; z-index: 200;
-            background: var(--sidebar-bg); border: 1px solid var(--border);
-            border-radius: 6px; box-shadow: var(--shadow-md);
-            min-width: 10rem; padding: 0.25rem 0;
-            display: flex; flex-direction: column;
-        }}
-        .page-controls-menu[hidden] {{ 
-            display: none; 
-        }}
-        .page-controls-item {{
-            display: flex; align-items: center; gap: 0.5rem;
-            padding: 0.4rem 0.75rem; font-size: 0.875rem;
-            color: var(--text-color); text-decoration: none; white-space: nowrap;
-            cursor: pointer;
-        }}
-        .page-controls-item svg {{
-            width: 14px; height: 14px; flex-shrink: 0;
-        }}
-        .page-controls-item:hover {{
-            background: var(--accent-light); color: var(--accent);
-        }}
-        .page-controls-item.loading {{ opacity: 0.6; pointer-events: none; }}
-        .page-controls-divider {{
-            height: 1px; background: var(--border); margin: 0.25rem 0;
-        }}
-        .page-meta {{
-            display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-            margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
-            flex-wrap: wrap;
-        }}
-        .page-meta-right {{
-            margin-left: auto;
-        }}
-        .last-updated {{
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }}
-        .edit-link {{
-            display: inline-flex; align-items: center; gap: 0.35rem;
-            font-size: 0.85rem; color: var(--text-muted); text-decoration: none;
-        }}
-        .edit-link:hover {{
-            color: var(--accent);
         }}
         .breadcrumb {{
             display: flex; align-items: center; gap: 0.4rem;
@@ -1464,7 +1260,8 @@ public static partial class LayoutProvider
         .site-nav a.here {{ color: var(--text-color); box-shadow: inset 0 -2px 0 var(--accent); }}
         .site-nav .top-nav-item {{ position: relative; display: inline-flex; align-items: center; height: auto; }}
         .site-nav .top-nav-link {{ padding: 0.35rem 0; font-size: 0.9rem; font-weight: 400; color: var(--text-muted); }}
-        .site-nav .top-nav-link:hover, .site-nav .top-nav-link.active {{ color: var(--text-color); }}
+        .site-nav .top-nav-link:hover {{ color: var(--text-color); }}
+        .site-nav .top-nav-link.active {{ color: var(--text-color); box-shadow: inset 0 -2px 0 var(--accent); }}
         .site-nav .top-nav-chevron {{ width: 13px; height: 13px; }}
         .site-nav .top-nav-dropdown-menu {{
             display: block; opacity: 0; visibility: hidden;
@@ -1518,7 +1315,7 @@ public static partial class LayoutProvider
         .post-excerpt {{ color: var(--text-muted); margin: 0.35rem 0 0; max-width: 62ch; }}
         .post-meta {{
             display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
-            font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.01em;
+            font-size: 0.85rem; color: var(--text-muted); letter-spacing: 0.01em;
             font-variant-numeric: tabular-nums;
         }}
         .post-tags {{ display: inline-flex; flex-wrap: wrap; gap: 0.4rem; margin-left: 0.15rem; }}
@@ -1559,7 +1356,7 @@ public static partial class LayoutProvider
         .lead {{ display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(1.75rem, 4vw, 3.5rem); align-items: center; padding: 3.5rem 0 3rem; border-bottom: 1px solid var(--border); }}
         .lead-cover {{ display: block; order: 2; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--accent-light); }}
         .lead-cover img {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
-        .lead-cover-empty {{ background: radial-gradient(120% 90% at 15% 10%, color-mix(in srgb, var(--accent) 22%, var(--sidebar-bg)), var(--sidebar-bg)); }}
+        .lead-cover-empty {{ background: var(--sidebar-bg); }}
         .lead-body {{ order: 1; }}
         .lead-title {{ font-family: var(--font-display); font-size: clamp(1.7rem, 1rem + 2.2vw, 2.4rem); font-weight: 600; line-height: 1.14; letter-spacing: -0.02em; margin: 0.55rem 0 0.5rem; text-wrap: balance; }}
         .lead-title a {{ color: var(--text-color); text-decoration: none; }}
@@ -1597,6 +1394,10 @@ public static partial class LayoutProvider
         .site-footer-note {{ margin-right: auto; text-align: left; }}
         .DocSearch-Commands {{ display: none !important; }}
         .search-modal-results:empty {{ display: none; }}
+        @media (hover: none) and (pointer: coarse) {{
+            .site-nav a, .site-nav .top-nav-link {{ min-height: 44px; display: inline-flex; align-items: center; }}
+            .site-footer .icon-btn {{ width: 40px; height: 40px; }}
+        }}
 
         @media (max-width: 620px) {{
             .site-nav {{ gap: 1.1rem; font-size: 0.85rem; }}

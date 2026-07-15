@@ -54,6 +54,9 @@ internal static class BlogEndpoints
         }
         content += PostListRenderer.BuildPager(page, totalPages, basePath);
 
+        var heading = page > 1 ? $"Posts, page {page}" : "Latest posts";
+        content = $"<h1 class=\"sr-only\">{heading}</h1>" + content;
+
         await responder.WriteAsync(ctx, new BlogPageView(
             Title: page > 1 ? $"Page {page}" : string.Empty,
             ContentHtml: content,

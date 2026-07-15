@@ -162,6 +162,7 @@ public static partial class LayoutProvider
     {canonicalLink}
     {socialMeta}
     {rssDiscoveryHtml}
+    <link rel=""preload"" href=""{basePath}/fonts/Inter.woff2"" as=""font"" type=""font/woff2"" crossorigin>
     {faviconHtml}
     {headTagsHtml}
     {themeCss}
