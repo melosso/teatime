@@ -18,6 +18,7 @@ public sealed record BlogPageView(
 public sealed class BlogPageResponder
 {
     private readonly ContentService _content;
+    private readonly MarkdownService _markdown;
     private readonly ThemeOptions _theme;
     private readonly DocsOptions _docsOptions;
     private readonly PageRequestSettings _settings;
@@ -26,11 +27,13 @@ public sealed class BlogPageResponder
 
     public BlogPageResponder(
         ContentService content,
+        MarkdownService markdown,
         ThemeOptions theme,
         DocsOptions docsOptions,
         PageRequestSettings settings)
     {
         _content = content;
+        _markdown = markdown;
         _theme = theme;
         _docsOptions = docsOptions;
         _settings = settings;
@@ -84,6 +87,8 @@ public sealed class BlogPageResponder
             .Replace("{year}", DateTime.UtcNow.Year.ToString())
             .Replace("{author}", config.Author ?? string.Empty)
             .Replace("{title}", config.Title ?? string.Empty);
+        if (!string.IsNullOrEmpty(footerText))
+            footerText = _markdown.ToHtml(footerText).Replace("<p>", "").Replace("</p>", "").Trim();
 
         var fullHtml = LayoutProvider.GetLayout(
             title: PageTitleRenderer.ComputeTitle(view.Title, config),

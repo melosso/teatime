@@ -5,7 +5,7 @@
   "author": "Melosso",
   "favicon": "🍵",
   "scrollIndicator": true,
-  "footer": "© {year} {author}. Brewed with Teatime.",
+  "footer": "© {year} {author}. Brewed with [Teatime](https://github.com/melosso/teatime){target=\"_blank\" rel=\"noopener\"}.",
   "menu": [
     { "title": "Posts", "path": "/" },
     { "title": "Tags", "path": "/tags/" },

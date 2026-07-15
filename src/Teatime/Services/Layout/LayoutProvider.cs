@@ -234,7 +234,7 @@ public static partial class LayoutProvider
         {sidebarRightHtml}
     </div>
     <footer class=""site-footer"">
-        <span class=""site-footer-note"">{(!string.IsNullOrEmpty(footerText) ? HtmlEncode(footerText) : $"© {DateTime.UtcNow.Year} {HtmlEncode(brandText ?? "Teatime")}")}</span>
+        <span class=""site-footer-note"">{(!string.IsNullOrEmpty(footerText) ? footerText : $"© {DateTime.UtcNow.Year} {HtmlEncode(brandText ?? "Teatime")}")}</span>
         <a href=""{basePath}/feed.xml"">RSS</a>
         <a href=""{homeHref}archive/"">Archive</a>
         {socialLinksHtml}

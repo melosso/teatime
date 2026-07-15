@@ -1496,7 +1496,7 @@ public static partial class LayoutProvider
         .content {{ max-width: none; margin: 0; padding: 0; }}
         .content > :first-child, .content.reading > :first-child {{ margin-top: 0; }}
         .list-heading {{ margin-top: 0; }}
-        .content.reading {{ max-width: var(--measure); margin: 0 auto; font-size: 1.125rem; line-height: 1.8; }}
+        .content.reading {{ max-width: var(--measure); margin: 0 auto; font-size: 1.125rem; line-height: 1.7; }}
         .content.reading p {{ margin: 0 0 1.6rem; }}
         .content.reading h1, .content.reading h2, .content.reading h3, .content.reading h4 {{ font-family: var(--font-display); font-weight: 600; border-bottom: none; padding-bottom: 0; }}
         .content.reading h2 {{ font-size: 1.6rem; line-height: 1.3; letter-spacing: -0.015em; margin: 2.75rem 0 1rem; }}
@@ -1538,7 +1538,7 @@ public static partial class LayoutProvider
         .post-header .post-meta {{ padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }}
         .content.reading > p:first-of-type {{ margin-top: 1.75rem; }}
         .content.reading blockquote {{ font-family: var(--font-display); font-weight: 500; font-style: normal; border-left: 2px solid var(--accent); padding: 0.1rem 0 0.1rem 1.5rem; margin: 2.2rem 0; font-size: 1.25rem; line-height: 1.5; letter-spacing: -0.01em; color: var(--text-color); }}
-        .post-nav {{ display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.75rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.92rem; }}
+        .post-nav {{ display: flex; justify-content: space-between; gap: 1rem; margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.92rem; }}
         .post-nav a {{ color: var(--accent); text-decoration: none; }}
         .post-nav-newer {{ text-align: right; margin-left: auto; }}
         .page-title {{ font-family: var(--font-display); font-size: clamp(1.8rem, 1.2rem + 2.5vw, 2.6rem); font-weight: 600; letter-spacing: -0.02em; margin: 0.3rem 0 1.5rem; }}
