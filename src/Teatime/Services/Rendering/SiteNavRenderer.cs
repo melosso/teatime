@@ -1,0 +1,119 @@
+using System.Text;
+using Teatime.Models;
+using Teatime.Services.Layout;
+
+namespace Teatime.Services.Rendering;
+
+public static class SiteNavRenderer
+{
+    private const string Chevron =
+        "<svg class=\"top-nav-chevron\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>";
+
+    private static readonly (string Text, string Path)[] Default =
+    [
+        ("Posts", ""),
+        ("Tags", "tags"),
+        ("Archive", "archive"),
+        ("About", "about"),
+    ];
+
+    public static string Build(Config? config, string basePath, string currentPath)
+    {
+        var sb = new StringBuilder();
+        sb.Append("<nav class=\"site-nav\" aria-label=\"Primary\">");
+
+        if (config?.Menu is { Count: > 0 } menu)
+        {
+            foreach (var item in menu)
+                AppendEntry(sb, item, basePath, currentPath);
+        }
+        else
+        {
+            foreach (var (text, path) in Default)
+                AppendLink(sb, text, path, basePath, currentPath);
+        }
+
+        sb.Append("</nav>");
+        return sb.ToString();
+    }
+
+    private static void AppendEntry(StringBuilder sb, MenuLink item, string basePath, string currentPath)
+    {
+        if (string.IsNullOrWhiteSpace(item.Title)) return;
+
+        if (item.Items is { Count: > 0 } children)
+        {
+            AppendDropdown(sb, item.Title!, children, basePath, currentPath);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(item.Path)) return;
+        AppendLink(sb, item.Title!, item.Path!, basePath, currentPath);
+    }
+
+    private static void AppendDropdown(StringBuilder sb, string text, List<MenuLink> children, string basePath, string currentPath)
+    {
+        var anyActive = children.Any(c => !string.IsNullOrWhiteSpace(c.Path) && !IsExternal(c.Path!)
+            && IsActive(c.Path!.Trim('/').ToLowerInvariant(), currentPath));
+
+        sb.Append("<div class=\"top-nav-item has-dropdown\">");
+        sb.Append("<button type=\"button\" class=\"top-nav-link").Append(anyActive ? " active" : "")
+          .Append("\" aria-expanded=\"false\" aria-haspopup=\"true\">")
+          .Append(LayoutProvider.HtmlEncode(text)).Append(' ').Append(Chevron).Append("</button>");
+        sb.Append("<div class=\"top-nav-dropdown-menu\">");
+        foreach (var child in children)
+        {
+            if (string.IsNullOrWhiteSpace(child.Title) || string.IsNullOrWhiteSpace(child.Path)) continue;
+            AppendDropdownLink(sb, child.Title!, child.Path!, basePath, currentPath);
+        }
+        sb.Append("</div></div>");
+    }
+
+    private static void AppendLink(StringBuilder sb, string text, string link, string basePath, string currentPath)
+    {
+        if (IsExternal(link))
+        {
+            sb.Append("<a href=\"").Append(LayoutProvider.HtmlEncode(link))
+              .Append("\" rel=\"noopener\">").Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
+            return;
+        }
+
+        var seg = link.Trim('/').ToLowerInvariant();
+        var href = UrlPaths.Href(basePath, seg);
+        sb.Append("<a href=\"").Append(href).Append('"');
+        if (IsActive(seg, currentPath)) sb.Append(" class=\"here\" aria-current=\"page\"");
+        sb.Append('>').Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
+    }
+
+    private static void AppendDropdownLink(StringBuilder sb, string text, string link, string basePath, string currentPath)
+    {
+        if (IsExternal(link))
+        {
+            sb.Append("<a class=\"top-nav-dropdown-link\" href=\"").Append(LayoutProvider.HtmlEncode(link))
+              .Append("\" rel=\"noopener\">").Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
+            return;
+        }
+
+        var seg = link.Trim('/').ToLowerInvariant();
+        var href = UrlPaths.Href(basePath, seg);
+        sb.Append("<a class=\"top-nav-dropdown-link").Append(IsActive(seg, currentPath) ? " here" : "")
+          .Append("\" href=\"").Append(href).Append("\">").Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
+    }
+
+    private static bool IsActive(string itemSeg, string currentPath)
+    {
+        if (itemSeg.Length == 0)
+            return currentPath.Length == 0
+                || currentPath.StartsWith("posts/", StringComparison.Ordinal)
+                || currentPath.StartsWith("page/", StringComparison.Ordinal);
+
+        return currentPath == itemSeg
+            || currentPath.StartsWith($"{itemSeg}/", StringComparison.Ordinal);
+    }
+
+    private static bool IsExternal(string link) =>
+        link.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+        || link.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+        || link.StartsWith("//", StringComparison.Ordinal)
+        || link.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase);
+}

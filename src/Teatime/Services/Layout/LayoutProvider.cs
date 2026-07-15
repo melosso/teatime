@@ -22,7 +22,6 @@ public static partial class LayoutProvider
         long buildVersion = 0,
         string? favicon = null,
         string? description = null,
-        string? topNavHtml = null,
         string? mobileTopNavHtml = null,
         bool isHomePage = false,
         string? lastUpdatedHtml = null,
@@ -40,7 +39,8 @@ public static partial class LayoutProvider
         string? rssDiscoveryHtml = null,
         string? promoBarHtml = null,
         bool isArticle = false,
-        string? activeNav = null)
+        string? siteNavHtml = null,
+        string? footerText = null)
     {
         var scrollIndicatorHtml = showScrollIndicator ? @"<div id=""scroll-indicator""></div>" : "";
         var faviconHtml = BuildFaviconLink(favicon, basePath);
@@ -185,12 +185,7 @@ public static partial class LayoutProvider
             {themeToggleHtml}
         </div>
         <a class=""brand"" href=""{homeHref}"">{(brandImageSrc is not null ? $"<img src=\"{HtmlEncode(brandImageSrc)}\" alt=\"\">" : "<span class=\"brand-mark\" aria-hidden=\"true\">\U0001F375</span>")}{brandText ?? "Teatime"}</a>
-        <nav class=""site-nav"" aria-label=""Primary"">
-            <a href=""{homeHref}""{(activeNav == "posts" ? " class=\"here\"" : "")}>Posts</a>
-            <a href=""{basePath}/tags/""{(activeNav == "tags" ? " class=\"here\"" : "")}>Tags</a>
-            <a href=""{basePath}/archive/""{(activeNav == "archive" ? " class=\"here\"" : "")}>Archive</a>
-            <a href=""{basePath}/about/""{(activeNav == "about" ? " class=\"here\"" : "")}>About</a>
-        </nav>
+        {siteNavHtml}
     </header>
     <div class=""search-overlay"" id=""search-overlay"" hidden>
         <div class=""search-modal"" id=""search-modal"" role=""dialog"" aria-modal=""true"" aria-labelledby=""search-modal-label"">
@@ -239,10 +234,10 @@ public static partial class LayoutProvider
         {sidebarRightHtml}
     </div>
     <footer class=""site-footer"">
-        <span>© {DateTime.UtcNow.Year} {HtmlEncode(brandText ?? "Teatime")}</span>
+        <span class=""site-footer-note"">{(!string.IsNullOrEmpty(footerText) ? HtmlEncode(footerText) : $"© {DateTime.UtcNow.Year} {HtmlEncode(brandText ?? "Teatime")}")}</span>
         <a href=""{basePath}/feed.xml"">RSS</a>
         <a href=""{homeHref}archive/"">Archive</a>
-        <span class=""site-footer-note"">Served from Markdown, built on .NET</span>
+        {socialLinksHtml}
     </footer>
     {GetScripts(enableLiveReload, enableDarkMode, buildVersion, basePath, nonce, staticSearch)}
 </body>

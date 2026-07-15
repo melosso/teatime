@@ -154,6 +154,17 @@ try
         app.UseStaticFiles();
     }
 
+    // Serve user-hosted files from content/assets/ at /assets/ (covers, downloads, etc.).
+    var assetsDir = Path.Combine(Path.GetFullPath(docsOptions.RootPath), "assets");
+    if (Directory.Exists(assetsDir))
+    {
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(assetsDir),
+            RequestPath = "/assets"
+        });
+    }
+
     app.UseRouting();
     app.UseRateLimiter();
 

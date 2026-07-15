@@ -319,8 +319,8 @@ public static partial class LayoutProvider
         .search-overlay {{
             position: fixed; inset: 0; z-index: 1200;
             background-color: var(--overlay-bg);
-            display: flex; align-items: flex-start; justify-content: center;
-            padding: 8vh 1rem 2rem; opacity: 0; transition: opacity 0.15s ease;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem; opacity: 0; transition: opacity 0.15s ease;
         }}
         .search-overlay[hidden] {{
             display: none;
@@ -1302,12 +1302,8 @@ public static partial class LayoutProvider
         /* Bump touch targets to 44px on coarse-pointer devices, not just by viewport width. */
         @media (hover: none) and (pointer: coarse) {{
             .icon-btn {{
-                width: 44px;
-                height: 44px;
-            }}
-            .theme-toggle {{
-                height: 44px;
-                border-radius: 22px;
+                width: 40px;
+                height: 40px;
             }}
             .nav-item a, .toc-item a {{
                 min-height: 44px; display: flex; align-items: center;
@@ -1466,6 +1462,33 @@ public static partial class LayoutProvider
         .site-nav a {{ color: var(--text-muted); text-decoration: none; padding: 0.35rem 0; box-shadow: inset 0 -2px 0 transparent; transition: color 0.15s ease, box-shadow 0.15s ease; }}
         .site-nav a:hover {{ color: var(--text-color); }}
         .site-nav a.here {{ color: var(--text-color); box-shadow: inset 0 -2px 0 var(--accent); }}
+        .site-nav .top-nav-item {{ position: relative; display: inline-flex; align-items: center; height: auto; }}
+        .site-nav .top-nav-link {{ padding: 0.35rem 0; font-size: 0.9rem; font-weight: 400; color: var(--text-muted); }}
+        .site-nav .top-nav-link:hover, .site-nav .top-nav-link.active {{ color: var(--text-color); }}
+        .site-nav .top-nav-chevron {{ width: 13px; height: 13px; }}
+        .site-nav .top-nav-dropdown-menu {{
+            display: block; opacity: 0; visibility: hidden;
+            top: 100%; left: 50%; transform: translateX(-50%) translateY(6px);
+            margin-top: 0.5rem; min-width: 170px; padding: 0.3rem;
+            background: var(--bg-color); border: 1px solid var(--border);
+            border-radius: 10px; box-shadow: var(--shadow-md);
+            transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+        }}
+        .site-nav .top-nav-dropdown-menu::before {{
+            content: ""; position: absolute; top: -0.9rem; left: 0; right: 0; height: 0.9rem;
+        }}
+        .site-nav .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
+        .site-nav .top-nav-item.has-dropdown:focus-within .top-nav-dropdown-menu {{
+            opacity: 1; visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }}
+        .site-nav .top-nav-dropdown-link {{
+            justify-content: flex-start; padding: 0.5rem 0.7rem; border-radius: 7px;
+            font-size: 0.875rem; color: var(--text-color); white-space: nowrap;
+        }}
+        .site-nav .top-nav-dropdown-link:hover, .site-nav .top-nav-dropdown-link.here {{
+            background: var(--accent-light); color: var(--accent);
+        }}
 
         .sidebar-left, .sidebar-right, .sidebar-overlay {{ display: none !important; }}
         .layout, .layout.no-left-sidebar {{ display: block; min-height: 0; }}
@@ -1549,7 +1572,13 @@ public static partial class LayoutProvider
         .byline {{ gap: 0.55rem; }}
         .byline-author {{ color: var(--text-color); font-weight: 500; }}
         .avatar {{ width: 26px; height: 26px; border-radius: 50%; object-fit: cover; display: inline-grid; place-items: center; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, var(--sidebar-bg)), var(--accent)); color: var(--bg-color); font-size: 0.72rem; font-weight: 700; }}
-        .post-cover {{ display: block; width: 100%; border-radius: 12px; border: 1px solid var(--border); margin: 1.75rem 0 0; }}
+        .post-cover {{ display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); background: var(--sidebar-bg); margin: 1.75rem 0 0; }}
+        .content.reading img {{ max-width: 100%; height: auto; border-radius: 10px; background: var(--sidebar-bg); }}
+        .content.reading p > img:only-child {{ display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--border); border-radius: 12px; background: var(--sidebar-bg); margin: 1.75rem 0; }}
+        .content.reading img.natural, .content.reading p > img.natural:only-child {{ aspect-ratio: auto; object-fit: initial; width: auto; }}
+        .content.reading img.plain, .content.reading p > img.plain:only-child {{ border: none; background: none; border-radius: 0; }}
+        .content.reading img.left, .content.reading p > img.left:only-child {{ float: left; width: min(45%, 20rem); margin: 0.4rem 1.4rem 1rem 0; aspect-ratio: auto; }}
+        .content.reading img.right, .content.reading p > img.right:only-child {{ float: right; width: min(45%, 20rem); margin: 0.4rem 0 1rem 1.4rem; aspect-ratio: auto; }}
 
         .brand-mark {{ font-size: 1.15rem; line-height: 1; }}
         .site-footer {{
@@ -1561,7 +1590,13 @@ public static partial class LayoutProvider
         }}
         .site-footer a {{ color: var(--accent); text-decoration: none; }}
         .site-footer a:hover {{ text-decoration: underline; }}
-        .site-footer-note {{ margin-left: auto; }}
+        .site-footer .social-links {{ display: inline-flex; gap: 0.2rem; }}
+        .site-footer .social-links a {{ text-decoration: none; }}
+        .site-footer .icon-btn {{ width: 32px; height: 32px; }}
+        .site-footer {{ justify-content: flex-start; }}
+        .site-footer-note {{ margin-right: auto; text-align: left; }}
+        .DocSearch-Commands {{ display: none !important; }}
+        .search-modal-results:empty {{ display: none; }}
 
         @media (max-width: 620px) {{
             .site-nav {{ gap: 1.1rem; font-size: 0.85rem; }}

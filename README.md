@@ -38,9 +38,7 @@ We'll be working on this soon.
 
 ## Writing
 
-Teatime renders your content through the same Markdig pipeline Bark uses, so roughly 95% of what you know from Bark carries straight over: headings, tables, task lists, footnotes, fenced code with syntax highlighting, alert blocks, math, and mermaid diagrams. If you would like a refresher on the syntax itself, the [Markdown Guide](https://www.markdownguide.org/) is a friendly and thorough place to start.
-
-Besides that, you get a few more features out of the box:
+Teatime renders your content through the same Markdig pipeline [Bark](https://github.com/melosso/bark) uses. If you would like a refresher on the syntax itself, the [Markdown Guide](https://www.markdownguide.org/) is a friendly and thorough place to start. You also get:
 
 - A chronological home page with pagination
 - Individual post pages, each with previous and next links
@@ -49,6 +47,8 @@ Besides that, you get a few more features out of the box:
 - Full text search
 - Light and dark themes
 
+And some more unmentioned features.
+
 ## Configuring your site
 
 A `content/config.json` file is entirely optional. It lets you set details like your site title, description, and social links:
@@ -56,7 +56,7 @@ A `content/config.json` file is entirely optional. It lets you set details like 
 ```json
 {
   "title": "Teatime",
-  "description": "A personal blog served from Markdown files.",
+  "description": "A personal blog published with Teatime.",
   "socialLinks": [
     { "icon": "github", "url": "https://github.com/you" }
   ]

@@ -1,6 +1,26 @@
 {
   "title": "Teatime",
-  "description": "A personal blog served from Markdown files.",
+  "description": "A personal blog published with Teatime.",
   "lang": "en",
-  "author": "Melosso"
+  "author": "Melosso",
+  "favicon": "🍵",
+  "scrollIndicator": true,
+  "footer": "© {year} {author}. Brewed with Teatime.",
+  "menu": [
+    { "title": "Posts", "path": "/" },
+    { "title": "Tags", "path": "/tags/" },
+    { "title": "Archive", "path": "/archive/" },
+    { "title": "About", "path": "/about/" },
+    {
+      "title": "More",
+      "items": [
+        { "title": "Now", "path": "/now/" },
+        { "title": "GitHub", "path": "https://github.com/melosso/teatime" }
+      ]
+    }
+  ],
+  "socialLinks": [
+    { "icon": "github", "url": "https://github.com/melosso/teatime", "title": "GitHub" },
+    { "icon": "mastodon", "url": "https://fosstodon.org/@example", "title": "Mastodon" }
+  ]
 }

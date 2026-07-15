@@ -5,4 +5,4 @@ tags: [meta]
 draft: true
 ---
 
-This post is a draft. It appears while running in Development, but is excluded from listings, feeds, and the sitemap in Production.
+This is a draft, and it is here to show how drafts behave. While you are working locally in Development, you can see it and keep editing. Everywhere else, it stays quietly out of your listings, feeds, and sitemap until you are ready to publish.

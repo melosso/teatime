@@ -85,6 +85,10 @@ public static class StaticSiteExporter
 
         CopyStaticAssets(app.Environment.WebRootPath, outputDir);
 
+        var assetsSrc = Path.Combine(Path.GetFullPath(options.RootPath), "assets");
+        if (Directory.Exists(assetsSrc))
+            CopyStaticAssets(assetsSrc, Path.Combine(outputDir, "assets"));
+
         await app.StopAsync(cancellationToken);
     }
 

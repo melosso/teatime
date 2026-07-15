@@ -18,7 +18,6 @@ public sealed record BlogPageView(
 public sealed class BlogPageResponder
 {
     private readonly ContentService _content;
-    private readonly MarkdownService _markdown;
     private readonly ThemeOptions _theme;
     private readonly DocsOptions _docsOptions;
     private readonly PageRequestSettings _settings;
@@ -27,13 +26,11 @@ public sealed class BlogPageResponder
 
     public BlogPageResponder(
         ContentService content,
-        MarkdownService markdown,
         ThemeOptions theme,
         DocsOptions docsOptions,
         PageRequestSettings settings)
     {
         _content = content;
-        _markdown = markdown;
         _theme = theme;
         _docsOptions = docsOptions;
         _settings = settings;
@@ -74,28 +71,19 @@ public sealed class BlogPageResponder
         var customJsScript = ThemeProvider.BuildCustomJsScript(_theme, _settings.AutoCustomJsUrl, basePath);
         var brandText = config?.Brand ?? config?.Title ?? ThemeProvider.GetBrandText(_theme);
         var socialLinksHtml = await SocialLinksHtmlRenderer.BuildSocialLinksHtmlAsync(config?.SocialLinks, _iconsDir, _fallbackIconsDir);
-        var footerHtml = config?.Footer is { } footer
-            ? $"<div class=\"content-footer\">{_markdown.ToHtml(footer)}</div>"
-            : string.Empty;
-
         var feedUrl = $"{context.Request.Scheme}://{context.Request.Host}{basePath}/feed.xml";
         var rssDiscoveryHtml = $"<link rel=\"alternate\" type=\"application/rss+xml\" title=\"{LayoutProvider.HtmlEncode(config?.Brand ?? config?.Title ?? "RSS Feed")}\" href=\"{LayoutProvider.HtmlEncode(feedUrl)}\">";
 
         var seg = view.CanonicalPath.Trim('/');
-        var activeNav = seg switch
-        {
-            "" => "posts",
-            "tags" => "tags",
-            "archive" => "archive",
-            "about" => "about",
-            _ when seg.StartsWith("page/", StringComparison.Ordinal) => "posts",
-            _ when seg.StartsWith("posts/", StringComparison.Ordinal) => "posts",
-            _ when seg.StartsWith("tags/", StringComparison.Ordinal) => "tags",
-            _ => null
-        };
+        var siteNavHtml = SiteNavRenderer.Build(config, basePath, seg);
         var pageSegment = seg.Length == 0 ? string.Empty : $"{seg}/";
         var rawPath = $"{basePath}/{pageSegment}".TrimStart('/');
         var canonicalUrl = $"{context.Request.Scheme}://{context.Request.Host}/{rawPath}";
+
+        var footerText = config?.Footer?
+            .Replace("{year}", DateTime.UtcNow.Year.ToString())
+            .Replace("{author}", config.Author ?? string.Empty)
+            .Replace("{title}", config.Title ?? string.Empty);
 
         var fullHtml = LayoutProvider.GetLayout(
             title: PageTitleRenderer.ComputeTitle(view.Title, config),
@@ -108,17 +96,16 @@ public sealed class BlogPageResponder
             brandText: brandText,
             brandImage: config?.BrandImage,
             enableDarkMode: ThemeProvider.UseDarkMode(_theme),
-            footerHtml: footerHtml,
+            footerText: footerText,
             socialLinksHtml: socialLinksHtml,
             enableLiveReload: _docsOptions.EnableHotReload,
             staticSearch: _docsOptions.IsStaticExport,
             buildVersion: _content.BuildVersion,
             favicon: config?.Favicon,
             description: string.IsNullOrEmpty(view.Description) ? config?.Description : view.Description,
-            topNavHtml: string.Empty,
             mobileTopNavHtml: string.Empty,
             isHomePage: false,
-            showScrollIndicator: ThemeProvider.ShowScrollIndicator(_theme),
+            showScrollIndicator: config?.ScrollIndicator ?? ThemeProvider.ShowScrollIndicator(_theme),
             basePath: basePath,
             lang: config?.Lang ?? "en",
             headTagsHtml: HeadTagHtmlRenderer.BuildHeadTagsHtml(config?.Head),
@@ -128,7 +115,7 @@ public sealed class BlogPageResponder
             hasMermaid: view.ContentHtml.Contains("class=\"mermaid\"", StringComparison.Ordinal),
             rssDiscoveryHtml: rssDiscoveryHtml,
             isArticle: view.IsArticle,
-            activeNav: activeNav);
+            siteNavHtml: siteNavHtml);
 
         context.Response.ContentType = "text/html; charset=utf-8";
         await context.Response.WriteAsync(fullHtml);

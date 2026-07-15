@@ -19,5 +19,11 @@ public class Config
     /// <summary>Optional avatar image URL for the byline; falls back to the author's initial.</summary>
     public string? AuthorImage { get; set; }
 
+    /// <summary>Header nav items. When present, replaces the default Posts/Tags/Archive/About menu.</summary>
+    public List<MenuLink>? Menu { get; set; }
+
+    /// <summary>Top reading-progress bar. Defaults to on; set false to hide it.</summary>
+    public bool? ScrollIndicator { get; set; }
+
     public List<SocialLink>? SocialLinks { get; set; }
 }

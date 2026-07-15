@@ -325,6 +325,11 @@ public sealed partial class ContentService : IHostedService, IDisposable
         return string.Join("/", segments).ToLowerInvariant();
     }
 
+    private static bool IsKnownRoute(string resolved) =>
+        resolved is "tags" or "archive" or "feed.xml" or "sitemap.xml" or "robots.txt" or "llms.txt"
+        || resolved.StartsWith("tags/", StringComparison.Ordinal)
+        || resolved.StartsWith("page/", StringComparison.Ordinal);
+
     private static bool ShouldSkipHref(string href)
     {
         return href.StartsWith("http://", StringComparison.OrdinalIgnoreCase)

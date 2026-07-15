@@ -88,6 +88,7 @@ public sealed partial class MarkdownService
 
         var html = UnescapeBraces(AddHeadingAnchors(Markdown.ToHtml(markdown, _pipeline)));
         html = PrefixBodyContent(html, _basePath);
+        html = AddExternalLinkAttributes(html);
 
         return new MarkdownParseResult(
             html,
@@ -194,6 +195,22 @@ public sealed partial class MarkdownService
 
     [GeneratedRegex(@"(href|src)=""(/(?!/)[^""]*)""")]
     private static partial Regex BodyContentUrlRegex();
+
+    // External links (absolute http/https) open in a new tab safely, unless the author set target explicitly.
+    private static string AddExternalLinkAttributes(string html) =>
+        ExternalLinkRegex().Replace(html, m =>
+        {
+            var tag = m.Value;
+            if (tag.Contains("target=", StringComparison.OrdinalIgnoreCase))
+                return tag;
+            var extra = tag.Contains("rel=", StringComparison.OrdinalIgnoreCase)
+                ? " target=\"_blank\""
+                : " target=\"_blank\" rel=\"noopener noreferrer\"";
+            return string.Concat(tag.AsSpan(0, tag.Length - 1), extra, ">");
+        });
+
+    [GeneratedRegex(@"<a\s[^>]*href=""https?://[^""]*""[^>]*>", RegexOptions.IgnoreCase)]
+    private static partial Regex ExternalLinkRegex();
 
     // Renders inline markdown to plain text: strips links/bold/italic/code tags so
     // frontmatter descriptions are searchable and safe for <meta name="description">.
