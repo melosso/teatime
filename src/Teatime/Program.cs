@@ -30,9 +30,7 @@ try
 
     var docsOptions = builder.Configuration.GetSection("Docs").Get<DocsOptions>() ?? new DocsOptions();
     if (exportDir != null)
-        // No server survives the export, so there's nothing for the hot-reload poll or the
-        // /api/search endpoint baked into the exported HTML to talk to. Disable the poll and
-        // switch search to the prebuilt static index instead of baking in dead endpoint calls.
+        // Disable polling and use prebuilt static search index for static exports
         docsOptions = docsOptions with { EnableHotReload = false, IsStaticExport = true };
 
     var basePath = NormalizeBasePath(cliArgs.BasePath ?? docsOptions.BasePath);
@@ -50,6 +48,17 @@ try
 
     var codeGroupIconOptions = builder.Configuration.GetSection("Docs:CodeGroupIcons").Get<CodeGroupIconOptions>()
         ?? new CodeGroupIconOptions();
+    // Only render tab icons for existing slugs to avoid 404s
+    if (codeGroupIconOptions.Enabled && codeGroupIconOptions.BaseUrl.StartsWith('/') && !codeGroupIconOptions.BaseUrl.StartsWith("//"))
+    {
+        var iconWebRoot = builder.Environment.WebRootPath
+            ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+        var available = ScanIconSlugs(
+            Path.Combine(iconWebRoot, codeGroupIconOptions.BaseUrl.Trim('/')),
+            codeGroupIconOptions.Format);
+        if (available.Count > 0)
+            codeGroupIconOptions = codeGroupIconOptions with { Available = available };
+    }
     builder.Services.AddSingleton(codeGroupIconOptions);
 
     builder.Services.AddSingleton<ISyntaxHighlighter, TextMateSyntaxHighlighter>();
@@ -71,7 +80,7 @@ try
     var webRootPath = builder.Environment.WebRootPath
         ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
 
-    // Drop files at wwwroot/theme/custom.{css,js} and they're picked up at startup, no config edit needed. Does NOT support hot reloading.
+    // Drop files at wwwroot/theme/custom.{css,js} and they're picked up at startup, no config edit needed. Does NOT support hot reloading!
     var themeDir = Path.Combine(webRootPath, "theme");
     try { Directory.CreateDirectory(themeDir); } catch (IOException) { }
     var autoCustomCssUrl = File.Exists(Path.Combine(themeDir, "custom.css")) ? $"{basePath}/theme/custom.css" : null;
@@ -244,6 +253,16 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
+}
+
+static HashSet<string> ScanIconSlugs(string dir, string format)
+{
+    var slugs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    if (!Directory.Exists(dir))
+        return slugs;
+    foreach (var file in Directory.EnumerateFiles(dir, $"*.{format}"))
+        slugs.Add(Path.GetFileNameWithoutExtension(file));
+    return slugs;
 }
 
 static string NormalizeBasePath(string? raw)

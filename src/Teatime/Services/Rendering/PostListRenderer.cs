@@ -27,6 +27,12 @@ public static class PostListRenderer
         return sb.ToString();
     }
 
+    public static string BuildLoadMore(string? nextUrl)
+    {
+        if (string.IsNullOrEmpty(nextUrl)) return string.Empty;
+        return $"<div class=\"load-more-wrap\"><button type=\"button\" class=\"load-more\" data-next=\"{nextUrl}\">Load more posts</button></div>";
+    }
+
     public static string BuildPager(int currentPage, int totalPages, string basePath)
     {
         if (totalPages <= 1) return string.Empty;

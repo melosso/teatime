@@ -87,6 +87,81 @@ public static partial class LayoutProvider
                 }});
             }}
 
+            var navDropdowns = Array.prototype.slice.call(document.querySelectorAll('.site-nav .top-nav-item.has-dropdown'));
+            function closeNavDropdown(item) {{
+                item.classList.remove('open');
+                var b = item.querySelector('.top-nav-link');
+                if (b) b.setAttribute('aria-expanded', 'false');
+            }}
+            navDropdowns.forEach(function(item) {{
+                var btn = item.querySelector('.top-nav-link');
+                if (!btn) return;
+                btn.addEventListener('click', function(e) {{
+                    e.preventDefault();
+                    var willOpen = !item.classList.contains('open');
+                    navDropdowns.forEach(closeNavDropdown);
+                    if (willOpen) {{
+                        item.classList.add('open');
+                        btn.setAttribute('aria-expanded', 'true');
+                    }}
+                }});
+            }});
+            if (navDropdowns.length) {{
+                document.addEventListener('click', function(e) {{
+                    navDropdowns.forEach(function(item) {{
+                        if (item.classList.contains('open') && !item.contains(e.target)) closeNavDropdown(item);
+                    }});
+                }});
+                document.addEventListener('keydown', function(e) {{
+                    if (e.key === 'Escape') navDropdowns.forEach(closeNavDropdown);
+                }});
+            }}
+
+            document.querySelectorAll('.load-more').forEach(function(btn) {{
+                var skeletonCard = '<article class=""post-card skeleton-card"" aria-hidden=""true"">' +
+                    '<div class=""skeleton skeleton-title""></div>' +
+                    '<div class=""skeleton skeleton-meta""></div>' +
+                    '<div class=""skeleton skeleton-line""></div>' +
+                    '<div class=""skeleton skeleton-line short""></div>' +
+                    '</article>';
+                btn.addEventListener('click', function() {{
+                    var next = btn.getAttribute('data-next');
+                    if (!next || btn.disabled) return;
+                    var wrap = btn.closest('.load-more-wrap');
+                    btn.disabled = true;
+                    var skel = document.createElement('div');
+                    skel.className = 'load-more-skeletons';
+                    skel.innerHTML = skeletonCard + skeletonCard + skeletonCard;
+                    wrap.parentNode.insertBefore(skel, wrap);
+                    fetch(next)
+                        .then(function(r) {{ return r.text(); }})
+                        .then(function(html) {{
+                            var doc = new DOMParser().parseFromString(html, 'text/html');
+                            var cards = doc.querySelectorAll('.content .post-card');
+                            var nextBtn = doc.querySelector('.load-more');
+                            skel.remove();
+                            cards.forEach(function(c) {{ wrap.parentNode.insertBefore(c, wrap); }});
+                            var moreUrl = nextBtn ? nextBtn.getAttribute('data-next') : null;
+                            if (moreUrl) {{ btn.setAttribute('data-next', moreUrl); btn.disabled = false; }}
+                            else {{ wrap.remove(); }}
+                        }})
+                        ['catch'](function() {{
+                            skel.remove();
+                            btn.disabled = false;
+                        }});
+                }});
+            }});
+
+            var topbarEl = document.querySelector('.topbar');
+            if (topbarEl) {{
+                var syncTopbarHeight = function() {{
+                    document.documentElement.style.setProperty('--topbar-height', topbarEl.offsetHeight + 'px');
+                }};
+                syncTopbarHeight();
+                window.addEventListener('resize', syncTopbarHeight);
+                if (window.ResizeObserver) new ResizeObserver(syncTopbarHeight).observe(topbarEl);
+            }}
+
             function updateScrollProgress() {{
                 if (!scrollIndicator) return;
                 var winScroll = document.documentElement.scrollTop || document.body.scrollTop;

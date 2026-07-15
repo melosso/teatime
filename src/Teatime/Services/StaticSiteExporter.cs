@@ -52,7 +52,12 @@ public static class StaticSiteExporter
         {
             routes.Add(("/tags", "tags"));
             foreach (var tag in view.Tags)
+            {
                 routes.Add(($"/tags/{tag.Slug}", $"tags/{tag.Slug}"));
+                var tagPages = Math.Max(1, (int)Math.Ceiling(tag.Count / (double)options.PageSize));
+                for (var n = 2; n <= tagPages; n++)
+                    routes.Add(($"/tags/{tag.Slug}/page/{n}", $"tags/{tag.Slug}/page/{n}"));
+            }
         }
         if (config?.Archive != false)
             routes.Add(("/archive", "archive"));
@@ -63,7 +68,13 @@ public static class StaticSiteExporter
         {
             routes.Add(("/authors", "authors"));
             foreach (var author in authors)
+            {
                 routes.Add(($"/{author.Url}", author.Url));
+                var authorPosts = await postService.GetByAuthorAsync(author.Id, cancellationToken);
+                var authorPages = Math.Max(1, (int)Math.Ceiling(authorPosts.Count / (double)options.PageSize));
+                for (var n = 2; n <= authorPages; n++)
+                    routes.Add(($"/{author.Url}/page/{n}", $"{author.Url}/page/{n}"));
+            }
         }
 
         foreach (var (request, dir) in routes)

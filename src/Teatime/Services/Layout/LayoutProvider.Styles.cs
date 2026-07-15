@@ -149,7 +149,7 @@ public static partial class LayoutProvider
             transition: transform 0.15s ease;
         }}
         .top-nav-item.has-dropdown:hover .top-nav-chevron,
-        .top-nav-item.has-dropdown:focus-within .top-nav-chevron {{
+        .top-nav-item.has-dropdown.open .top-nav-chevron {{
             transform: rotate(180deg);
         }}
         .top-nav-dropdown-menu {{
@@ -158,7 +158,7 @@ public static partial class LayoutProvider
             padding: 0.4rem; box-shadow: var(--shadow-md); z-index: 1003;
         }}
         .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
-        .top-nav-item.has-dropdown:focus-within .top-nav-dropdown-menu {{
+        .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
             display: block;
         }}
         .top-nav-dropdown-link {{
@@ -168,6 +168,9 @@ public static partial class LayoutProvider
         }}
         .top-nav-dropdown-link:hover {{
             background-color: var(--code-bg); color: var(--accent);
+        }}
+        .top-nav-dropdown-link:nth-of-type(2n) {{
+            margin-top: 0.5em;
         }}
         .layout {{
             display: grid;
@@ -662,12 +665,23 @@ public static partial class LayoutProvider
         pre code {{
             padding: 0; background-color: transparent; border-radius: 0;
         }}
-        dt {{
-            font-weight: 700;
+        .content dl {{
+            margin: 1.25rem 0;
+            padding: 0;
         }}
-        dd {{
-            margin-bottom: .5rem;
-            margin-left: 0;
+        .content dt {{
+            font-weight: 600;
+            color: var(--text-color);
+            margin-top: 1rem;
+        }}
+        .content dl > dt:first-child {{
+            margin-top: 0;
+        }}
+        .content dd {{
+            margin: 0.3rem 0 0;
+            padding-left: 1rem;
+            border-left: 2px solid var(--border);
+            color: var(--text-muted);
         }}
         .content h1 code, .content h2 code, .content h3 code,
         .content h4 code, .content h5 code, .content h6 code {{
@@ -727,9 +741,13 @@ public static partial class LayoutProvider
             background-color: var(--shiki-dark-bg);
         }}
         @media (prefers-color-scheme: dark) {{
-            :root:not([data-theme=""light""]) .tab-icon {{ filter: brightness(0) invert(1); }}
+            :root:not([data-theme=""light""]) .tab-icon {{
+                filter: brightness(0) invert(1);
+            }}
         }}
-        :root[data-theme=""dark""] .tab-icon {{ filter: brightness(0) invert(1); }}
+        :root[data-theme=""dark""] .tab-icon {{
+            filter: brightness(0) invert(1);
+        }}
         .content .line {{
             display: inline-block;
             width: 100%;
@@ -770,7 +788,7 @@ public static partial class LayoutProvider
             padding-left: 2.5rem;
         }}
         .content .line-numbers-wrapper {{
-            position: absolute; top: 2rem; left: 0; width: 2rem;
+            position: absolute; top: 3.3rem; left: 0; width: 2rem;
             text-align: right; color: var(--text-muted); font-family: var(--font-mono);
             font-size: 0.85rem; line-height: 1.6; user-select: none;
         }}
@@ -810,15 +828,18 @@ public static partial class LayoutProvider
         .content .custom-block a:hover {{
             opacity: 0.75;
         }}
-        .content details.custom-block summary {{
+        .content details.custom-block > summary {{
             font-weight: 700;
             cursor: pointer;
-            margin: 0 0 0.5rem;
+            margin: 0;
+        }}
+        .content details.custom-block[open] > summary {{
+            padding-bottom: 0.6rem;
         }}
         .content details.custom-block:not([open]) {{
             padding-bottom: 0;
         }}
-        .content details.custom-block:not([open]) summary {{
+        .content details.custom-block[open] > :last-child {{
             margin-bottom: 0;
         }}
         /* code-group tabs */
@@ -1149,13 +1170,17 @@ public static partial class LayoutProvider
                 padding: 0.5rem 0; list-style: none;
                 display: flex; align-items: center; justify-content: space-between;
             }}
-            .toc-inline summary::-webkit-details-marker {{ display: none; }}
+            .toc-inline summary::-webkit-details-marker {{
+                display: none;
+            }}
             .toc-inline summary::after {{
                 content: ""; display: inline-block; width: 6px; height: 6px; flex-shrink: 0;
                 border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted);
                 transform: rotate(-45deg); transition: transform 0.2s ease;
             }}
-            .toc-inline[open] summary::after {{ transform: rotate(45deg); }}
+            .toc-inline[open] summary::after {{
+                transform: rotate(45deg);
+            }}
             .toc-inline .toc-list {{
                 padding-bottom: 0.5rem;
             }}
@@ -1180,7 +1205,10 @@ public static partial class LayoutProvider
             }}
         }}
 
-        h1, h2, h3, h4, h5, h6 {{ font-family: var(--font-display); letter-spacing: -0.015em; }}
+        h1, h2, h3, h4, h5, h6 {{
+            font-family: var(--font-display);
+            letter-spacing: -0.015em;
+        }}
 
         .topbar {{
             position: sticky; top: 0; z-index: 1002;
@@ -1201,19 +1229,50 @@ public static partial class LayoutProvider
             letter-spacing: -0.015em; color: var(--text-color); text-decoration: none;
             display: inline-flex; align-items: center; gap: 0.5rem;
         }}
-        .brand img {{ height: 1.4rem; width: auto; }}
+        .brand img {{
+            height: 1.4rem;
+            width: auto;
+        }}
         .site-nav {{
             display: flex; flex-wrap: wrap; justify-content: center;
             gap: 1.75rem; font-size: 0.9rem;
         }}
-        .site-nav a {{ color: var(--text-muted); text-decoration: none; padding: 0.35rem 0; box-shadow: inset 0 -2px 0 transparent; transition: color 0.15s ease, box-shadow 0.15s ease; }}
-        .site-nav a:hover {{ color: var(--text-color); }}
-        .site-nav a.here {{ color: var(--text-color); }}
-        .site-nav .top-nav-item {{ position: relative; display: inline-flex; align-items: center; height: auto; }}
-        .site-nav .top-nav-link {{ padding: 0.35rem 0; font-size: 0.9rem; font-weight: 400; color: var(--text-muted); }}
-        .site-nav .top-nav-link:hover {{ color: var(--text-color); }}
-        .site-nav .top-nav-link.active {{ color: var(--text-color); box-shadow: inset 0 -2px 0 var(--accent); }}
-        .site-nav .top-nav-chevron {{ width: 13px; height: 13px; }}
+        .site-nav a {{
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.35rem 0;
+            box-shadow: inset 0 -2px 0 transparent;
+            transition: color 0.15s ease, box-shadow 0.15s ease;
+        }}
+        .site-nav a:hover {{
+            color: var(--text-color);
+        }}
+        .site-nav a.here {{
+            color: var(--text-color);
+        }}
+        .site-nav .top-nav-item {{
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            height: auto;
+        }}
+        .site-nav .top-nav-link {{
+            padding: 0.35rem 0;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }}
+        .site-nav .top-nav-link:hover {{
+            color: var(--text-color);
+        }}
+        .site-nav .top-nav-link.active {{
+            color: var(--text-color);
+            box-shadow: inset 0 -2px 0 var(--accent);
+        }}
+        .site-nav .top-nav-chevron {{
+            width: 13px;
+            height: 13px;
+        }}
         .site-nav .top-nav-dropdown-menu {{
             display: block; opacity: 0; visibility: hidden;
             top: 100%; left: 50%; transform: translateX(-50%) translateY(6px);
@@ -1226,7 +1285,7 @@ public static partial class LayoutProvider
             content: ""; position: absolute; top: -0.9rem; left: 0; right: 0; height: 0.9rem;
         }}
         .site-nav .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
-        .site-nav .top-nav-item.has-dropdown:focus-within .top-nav-dropdown-menu {{
+        .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
             opacity: 1; visibility: visible;
             transform: translateX(-50%) translateY(0);
         }}
@@ -1238,113 +1297,540 @@ public static partial class LayoutProvider
             background: var(--accent-light); color: var(--accent);
         }}
 
-        .sidebar-left, .sidebar-right, .sidebar-overlay {{ display: none !important; }}
-        .layout, .layout.no-left-sidebar {{ display: block; min-height: 0; }}
-        .main-container {{ max-width: var(--measure-wide); margin: 0 auto; padding: 2.5rem clamp(1.25rem, 5vw, 2.75rem) 0; min-height: 0; }}
-        .content {{ max-width: none; margin: 0; padding: 0; }}
-        .content > :first-child, .content.reading > :first-child {{ margin-top: 0; }}
-        .list-heading {{ margin-top: 0; }}
-        .content.reading {{ max-width: var(--measure); margin: 0 auto; font-size: 1.125rem; line-height: 1.7; }}
-        .content.reading p {{ margin: 0 0 1.6rem; }}
-        .content.reading h1, .content.reading h2, .content.reading h3, .content.reading h4 {{ font-family: var(--font-display); font-weight: 600; border-bottom: none; padding-bottom: 0; }}
-        .content.reading h2 {{ font-size: 1.6rem; line-height: 1.3; letter-spacing: -0.015em; margin: 2.75rem 0 1rem; }}
-        .content.reading h3 {{ font-size: 1.3rem; line-height: 1.35; margin: 2.25rem 0 0.75rem; }}
-        .content.reading a {{ text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }}
+        .sidebar-left, .sidebar-right, .sidebar-overlay {{
+            display: none !important;
+        }}
+        .layout, .layout.no-left-sidebar {{
+            display: block;
+            min-height: 0;
+        }}
+        .main-container {{
+            max-width: var(--measure-wide);
+            margin: 0 auto;
+            padding: 2.5rem clamp(1.25rem, 5vw, 2.75rem) 0;
+            min-height: 0;
+        }}
+        .content {{
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }}
+        .content > :first-child, .content.reading > :first-child {{
+            margin-top: 0;
+        }}
+        .list-heading {{
+            margin-top: 0;
+        }}
+        .content.reading {{
+            max-width: var(--measure);
+            margin: 0 auto;
+            font-size: 1.125rem;
+            line-height: 1.7;
+        }}
+        .content.reading p {{
+            margin: 0 0 1.6rem;
+        }}
+        .content.reading h1, .content.reading h2, .content.reading h3, .content.reading h4 {{
+            font-family: var(--font-display);
+            font-weight: 600;
+            border-bottom: none;
+            padding-bottom: 0;
+        }}
+        .content.reading h2 {{
+            font-size: 1.6rem;
+            line-height: 1.3;
+            letter-spacing: -0.015em;
+            margin: 2.75rem 0 1rem;
+        }}
+        .content.reading h3 {{
+            font-size: 1.3rem;
+            line-height: 1.35;
+            margin: 2.25rem 0 0.75rem;
+        }}
+        .content.reading a {{
+            text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+        }}
 
         #scroll-indicator {{
             height: 2px;
             background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), var(--accent));
         }}
 
-        .list-heading {{ font-family: var(--font-display); font-size: clamp(1.7rem, 1.2rem + 1.5vw, 2.1rem); font-weight: 600; letter-spacing: -0.02em; margin: 2.5rem 0 0.4rem; }}
-        .list-intro {{ color: var(--text-muted); margin: 0 0 2rem; font-size: 1.05rem; max-width: 60ch; }}
-        .list-empty {{ color: var(--text-muted); padding: 2rem 0; }}
-        .post-card {{ display: block; padding: 2.15rem 0; border-bottom: 1px solid var(--border); text-decoration: none; }}
-        .post-card-title {{ font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.015em; margin: 0.45rem 0 0.4rem; }}
-        .post-card-title a {{ color: var(--text-color); text-decoration: none; transition: color 0.15s ease; }}
-        .post-card-title a:hover {{ color: var(--accent); }}
-        .post-excerpt {{ color: var(--text-muted); margin: 0.35rem 0 0; max-width: 62ch; }}
+        .list-heading {{
+            font-family: var(--font-display);
+            font-size: clamp(1.7rem, 1.2rem + 1.5vw, 2.1rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin: 2.5rem 0 0.4rem;
+        }}
+        .list-intro {{
+            color: var(--text-muted);
+            margin: 0 0 2rem;
+            font-size: 1.05rem;
+            max-width: 60ch;
+        }}
+        .list-empty {{
+            color: var(--text-muted);
+            padding: 2rem 0;
+        }}
+        .post-card {{
+            display: block;
+            padding: 2.15rem 0;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+        }}
+        .post-card-title {{
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.015em;
+            margin: 0.45rem 0 0.4rem;
+        }}
+        .post-card-title a {{
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }}
+        .post-card-title a:hover {{
+            color: var(--accent);
+        }}
+        .post-excerpt {{
+            color: var(--text-muted);
+            margin: 0.35rem 0 0;
+            max-width: 62ch;
+        }}
         .post-meta {{
             display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
             font-size: 0.85rem; color: var(--text-muted); letter-spacing: 0.01em;
             font-variant-numeric: tabular-nums;
         }}
-        .post-tags {{ display: inline-flex; flex-wrap: wrap; gap: 0.4rem; margin-left: 0.15rem; }}
+        .post-tags {{
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-left: 0.15rem;
+        }}
         .tag-chip {{
             display: inline-block; text-decoration: none;
             color: var(--accent); background: var(--accent-light);
             padding: 0.12rem 0.55rem; border-radius: 999px; font-size: 0.72rem; letter-spacing: 0.01em;
         }}
-        .tag-chip:hover {{ background: color-mix(in srgb, var(--accent) 18%, var(--accent-light)); }}
+        .tag-chip:hover {{
+            background: color-mix(in srgb, var(--accent) 18%, var(--accent-light));
+        }}
 
-        .pager {{ display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.9rem; }}
-        .pager a {{ color: var(--accent); text-decoration: none; }}
-        .pager-status {{ color: var(--text-muted); font-variant-numeric: tabular-nums; }}
+        .pager {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+        }}
+        .pager a {{
+            color: var(--accent);
+            text-decoration: none;
+        }}
+        .pager-status {{
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }}
 
-        .post-header {{ margin-bottom: 0.5rem; }}
-        .post-title {{ font-family: var(--font-display); font-size: clamp(1.9rem, 1.2rem + 3vw, 3rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; margin: 0.3rem 0 0.9rem; text-wrap: balance; }}
-        .post-header .post-meta {{ padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }}
-        .content.reading > p:first-of-type {{ margin-top: 1.75rem; }}
-        .content.reading blockquote {{ font-family: var(--font-display); font-weight: 500; font-style: normal; border-left: 2px solid var(--accent); padding: 0.1rem 0 0.1rem 1.5rem; margin: 2.2rem 0; font-size: 1.25rem; line-height: 1.5; letter-spacing: -0.01em; color: var(--text-color); }}
-        .post-nav {{ display: flex; justify-content: space-between; gap: 1rem; margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.92rem; }}
-        .post-nav a {{ color: var(--accent); text-decoration: none; }}
-        .post-nav-newer {{ text-align: right; margin-left: auto; }}
-        .page-title {{ font-family: var(--font-display); font-size: clamp(1.8rem, 1.2rem + 2.5vw, 2.6rem); font-weight: 600; letter-spacing: -0.02em; margin: 0.3rem 0 1.5rem; }}
+        .load-more-wrap {{
+            display: flex;
+            justify-content: center;
+            padding: 2.5rem 0 0;
+        }}
+        .load-more {{
+            font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600;
+            color: var(--accent); background: none;
+            border: 1px solid var(--border); border-radius: 999px;
+            padding: 0.6rem 1.5rem; cursor: pointer;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }}
+        .load-more:hover {{
+            border-color: var(--accent);
+            background-color: var(--accent-light);
+        }}
+        .load-more[disabled] {{
+            opacity: 0.55;
+            cursor: default;
+        }}
+        .skeleton-card {{
+            border-bottom: 1px solid var(--border);
+            padding: 2.15rem 0;
+        }}
+        .skeleton {{
+            position: relative; overflow: hidden; border-radius: 6px;
+            background: var(--sidebar-bg);
+        }}
+        .skeleton::after {{
+            content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 9%, transparent), transparent);
+            animation: teatime-shimmer 1.4s ease-in-out infinite;
+        }}
+        .skeleton-title {{
+            height: 1.5rem;
+            width: 55%;
+            margin: 0.45rem 0 0.7rem;
+        }}
+        .skeleton-meta {{
+            height: 0.85rem;
+            width: 32%;
+            margin-bottom: 1rem;
+        }}
+        .skeleton-line {{
+            height: 0.9rem;
+            width: 100%;
+            max-width: 62ch;
+            margin-bottom: 0.5rem;
+        }}
+        .skeleton-line.short {{
+            width: 68%;
+        }}
+        @keyframes teatime-shimmer {{ 100% {{ transform: translateX(100%); }} }}
+        @media (prefers-reduced-motion: reduce) {{ .skeleton::after {{ animation: none; }} }}
 
-        .tag-cloud {{ list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.6rem; }}
-        .tag-cloud .tag-chip {{ font-size: 0.85rem; padding: 0.3rem 0.7rem; }}
-        .tag-count {{ margin-left: 0.4rem; opacity: 0.7; font-variant-numeric: tabular-nums; }}
-        .archive-year {{ margin-top: 2.5rem; }}
-        .archive-year h2 {{ font-size: 1.2rem; color: var(--text-muted); font-variant-numeric: tabular-nums; margin-bottom: 0.75rem; }}
-        .archive-list {{ list-style: none; padding: 0; margin: 0; }}
-        .content .archive-list, .content .tag-cloud, .content .author-grid {{ padding-left: 0; }}
-        .archive-list li {{ display: flex; gap: 1rem; align-items: baseline; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }}
-        .archive-list time {{ color: var(--text-muted); font-size: 0.85rem; min-width: 4.5rem; font-variant-numeric: tabular-nums; }}
-        .archive-list a {{ color: var(--text-color); text-decoration: none; }}
-        .archive-list a:hover {{ color: var(--accent); }}
-        .post-card:last-child, .lead:last-child {{ border-bottom: none; }}
-        .archive-year:last-child .archive-list li:last-child {{ border-bottom: none; }}
+        .post-header {{
+            margin-bottom: 0.5rem;
+        }}
+        .post-title {{
+            font-family: var(--font-display);
+            font-size: clamp(1.9rem, 1.2rem + 3vw, 3rem);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin: 0.3rem 0 0.9rem;
+            text-wrap: balance;
+        }}
+        .post-header .post-meta {{
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }}
+        .content.reading > p:first-of-type {{
+            margin-top: 1.75rem;
+        }}
+        .content.reading blockquote {{
+            font-family: var(--font-display);
+            font-weight: 500;
+            font-style: normal;
+            border-left: 2px solid var(--accent);
+            padding: 0.1rem 0 0.1rem 1.5rem;
+            margin: 2.2rem 0;
+            font-size: 1.25rem;
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+            color: var(--text-color);
+        }}
+        .post-nav {{
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.92rem;
+        }}
+        .post-nav a {{
+            color: var(--accent);
+            text-decoration: none;
+        }}
+        .post-nav-newer {{
+            text-align: right;
+            margin-left: auto;
+        }}
+        .page-title {{
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 1.2rem + 2.5vw, 2.6rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin: 0.3rem 0 1.5rem;
+        }}
 
-        .lead {{ display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(1.75rem, 4vw, 3.5rem); align-items: center; padding: 3.5rem 0 3rem; border-bottom: 1px solid var(--border); }}
-        .lead-cover {{ display: block; order: 2; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: var(--accent-light); }}
-        .lead-cover img {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
-        .lead-cover-empty {{ background: var(--sidebar-bg); }}
-        .lead-body {{ order: 1; }}
-        .lead-title {{ font-family: var(--font-display); font-size: clamp(1.7rem, 1rem + 2.2vw, 2.4rem); font-weight: 600; line-height: 1.14; letter-spacing: -0.02em; margin: 0.55rem 0 0.5rem; text-wrap: balance; }}
-        .lead-title a {{ color: var(--text-color); text-decoration: none; }}
-        .lead-title a:hover {{ color: var(--accent); }}
-        .lead-excerpt {{ color: var(--text-muted); margin: 0.5rem 0 1rem; }}
-        .readmore {{ display: inline-flex; align-items: center; gap: 0.35rem; color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.9rem; }}
-        .readmore span {{ transition: transform 0.15s ease; }}
-        .readmore:hover span {{ transform: translateX(3px); }}
+        .tag-cloud {{
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }}
+        .tag-cloud .tag-chip {{
+            font-size: 0.85rem;
+            padding: 0.3rem 0.7rem;
+        }}
+        .tag-count {{
+            margin-left: 0.4rem;
+            opacity: 0.7;
+            font-variant-numeric: tabular-nums;
+        }}
+        .archive-year {{
+            margin-top: 2.5rem;
+        }}
+        .archive-year h2 {{
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 0.75rem;
+        }}
+        .archive-list {{
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }}
+        .content .archive-list, .content .tag-cloud, .content .author-grid {{
+            padding-left: 0;
+        }}
+        .archive-list li {{
+            display: flex;
+            gap: 1rem;
+            align-items: baseline;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }}
+        .archive-list time {{
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            min-width: 4.5rem;
+            font-variant-numeric: tabular-nums;
+        }}
+        .archive-list a {{
+            color: var(--text-color);
+            text-decoration: none;
+        }}
+        .archive-list a:hover {{
+            color: var(--accent);
+        }}
+        .post-card:last-child, .lead:last-child {{
+            border-bottom: none;
+        }}
+        .archive-year:last-child .archive-list li:last-child {{
+            border-bottom: none;
+        }}
 
-        .byline {{ gap: 0.55rem; }}
-        .byline-author {{ color: var(--text-color); font-weight: 500; }}
-        .byline-link {{ display: inline-flex; align-items: center; gap: 0.55rem; color: inherit; text-decoration: none; }}
-        .byline-link:hover .byline-author {{ color: var(--accent); }}
-        .avatar {{ width: 26px; height: 26px; border-radius: 50%; object-fit: cover; display: inline-grid; place-items: center; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, var(--sidebar-bg)), var(--accent)); color: var(--bg-color); font-size: 0.72rem; font-weight: 700; }}
-        .avatar-initial {{ display: inline-grid; place-items: center; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, var(--sidebar-bg)), var(--accent)); color: var(--bg-color); font-weight: 700; }}
-        .author-header {{ text-align: center; padding: 0.5rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }}
-        .author-header-avatar {{ width: 76px; height: 76px; border-radius: 50%; object-fit: cover; margin: 0 auto 1rem; }}
-        .author-header-avatar.avatar-initial {{ font-size: 1.9rem; }}
-        .author-name {{ font-family: var(--font-display); font-size: clamp(1.8rem, 1.2rem + 2.5vw, 2.6rem); font-weight: 600; letter-spacing: -0.02em; margin: 0 0 0.6rem; }}
-        .author-bio {{ color: var(--text-muted); max-width: 52ch; margin: 0 auto; }}
-        .author-bio p {{ margin: 0; }}
-        .author-grid {{ list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem; }}
-        .author-card {{ display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.85rem; border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: var(--text-color); transition: border-color 0.15s ease; }}
-        .author-card:hover {{ border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }}
-        .author-card-avatar {{ width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }}
-        .author-card-avatar.avatar-initial {{ font-size: 1.1rem; }}
-        .author-card-name {{ font-weight: 500; }}
-        .post-cover {{ display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); background: var(--sidebar-bg); margin: 1.75rem 0 0; }}
-        .content.reading img {{ max-width: 100%; height: auto; border-radius: 10px; background: var(--sidebar-bg); }}
-        .content.reading p > img:only-child {{ display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--border); border-radius: 12px; background: var(--sidebar-bg); margin: 1.75rem 0; }}
-        .content.reading img.natural, .content.reading p > img.natural:only-child {{ aspect-ratio: auto; object-fit: initial; width: auto; }}
-        .content.reading img.plain, .content.reading p > img.plain:only-child {{ border: none; background: none; border-radius: 0; }}
-        .content.reading img.left, .content.reading p > img.left:only-child {{ float: left; width: min(45%, 20rem); margin: 0.4rem 1.4rem 1rem 0; aspect-ratio: auto; }}
-        .content.reading img.right, .content.reading p > img.right:only-child {{ float: right; width: min(45%, 20rem); margin: 0.4rem 0 1rem 1.4rem; aspect-ratio: auto; }}
+        .lead {{
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: clamp(1.75rem, 4vw, 3.5rem);
+            align-items: start;
+            padding: 0 0 3rem;
+            border-bottom: 1px solid var(--border);
+        }}
+        .lead-cover {{
+            display: block;
+            order: 2;
+            aspect-ratio: 4 / 3;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--accent-light);
+        }}
+        .lead-cover img {{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }}
+        .lead-cover-empty {{
+            background: var(--sidebar-bg);
+        }}
+        .lead-body {{
+            order: 1;
+        }}
+        .lead-title {{
+            font-family: var(--font-display);
+            font-size: clamp(1.7rem, 1rem + 2.2vw, 2.4rem);
+            font-weight: 600;
+            line-height: 1.14;
+            letter-spacing: -0.02em;
+            margin: 0 0 0.5rem;
+            text-wrap: balance;
+        }}
+        .lead-title a {{
+            color: var(--text-color);
+            text-decoration: none;
+        }}
+        .lead-title a:hover {{
+            color: var(--accent);
+        }}
+        .lead-excerpt {{
+            color: var(--text-muted);
+            margin: 0.5rem 0 1rem;
+        }}
+        .readmore {{
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }}
+        .readmore span {{
+            transition: transform 0.15s ease;
+        }}
+        .readmore:hover span {{
+            transform: translateX(3px);
+        }}
 
-        .brand-mark {{ font-size: 1.15rem; line-height: 1; }}
+        .byline {{
+            gap: 0.55rem;
+        }}
+        .byline-author {{
+            color: var(--text-color);
+            font-weight: 500;
+        }}
+        .byline-link {{
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            color: inherit;
+            text-decoration: none;
+        }}
+        .byline-link:hover .byline-author {{
+            color: var(--accent);
+        }}
+        .avatar {{
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: inline-grid;
+            place-items: center;
+            background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, var(--sidebar-bg)), var(--accent));
+            color: var(--bg-color);
+            font-size: 0.72rem;
+            font-weight: 700;
+        }}
+        .avatar-initial {{
+            display: inline-grid;
+            place-items: center;
+            background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 55%, var(--sidebar-bg)), var(--accent));
+            color: var(--bg-color);
+            font-weight: 700;
+        }}
+        .author-header {{
+            text-align: center;
+            padding: 0.5rem 0 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem;
+        }}
+        .author-header-avatar {{
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+        }}
+        .author-header-avatar.avatar-initial {{
+            font-size: 1.9rem;
+        }}
+        .author-name {{
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 1.2rem + 2.5vw, 2.6rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin: 0 0 0.6rem;
+        }}
+        .author-bio {{
+            color: var(--text-muted);
+            max-width: 52ch;
+            margin: 0 auto;
+        }}
+        .author-bio p {{
+            margin: 0;
+        }}
+        .author-grid {{
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 1rem;
+        }}
+        .author-card {{
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.85rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: border-color 0.15s ease;
+        }}
+        .author-card:hover {{
+            border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+        }}
+        .author-card-avatar {{
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }}
+        .author-card-avatar.avatar-initial {{
+            font-size: 1.1rem;
+        }}
+        .author-card-name {{
+            font-weight: 500;
+        }}
+        .post-cover {{
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--sidebar-bg);
+            margin: 1.75rem 0 0;
+        }}
+        .content.reading img {{
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            background: var(--sidebar-bg);
+        }}
+        .content.reading p > img:only-child {{
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--sidebar-bg);
+            margin: 1.75rem 0;
+        }}
+        .content.reading img.natural, .content.reading p > img.natural:only-child {{
+            aspect-ratio: auto;
+            object-fit: initial;
+            width: auto;
+        }}
+        .content.reading img.plain, .content.reading p > img.plain:only-child {{
+            border: none;
+            background: none;
+            border-radius: 0;
+        }}
+        .content.reading img.left, .content.reading p > img.left:only-child {{
+            float: left;
+            width: min(45%, 20rem);
+            margin: 0.4rem 1.4rem 1rem 0;
+            aspect-ratio: auto;
+        }}
+        .content.reading img.right, .content.reading p > img.right:only-child {{
+            float: right;
+            width: min(45%, 20rem);
+            margin: 0.4rem 0 1rem 1.4rem;
+            aspect-ratio: auto;
+        }}
+
+        .brand-mark {{
+            font-size: 1.15rem;
+            line-height: 1;
+        }}
         .site-footer {{
             max-width: var(--measure-wide); margin: 5.5rem auto 3rem;
             padding: 1.75rem clamp(1.25rem, 5vw, 2.75rem) 0;
@@ -1352,37 +1838,91 @@ public static partial class LayoutProvider
             display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.2rem;
             font-size: 0.82rem; color: var(--text-muted);
         }}
-        .site-footer a {{ color: var(--accent); text-decoration: none; }}
-        .site-footer a:hover {{ text-decoration: underline; }}
-        .site-footer .social-links {{ display: inline-flex; gap: 0.2rem; }}
-        .site-footer .social-links a {{ text-decoration: none; }}
-        .site-footer .icon-btn {{ width: 32px; height: 32px; }}
-        .site-footer {{ justify-content: flex-start; }}
-        .site-footer-note {{ margin-right: auto; text-align: left; }}
-        .DocSearch-Commands {{ display: none !important; }}
-        .search-modal-results:empty {{ display: none; }}
+        .site-footer a {{
+            color: var(--accent);
+            text-decoration: none;
+        }}
+        .site-footer a:hover {{
+            text-decoration: underline;
+        }}
+        .site-footer .social-links {{
+            display: inline-flex;
+            gap: 0.2rem;
+        }}
+        .site-footer .social-links a {{
+            text-decoration: none;
+        }}
+        .site-footer .icon-btn {{
+            width: 32px;
+            height: 32px;
+        }}
+        .site-footer {{
+            justify-content: flex-start;
+        }}
+        .site-footer-note {{
+            margin-right: auto;
+            text-align: left;
+        }}
+        .DocSearch-Commands {{
+            display: none !important;
+        }}
+        .search-modal-results:empty {{
+            display: none;
+        }}
         @media (hover: none) and (pointer: coarse) {{
-            .site-nav a, .site-nav .top-nav-link {{ min-height: 44px; display: inline-flex; align-items: center; }}
-            .site-footer .icon-btn {{ width: 40px; height: 40px; }}
+            .site-nav a, .site-nav .top-nav-link {{
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+            }}
+            .site-footer .icon-btn {{
+                width: 40px;
+                height: 40px;
+            }}
         }}
 
         @media (max-width: 620px) {{
-            .topbar {{ align-items: flex-start; }}
-            .site-nav {{ gap: 1.1rem; font-size: 0.85rem; justify-content: flex-start; align-items: flex-start; }}
-            .brand {{ font-size: 1.3rem; }}
-            .site-nav .top-nav-item.has-dropdown {{ flex-direction: column; align-items: flex-start; }}
+            .topbar {{
+                align-items: flex-start;
+            }}
+            .site-nav {{
+                gap: 1.1rem;
+                font-size: 0.85rem;
+                justify-content: flex-start;
+            }}
+            .brand {{
+                font-size: 1.3rem;
+            }}
             .site-nav .top-nav-dropdown-menu {{
-                position: static; display: none; opacity: 1; visibility: visible;
-                transform: none; margin: 0.4rem 0 0; box-shadow: none; min-width: 150px;
+                display: none; opacity: 1; visibility: visible;
+                top: 100%; left: auto; right: 0; transform: none;
+                margin-top: 0.4rem; min-width: 160px;
             }}
             .site-nav .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
-            .site-nav .top-nav-item.has-dropdown:focus-within .top-nav-dropdown-menu {{ display: block; }}
-            .post-nav {{ flex-direction: column; gap: 0.75rem; }}
-            .post-nav-newer {{ text-align: left; margin-left: 0; }}
-            .site-footer-note {{ margin-right: 0; flex-basis: 100%; }}
-            .lead {{ grid-template-columns: 1fr; }}
-            .lead-cover {{ order: 1; }}
-            .lead-body {{ order: 2; }}
+            .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
+                display: block;
+            }}
+            .post-nav {{
+                flex-direction: column;
+                gap: 0.75rem;
+            }}
+            .post-nav-newer {{
+                text-align: left;
+                margin-left: 0;
+            }}
+            .site-footer-note {{
+                margin-right: 0;
+                flex-basis: 100%;
+            }}
+            .lead {{
+                grid-template-columns: 1fr;
+            }}
+            .lead-cover {{
+                order: 1;
+            }}
+            .lead-body {{
+                order: 2;
+            }}
         }}
 </style>
 ";

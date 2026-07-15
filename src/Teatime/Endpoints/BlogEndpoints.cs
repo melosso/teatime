@@ -16,10 +16,16 @@ internal static class BlogEndpoints
 
         app.MapGet("/posts/{slug}", RenderPost);
         app.MapGet("/tags", RenderTagIndex);
-        app.MapGet("/tags/{tag}", RenderTag);
+        app.MapGet("/tags/{tag}", (string tag, HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content, DocsOptions options) =>
+            RenderTag(tag, ctx, posts, responder, content, options, 1));
+        app.MapGet("/tags/{tag}/page/{n:int}", (string tag, int n, HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content, DocsOptions options) =>
+            RenderTag(tag, ctx, posts, responder, content, options, n));
         app.MapGet("/archive", RenderArchive);
         app.MapGet("/authors", RenderAuthorIndex);
-        app.MapGet("/authors/{slug}", RenderAuthor);
+        app.MapGet("/authors/{slug}", (string slug, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options) =>
+            RenderAuthor(slug, ctx, authors, posts, responder, options, 1));
+        app.MapGet("/authors/{slug}/page/{n:int}", (string slug, int n, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options) =>
+            RenderAuthor(slug, ctx, authors, posts, responder, options, n));
         return app;
     }
 
@@ -29,24 +35,34 @@ internal static class BlogEndpoints
         await responder.WriteAsync(ctx, new BlogPageView("Authors", html, CanonicalPath: "authors"));
     }
 
-    private static async Task RenderAuthor(string slug, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder)
+    private static async Task RenderAuthor(string slug, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options, int page)
     {
         var author = authors.GetBySlug(slug);
-        if (author is null)
+        if (author is null || page < 1)
         {
             await responder.Write404Async(ctx);
             return;
         }
 
         var basePath = responder.BasePath;
-        var authorPosts = await posts.GetByAuthorAsync(author.Id, ctx.RequestAborted);
+        var all = await posts.GetByAuthorAsync(author.Id, ctx.RequestAborted);
+        var totalPages = Math.Max(1, (int)Math.Ceiling(all.Count / (double)options.PageSize));
+        if (page > totalPages && page > 1)
+        {
+            await responder.Write404Async(ctx);
+            return;
+        }
+
+        var slice = all.Skip((page - 1) * options.PageSize).Take(options.PageSize).ToList();
+        var nextUrl = page < totalPages ? UrlPaths.Href(basePath, $"{author.Url}/page/{page + 1}") : null;
         var html = AuthorRenderer.BuildHeader(author, basePath)
-                 + PostListRenderer.BuildList(authorPosts, basePath, emptyMessage: "No posts here yet.");
+                 + PostListRenderer.BuildList(slice, basePath, emptyMessage: "No posts here yet.")
+                 + PostListRenderer.BuildLoadMore(nextUrl);
 
         await responder.WriteAsync(ctx, new BlogPageView(
-            Title: author.Name,
+            Title: page > 1 ? $"{author.Name}, page {page}" : author.Name,
             ContentHtml: html,
-            CanonicalPath: author.Url));
+            CanonicalPath: page > 1 ? $"{author.Url}/page/{page}" : author.Url));
     }
 
     private static async Task RenderHome(HttpContext ctx, PostService posts, BlogPageResponder responder, DocsOptions options, int page, ContentService contentService)
@@ -146,20 +162,33 @@ internal static class BlogEndpoints
             CanonicalPath: "tags"));
     }
 
-    private static async Task RenderTag(string tag, HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content)
+    private static async Task RenderTag(string tag, HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content, DocsOptions options, int page)
     {
         var matches = await posts.GetByTagAsync(tag, ctx.RequestAborted);
-        if (content.SiteConfig?.Tags == false || matches.Count == 0)
+        if (content.SiteConfig?.Tags == false || matches.Count == 0 || page < 1)
         {
             await responder.Write404Async(ctx);
             return;
         }
 
-        var html = PostListRenderer.BuildList(matches, responder.BasePath, heading: $"Tagged “{tag}”");
+        var slug = Models.PagePath.SlugifySegment(tag);
+        var basePath = responder.BasePath;
+        var totalPages = Math.Max(1, (int)Math.Ceiling(matches.Count / (double)options.PageSize));
+        if (page > totalPages && page > 1)
+        {
+            await responder.Write404Async(ctx);
+            return;
+        }
+
+        var slice = matches.Skip((page - 1) * options.PageSize).Take(options.PageSize).ToList();
+        var nextUrl = page < totalPages ? UrlPaths.Href(basePath, $"tags/{slug}/page/{page + 1}") : null;
+        var html = PostListRenderer.BuildList(slice, basePath, heading: page > 1 ? $"Tagged “{tag}”, page {page}" : $"Tagged “{tag}”")
+                 + PostListRenderer.BuildLoadMore(nextUrl);
+
         await responder.WriteAsync(ctx, new BlogPageView(
-            Title: $"Tagged {tag}",
+            Title: page > 1 ? $"Tagged {tag}, page {page}" : $"Tagged {tag}",
             ContentHtml: html,
-            CanonicalPath: $"tags/{Models.PagePath.SlugifySegment(tag)}"));
+            CanonicalPath: page > 1 ? $"tags/{slug}/page/{page}" : $"tags/{slug}"));
     }
 
     private static async Task RenderArchive(HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content)

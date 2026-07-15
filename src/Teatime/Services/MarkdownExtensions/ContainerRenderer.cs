@@ -102,8 +102,8 @@ public sealed partial class ContainerRenderer : HtmlObjectRenderer<CustomContain
                 renderer.Write(" checked");
             renderer.Write("><label data-title=\"").WriteEscape(title).Write("\" for=\"").Write(tabId).Write("\">");
 
-            if (_icons.Enabled)
-                renderer.Write(BuildIconTag(title, meta.IconSlug));
+            if (_icons.Enabled && BuildIconTag(title, meta.IconSlug) is { } iconTag)
+                renderer.Write(iconTag);
 
             renderer.WriteEscape(title).Write("</label>");
 
@@ -130,12 +130,17 @@ public sealed partial class ContainerRenderer : HtmlObjectRenderer<CustomContain
         renderer.EnsureLine();
     }
 
-    private string BuildIconTag(string title, string? iconSlug)
+    private string? BuildIconTag(string title, string? iconSlug)
     {
-        var slug = iconSlug
-            ?? (_icons.Overrides is { } overrides && overrides.TryGetValue(title, out var mapped)
-                ? mapped
-                : SlugRegex().Replace(title.ToLowerInvariant(), "-").Trim('-'));
+        var explicitSlug = iconSlug
+            ?? (_icons.Overrides is { } overrides && overrides.TryGetValue(title, out var mapped) ? mapped : null);
+        var slug = explicitSlug ?? SlugRegex().Replace(title.ToLowerInvariant(), "-").Trim('-');
+        if (slug.Length == 0)
+            return null;
+
+        // An auto-derived slug must match a shipped icon; explicit icon:/override slugs always render.
+        if (explicitSlug is null && _icons.Available is { } available && !available.Contains(slug))
+            return null;
 
         var iconBase = IsRootRelative(_icons.BaseUrl) ? PrefixBasePath(_icons.BaseUrl) : _icons.BaseUrl;
         var src = System.Net.WebUtility.HtmlEncode($"{iconBase}/{slug}.{_icons.Format}");

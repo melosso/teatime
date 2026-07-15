@@ -2,7 +2,7 @@
   "title": "Teatime",
   "description": "A personal blog published with Teatime.",
   "lang": "en",
-  "author": "Murdock",
+  "author": "Melosso",
   "favicon": "🍵",
   "scrollIndicator": true,
   "footer": "© {year} {author}. Brewed with [Teatime](https://github.com/melosso/teatime){target=\"_blank\" rel=\"noopener\"}.",
