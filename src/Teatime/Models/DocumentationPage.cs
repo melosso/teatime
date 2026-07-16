@@ -22,7 +22,8 @@ public sealed record DocumentationPage(
     string? Author = null,
     bool? Enabled = null,
     string? PageNext = null,
-    string? PagePrev = null
+    string? PagePrev = null,
+    DateTime? Updated = null
 )
 {
     public DocumentationPage(

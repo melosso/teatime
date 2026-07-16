@@ -240,7 +240,8 @@ public sealed partial class ContentService : IHostedService, IDisposable
                 Author: parsed.Author,
                 Enabled: parsed.Enabled,
                 PageNext: parsed.PageNext,
-                PagePrev: parsed.PagePrev
+                PagePrev: parsed.PagePrev,
+                Updated: parsed.FrontmatterDate
             );
 
             pageMap[pagePath] = page;

@@ -51,14 +51,25 @@ public sealed class PageRequestHandler
 
         var header = $"<header class=\"page-header\"><h1 class=\"page-title\">{Layout.LayoutProvider.HtmlEncode(page.Title)}</h1></header>";
         var cover = PostListRenderer.BuildCover(page.Cover, _responder.BasePath);
+        var updated = BuildUpdatedStamp(page);
         var pageNav = await BuildPageNav(page, context.RequestAborted);
 
         await _responder.WriteAsync(context, new BlogPageView(
             Title: page.Title,
-            ContentHtml: header + cover + page.HtmlContent + pageNav,
+            ContentHtml: header + cover + page.HtmlContent + updated + pageNav,
             Description: page.Description,
             CanonicalPath: normalized,
             IsArticle: true));
+    }
+
+    // Opt-in: only pages with an explicit updated:/date: front matter show the stamp (never file mtime).
+    private static string BuildUpdatedStamp(Models.DocumentationPage page)
+    {
+        if (!page.ShowLastUpdated || page.Updated is not { } when)
+            return string.Empty;
+        var iso = when.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+        var human = when.ToString("MMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture);
+        return $"<p class=\"page-updated\">Last updated on <time datetime=\"{iso}\">{human}</time></p>";
     }
 
     private async Task<string> BuildPageNav(Models.DocumentationPage page, CancellationToken ct)

@@ -1911,6 +1911,11 @@ public static partial class LayoutProvider
         .content.reading .gallery + p {{
             margin-top: 0;
         }}
+        .content.reading .page-updated {{
+            margin: 2.5rem 0 0;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }}
         @media (max-width: 620px) {{
             .content.reading .gallery {{
                 flex-direction: column;
