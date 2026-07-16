@@ -56,7 +56,14 @@ public static class ThemeProvider
         return "Teatime";
     }
 
-    public static bool UseDarkMode(ThemeOptions? theme) => theme?.DarkMode ?? true;
+    public static ThemeMode ResolveMode(ThemeOptions? theme) =>
+        theme?.Mode?.Trim().ToLowerInvariant() switch
+        {
+            "dark" => ThemeMode.Dark,
+            "light" => ThemeMode.Light,
+            "auto" or "system" => ThemeMode.Auto,
+            _ => (theme?.DarkMode ?? true) ? ThemeMode.Auto : ThemeMode.Light,
+        };
 
     public static bool ShowScrollIndicator(ThemeOptions? theme) => theme?.ShowScrollIndicator ?? true;
 

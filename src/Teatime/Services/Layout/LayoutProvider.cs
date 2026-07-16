@@ -1,4 +1,5 @@
 using System.Text;
+using Teatime.Models;
 
 namespace Teatime.Services.Layout;
 
@@ -13,7 +14,7 @@ public static partial class LayoutProvider
         string? themeCss = null,
         string? brandText = null,
         string? brandImage = null,
-        bool enableDarkMode = true,
+        ThemeMode themeMode = ThemeMode.Auto,
         string? footerHtml = null,
         string? socialLinksHtml = null,
         bool enableLiveReload = false,
@@ -72,14 +73,26 @@ public static partial class LayoutProvider
                 --alert-caution: #f85149;
                 --promo-text: #dfe6e1;";
 
-        var darkModeMediaQuery = enableDarkMode
-            ? $@"@media (prefers-color-scheme: dark) {{
+        var enableDarkMode = themeMode == ThemeMode.Auto;
+        var darkModeMediaQuery = themeMode switch
+        {
+            ThemeMode.Auto => $@"@media (prefers-color-scheme: dark) {{
             :root:not([data-theme=""light""]) {{{darkVars}
             }}
         }}
         :root[data-theme=""dark""] {{{darkVars}
-        }}"
-            : "";
+        }}",
+            ThemeMode.Dark => $@":root[data-theme=""dark""] {{{darkVars}
+        }}",
+            _ => "",
+        };
+
+        var forcedThemeAttr = themeMode switch
+        {
+            ThemeMode.Dark => " data-theme=\"dark\"",
+            ThemeMode.Light => " data-theme=\"light\"",
+            _ => "",
+        };
 
         var nonceAttr = nonce is { Length: > 0 } ? $" nonce=\"{nonce}\"" : "";
         // Pre-<style> so no transition can fire; without a stored theme, data-theme stays unset so CSS follows live OS changes.
@@ -96,9 +109,12 @@ public static partial class LayoutProvider
             </button>"
             : "";
 
-        var colorSchemeMeta = enableDarkMode
-            ? "<meta name=\"color-scheme\" content=\"light dark\">"
-            : "<meta name=\"color-scheme\" content=\"light\">";
+        var colorSchemeMeta = themeMode switch
+        {
+            ThemeMode.Auto => "<meta name=\"color-scheme\" content=\"light dark\">",
+            ThemeMode.Dark => "<meta name=\"color-scheme\" content=\"dark\">",
+            _ => "<meta name=\"color-scheme\" content=\"light\">",
+        };
 
         var canonicalLink = canonicalUrl is { Length: > 0 }
             ? $"<link rel=\"canonical\" href=\"{HtmlEncode(canonicalUrl)}\">"
@@ -108,7 +124,7 @@ public static partial class LayoutProvider
 
         return $@"
 <!DOCTYPE html>
-<html lang=""{HtmlEncode(lang)}"">
+<html lang=""{HtmlEncode(lang)}""{forcedThemeAttr}>
 <head>
     <meta charset=""UTF-8"">
     {themeInitScript}

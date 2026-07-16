@@ -99,7 +99,7 @@ public sealed class BlogPageResponder
             themeCss: themeCss + customCssLink + customJsScript,
             brandText: brandText,
             brandImage: config?.BrandImage,
-            enableDarkMode: ThemeProvider.UseDarkMode(_theme),
+            themeMode: ThemeProvider.ResolveMode(_theme),
             footerText: footerText,
             socialLinksHtml: socialLinksHtml,
             enableLiveReload: _docsOptions.EnableHotReload,

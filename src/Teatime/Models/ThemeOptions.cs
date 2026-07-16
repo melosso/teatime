@@ -17,6 +17,8 @@ public sealed record ThemeOptions
     public string? BrandText { get; init; }
     public bool DarkMode { get; init; } = true;
 
+    public string? Mode { get; init; }
+
     /// <summary>Thin top-of-viewport progress bar that fills as the page scrolls. On by default.</summary>
     public bool ShowScrollIndicator { get; init; } = true;
 }
