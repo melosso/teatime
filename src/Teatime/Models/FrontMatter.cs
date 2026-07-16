@@ -1,7 +1,19 @@
+using YamlDotNet.Serialization;
+
 namespace Teatime.Models;
 
 public sealed record FrontMatter
 {
+    /// <summary>Optional "next" pagination target for a standalone page (path or URL).</summary>
+    [YamlMember(Alias = "page-next", ApplyNamingConventions = false)]
+    public string? PageNext { get; init; }
+
+    [YamlMember(Alias = "page-prev", ApplyNamingConventions = false)]
+    public string? PagePrev { get; init; }
+
+    [YamlMember(Alias = "page-previous", ApplyNamingConventions = false)]
+    public string? PagePrevious { get; init; }
+
     public string? Title { get; init; }
     public string? Description { get; init; }
 

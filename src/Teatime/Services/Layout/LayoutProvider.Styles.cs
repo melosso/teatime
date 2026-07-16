@@ -1604,10 +1604,7 @@ public static partial class LayoutProvider
             padding-top: 1.5rem;
             border-top: 1px solid var(--border);
         }}
-        .post-nav > span:empty {{
-            display: none;
-        }}
-        .post-nav-link {{
+        .content .post-nav-link {{
             display: flex;
             flex-direction: column;
             gap: 0.35rem;
@@ -2083,6 +2080,9 @@ public static partial class LayoutProvider
             }}
             .post-nav {{
                 grid-template-columns: 1fr;
+            }}
+            .post-nav > span:empty {{
+                display: none;
             }}
             .post-nav-newer {{
                 text-align: left;

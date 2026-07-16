@@ -54,14 +54,37 @@ public sealed class PageRequestHandler
             : null;
 
         var header = $"<header class=\"page-header\"><h1 class=\"page-title\">{Layout.LayoutProvider.HtmlEncode(page.Title)}</h1></header>";
+        var pageNav = await BuildPageNav(page, context.RequestAborted);
 
         await _responder.WriteAsync(context, new BlogPageView(
             Title: page.Title,
-            ContentHtml: header + page.HtmlContent,
+            ContentHtml: header + page.HtmlContent + pageNav,
             Description: page.Description,
             CanonicalPath: normalized,
             IsArticle: true,
             TocHtml: tocHtml));
+    }
+
+    private async Task<string> BuildPageNav(Models.DocumentationPage page, CancellationToken ct)
+    {
+        if (!page.ShowPagination || (page.PagePrev is null && page.PageNext is null))
+            return string.Empty;
+
+        var (prevHref, prevTitle) = await ResolvePageLink(page.PagePrev, ct);
+        var (nextHref, nextTitle) = await ResolvePageLink(page.PageNext, ct);
+        return PostListRenderer.BuildAdjacentNav(prevHref, prevTitle, nextHref, nextTitle, "Adjacent pages");
+    }
+
+    private async ValueTask<(string? Href, string? Title)> ResolvePageLink(string? target, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(target)) return (null, null);
+        if (target.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || target.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            return (target, target);
+
+        var norm = target.Trim('/').ToLowerInvariant();
+        var targetPage = await _content.GetPageAsync($"pages/{norm}", ct) ?? await _content.GetPageAsync(norm, ct);
+        return (UrlPaths.Href(_responder.BasePath, norm), targetPage?.Title ?? norm);
     }
 
     private static string ResolveRedirect(string target, string basePath)

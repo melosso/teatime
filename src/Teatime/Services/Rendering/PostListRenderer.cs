@@ -150,18 +150,24 @@ public static class PostListRenderer
         return sb.ToString();
     }
 
-    public static string BuildPostNav(Post? older, Post? newer, string basePath)
+    public static string BuildPostNav(Post? older, Post? newer, string basePath) =>
+        BuildAdjacentNav(
+            older is not null ? UrlPaths.Href(basePath, older.Url) : null, older?.Title,
+            newer is not null ? UrlPaths.Href(basePath, newer.Url) : null, newer?.Title,
+            "Adjacent posts");
+
+    public static string BuildAdjacentNav(string? prevHref, string? prevTitle, string? nextHref, string? nextTitle, string ariaLabel)
     {
-        if (older is null && newer is null) return string.Empty;
+        if (prevHref is null && nextHref is null) return string.Empty;
 
-        var olderHtml = older is not null
-            ? $"<a class=\"post-nav-link post-nav-older\" rel=\"prev\" href=\"{UrlPaths.Href(basePath, older.Url)}\"><span class=\"post-nav-label\">← Previous</span><span class=\"post-nav-title\">{LayoutProvider.HtmlEncode(older.Title)}</span></a>"
+        var olderHtml = prevHref is not null
+            ? $"<a class=\"post-nav-link post-nav-older\" rel=\"prev\" href=\"{prevHref}\"><span class=\"post-nav-label\">← Previous</span><span class=\"post-nav-title\">{LayoutProvider.HtmlEncode(prevTitle)}</span></a>"
             : "<span></span>";
-        var newerHtml = newer is not null
-            ? $"<a class=\"post-nav-link post-nav-newer\" rel=\"next\" href=\"{UrlPaths.Href(basePath, newer.Url)}\"><span class=\"post-nav-label\">Next →</span><span class=\"post-nav-title\">{LayoutProvider.HtmlEncode(newer.Title)}</span></a>"
+        var newerHtml = nextHref is not null
+            ? $"<a class=\"post-nav-link post-nav-newer\" rel=\"next\" href=\"{nextHref}\"><span class=\"post-nav-label\">Next →</span><span class=\"post-nav-title\">{LayoutProvider.HtmlEncode(nextTitle)}</span></a>"
             : "<span></span>";
 
-        return $"<nav class=\"post-nav\" aria-label=\"Adjacent posts\">{olderHtml}{newerHtml}</nav>";
+        return $"<nav class=\"post-nav\" aria-label=\"{ariaLabel}\">{olderHtml}{newerHtml}</nav>";
     }
 
     private static string PageHref(int page, string basePath) =>

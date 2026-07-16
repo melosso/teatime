@@ -53,13 +53,6 @@ public static partial class LayoutProvider
             : "";
 
         var contentClass = isArticle ? "content reading" : "content";
-        var tocDetailsHtml = tocHtml is null ? "" : $@"<details class=""toc-inline"">
-                <summary>On this page</summary>
-                <ul class=""toc-list"">
-                    {tocHtml}
-                </ul>
-            </details>";
-        content = InsertAfterHeader(content, tocDetailsHtml);
 
         const string darkVars = @"
                 color-scheme: dark;

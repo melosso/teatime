@@ -21,7 +21,9 @@ public sealed record DocumentationPage(
     string? Summary = null,
     string? Cover = null,
     string? Author = null,
-    bool? Enabled = null
+    bool? Enabled = null,
+    string? PageNext = null,
+    string? PagePrev = null
 )
 {
     public DocumentationPage(

@@ -15,7 +15,7 @@ Follow these steps to manage your content.
 
 To start writing, create a new `.md` file inside your `content/posts/` folder.
 
-Every file needs a block of settings at the top, called front matter. This tells the server how to display your post. Use this template to begin:
+Every file needs a block of settings at the top, called [front matter](/examples/frontmatter/). This tells the server how to display your post. Use this template to begin:
 
 ```md [content/posts/hello.md]
 ---
@@ -160,7 +160,7 @@ Images can carry a caption and choose their width. The alt text becomes a captio
 - `{.wide}` reaches a little past the reading column, and
 - `{.full}` spans the whole viewport
 
-For a row of images side by side, wrap them in a gallery:
+For a row of images side by side, wrap them in a gallery (you can find an example [here](/examples/gallery/)).
 
 ```md
 ::: gallery
@@ -170,7 +170,7 @@ For a row of images side by side, wrap them in a gallery:
 :::
 ```
 
-The post cover set in front matter accepts the same width attributes, so a full-bleed hero is one line: `cover: /assets/hero.webp {.full}`.
+The post cover set in [front matter](/examples/frontmatter/) accepts the same width attributes, so a full-bleed hero is one line: `cover: /assets/hero.webp {.full}`.
 
 Definition lists keep paired ideas tidy:
 
