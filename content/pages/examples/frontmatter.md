@@ -2,6 +2,9 @@
 title: Front Matter
 description: Every front matter field Teatime understands, gathered in one place.
 cover: /assets/frontmatter.webp {.wide}
+updated: 2026-07-16
+lastUpdated: true
+page-prev: /examples/
 ---
 
 Front matter is the small block of settings at the top of a Markdown file, wrapped in a pair of `---` lines. It tells Teatime how to treat the page. Every field is optional unless noted, and sensible defaults fill in whatever you leave out.
@@ -69,4 +72,4 @@ A couple of quieter fields help search and the "Last updated" stamp behave the w
 | `keywords`    | A list that nudges search weighting and fills the meta keywords    |
 | `lastUpdated` | Set to `false` to hide the "Last updated" stamp on a single page   |
 
-If a field ever feels unclear, the friendliest way to learn it is to add it, save, and watch the page refresh. Teatime reads your changes the moment you write them, so there is no wrong turn you cannot simply undo.
+Unsure about a field? Fill it in and save to see how it works. Teatime applies changes instantly, so you can always undo your work if needed.

@@ -1,6 +1,7 @@
 ---
 title: Gallery
 summary: A short example page with images.
+page-prev: /examples/
 ---
 
 Here is some text. But perhaps you'd like the images a bit more:
