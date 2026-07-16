@@ -25,4 +25,6 @@ The licence is also recognised by the Open Source Initiative, so you are standin
 
 ## A comfortable home
 
-If a permissive licence suits your project better, that is a perfectly good choice too. For Teatime, though, the EUPL felt like the right balance: open by default, easy to combine, and considerate enough to speak your language. That is exactly the kind of quiet thoughtfulness this engine hopes to encourage.
+If a permissive licence suits your project better, that is a perfectly good choice too. For Teatime, though, the EUPL felt like the right balance: open by default, easy to combine, and considerate enough to speak your language. 
+
+That is exactly the kind of quiet thoughtfulness this engine hopes to encourage.

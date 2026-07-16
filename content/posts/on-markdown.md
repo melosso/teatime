@@ -3,7 +3,7 @@ title: On Writing in Markdown
 author: murdock
 date: 2026-07-08
 tags: [writing, markdown]
-summary: Why plain text outlives every proprietary editor. We should all embrace the markdown!
+summary: A small writing about the reasons why plain text outlives every proprietary editor. My opinion? We should all embrace the markdown!
 cover: /assets/desk.webp
 ---
 
