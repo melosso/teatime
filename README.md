@@ -32,9 +32,44 @@ To get going, you really only need a `title` and a `date`. The `date` sets the o
 
 Once a post is saved, it appears right away. Teatime watches your files and rebuilds in memory, so there is nothing to recompile.
 
-## Running it
+## Installation
 
-We'll be working on this soon.
+The quickest way to run Teatime is the published container image, which has everything bundled and ready.
+
+### Docker
+
+Create a `docker-compose.yml` next to your writing:
+
+```yaml
+services:
+  teatime:
+    image: ghcr.io/melosso/teatime:latest
+    container_name: teatime
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./content:/app/content
+```
+
+Mount your own `content/` folder holding your `.md` files and an optional `config.json`. When that is in place, bring it up:
+
+```bash
+docker compose up -d
+```
+
+Your blog is then waiting at `http://localhost:8080`.
+
+### Windows and IIS
+
+If you would rather host on Windows, each release ships a ready to run build:
+
+1. Download the latest `*-Windows_x64.zip` from the [Releases](https://github.com/melosso/teatime/releases) page.
+2. Extract it into your site folder, for example `C:\inetpub\teatime`.
+3. Create an IIS site pointed at that folder, with the CLR version set to "No Managed Code".
+4. Make sure the [.NET 11 Hosting Bundle](https://dotnet.microsoft.com/download/dotnet/11.0) is installed.
+5. Start the site and browse to it.
+
+The zip already includes a `web.config` wired for in process hosting, so no manual edits are needed. A `*-Linux_x64.zip` build is attached to each release as well.
 
 ## Writing
 
