@@ -2,6 +2,7 @@
   "title": "Teatime",
   "description": "A personal blog published with Teatime.",
   "lang": "en",
+  "locale": { "culture": "en-GB" },
   "author": "Melosso",
   "favicon": "🍵",
   "scrollIndicator": true,

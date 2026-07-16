@@ -179,6 +179,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
         }
 
         var config = LoadConfig(docsPath);
+        DateFormatter.Current = DateFormatter.From(config?.Locale);
 
         // Sorted for deterministic hashing, regardless of FS enumeration order.
         var allFiles = Directory.GetFiles(docsPath, "*.md", SearchOption.AllDirectories).Order().ToArray();

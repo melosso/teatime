@@ -67,9 +67,8 @@ public sealed class PageRequestHandler
     {
         if (!page.ShowLastUpdated || page.Updated is not { } when)
             return string.Empty;
-        var iso = when.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
-        var human = when.ToString("MMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture);
-        return $"<p class=\"page-updated\">Last updated on <time datetime=\"{iso}\">{human}</time></p>";
+        var human = DateFormatter.Current.Medium(when);
+        return $"<p class=\"page-updated\">Last updated on <time datetime=\"{DateFormatter.Iso(when)}\">{human}</time></p>";
     }
 
     private async Task<string> BuildPageNav(Models.DocumentationPage page, CancellationToken ct)

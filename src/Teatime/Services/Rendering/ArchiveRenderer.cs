@@ -27,8 +27,8 @@ public static class ArchiveRenderer
             sb.Append("<section class=\"archive-year\"><h2>").Append(year).Append("</h2><ul class=\"archive-list\">");
             foreach (var post in posts)
             {
-                sb.Append("<li><time datetime=\"").Append(post.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)).Append("\">")
-                  .Append(post.Date.ToString("MMM d", CultureInfo.InvariantCulture)).Append("</time>")
+                sb.Append("<li><time datetime=\"").Append(DateFormatter.Iso(post.Date)).Append("\">")
+                  .Append(DateFormatter.Current.MonthDay(post.Date)).Append("</time>")
                   .Append("<a href=\"").Append(UrlPaths.Href(basePath, post.Url)).Append("\">")
                   .Append(LayoutProvider.HtmlEncode(post.Title)).Append("</a></li>");
             }

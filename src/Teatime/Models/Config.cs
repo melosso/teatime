@@ -39,4 +39,7 @@ public class Config
     public bool? Archive { get; set; }
 
     public List<SocialLink>? SocialLinks { get; set; }
+
+    /// <summary>Locale settings, later implemnt. for i18n. See <see cref="LocaleOptions"/>.</summary>
+    public LocaleOptions? Locale { get; set; }
 }

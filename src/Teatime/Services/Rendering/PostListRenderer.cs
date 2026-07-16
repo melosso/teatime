@@ -150,8 +150,8 @@ public static partial class PostListRenderer
     private static string MetaLine(Post post, string basePath)
     {
         var sb = new StringBuilder();
-        sb.Append("<time datetime=\"").Append(post.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)).Append("\">")
-          .Append(post.Date.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)).Append("</time>");
+        sb.Append("<time datetime=\"").Append(DateFormatter.Iso(post.Date)).Append("\">")
+          .Append(DateFormatter.Current.Medium(post.Date)).Append("</time>");
         sb.Append(" · ").Append(post.ReadingMinutes).Append(" min read");
         if (post.Tags.Count > 0)
             sb.Append("<span class=\"post-tags\">").Append(BuildTagChips(post.Tags, basePath)).Append("</span>");
