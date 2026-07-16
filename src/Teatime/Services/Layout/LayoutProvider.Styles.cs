@@ -1907,6 +1907,10 @@ public static partial class LayoutProvider
             object-fit: cover;
             border-radius: 10px;
         }}
+        .content.reading .gallery + figure.image-figure,
+        .content.reading .gallery + p {{
+            margin-top: 0;
+        }}
         @media (max-width: 620px) {{
             .content.reading .gallery {{
                 flex-direction: column;
@@ -1915,6 +1919,10 @@ public static partial class LayoutProvider
                 display: flex;
                 flex-direction: column;
                 gap: 0.75rem;
+                margin: 0;
+            }}
+            .content.reading .gallery img {{
+                height: auto;
             }}
         }}
 
