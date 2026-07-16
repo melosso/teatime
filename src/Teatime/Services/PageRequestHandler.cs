@@ -53,13 +53,14 @@ public sealed class PageRequestHandler
             ? TocHtmlRenderer.BuildTocHtml(page.Headings)
             : null;
 
-        var content = $"<h1 class=\"page-title\">{Layout.LayoutProvider.HtmlEncode(page.Title)}</h1>{page.HtmlContent}";
+        var header = $"<header class=\"page-header\"><h1 class=\"page-title\">{Layout.LayoutProvider.HtmlEncode(page.Title)}</h1></header>";
 
         await _responder.WriteAsync(context, new BlogPageView(
             Title: page.Title,
-            ContentHtml: content,
+            ContentHtml: header + page.HtmlContent,
             Description: page.Description,
             CanonicalPath: normalized,
+            IsArticle: true,
             TocHtml: tocHtml));
     }
 

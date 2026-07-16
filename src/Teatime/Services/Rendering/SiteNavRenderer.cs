@@ -48,7 +48,7 @@ public static class SiteNavRenderer
         }
 
         if (string.IsNullOrWhiteSpace(item.Path)) return;
-        AppendLink(sb, item.Title!, item.Path!, basePath, currentPath);
+        AppendLink(sb, item.Title!, item.Path!, basePath, currentPath, item.External);
     }
 
     private static void AppendDropdown(StringBuilder sb, string text, List<MenuLink> children, string basePath, string currentPath)
@@ -64,40 +64,43 @@ public static class SiteNavRenderer
         foreach (var child in children)
         {
             if (string.IsNullOrWhiteSpace(child.Title) || string.IsNullOrWhiteSpace(child.Path)) continue;
-            AppendDropdownLink(sb, child.Title!, child.Path!, basePath, currentPath);
+            AppendDropdownLink(sb, child.Title!, child.Path!, basePath, currentPath, child.External);
         }
         sb.Append("</div></div>");
     }
 
-    private static void AppendLink(StringBuilder sb, string text, string link, string basePath, string currentPath)
+    private static void AppendLink(StringBuilder sb, string text, string link, string basePath, string currentPath, bool external = false)
     {
         if (IsExternal(link))
         {
             sb.Append("<a href=\"").Append(LayoutProvider.HtmlEncode(link))
-              .Append("\" rel=\"noopener\">").Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
+              .Append("\" target=\"_blank\" rel=\"noopener noreferrer\">").Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
             return;
         }
 
         var seg = link.Trim('/').ToLowerInvariant();
         var href = UrlPaths.Href(basePath, seg);
         sb.Append("<a href=\"").Append(href).Append('"');
-        if (IsActive(seg, currentPath)) sb.Append(" class=\"here\" aria-current=\"page\"");
+        if (external) sb.Append(" target=\"_blank\" rel=\"noopener noreferrer\"");
+        else if (IsActive(seg, currentPath)) sb.Append(" class=\"here\" aria-current=\"page\"");
         sb.Append('>').Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
     }
 
-    private static void AppendDropdownLink(StringBuilder sb, string text, string link, string basePath, string currentPath)
+    private static void AppendDropdownLink(StringBuilder sb, string text, string link, string basePath, string currentPath, bool external = false)
     {
         if (IsExternal(link))
         {
             sb.Append("<a class=\"top-nav-dropdown-link\" href=\"").Append(LayoutProvider.HtmlEncode(link))
-              .Append("\" rel=\"noopener\">").Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
+              .Append("\" target=\"_blank\" rel=\"noopener noreferrer\">").Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
             return;
         }
 
         var seg = link.Trim('/').ToLowerInvariant();
         var href = UrlPaths.Href(basePath, seg);
         sb.Append("<a class=\"top-nav-dropdown-link").Append(IsActive(seg, currentPath) ? " here" : "")
-          .Append("\" href=\"").Append(href).Append("\">").Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
+          .Append("\" href=\"").Append(href).Append('"');
+        if (external) sb.Append(" target=\"_blank\" rel=\"noopener noreferrer\"");
+        sb.Append('>').Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
     }
 
     private static bool IsActive(string itemSeg, string currentPath)

@@ -7,6 +7,9 @@ namespace Teatime.Services.Rendering;
 
 public static class PostListRenderer
 {
+    private const string ShareIcon =
+        "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><path d=\"M8.6 13.5l6.8 4M15.4 6.5l-6.8 4\"/></svg>";
+
     public static string BuildList(IReadOnlyList<Post> posts, string basePath, string? heading = null, string? emptyMessage = null)
     {
         var sb = new StringBuilder();
@@ -64,15 +67,19 @@ public static class PostListRenderer
             sb.Append(" · ");
         }
         sb.Append(MetaLine(post, basePath));
+        sb.Append("<button type=\"button\" class=\"share-trigger\" data-share aria-haspopup=\"dialog\" aria-controls=\"share-overlay\">")
+          .Append(ShareIcon).Append("<span>Share</span></button>");
         sb.Append("</div>");
         sb.Append("</header>");
         return sb.ToString();
     }
 
-    public static string BuildCover(Post post, string basePath) =>
-        post.Cover is { Length: > 0 } cover
-            ? $"<img class=\"post-cover\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, cover))}\" alt=\"\" loading=\"lazy\">"
-            : string.Empty;
+    public static string BuildCover(Post post, string basePath)
+    {
+        if (post.Cover is not { Length: > 0 } cover) return string.Empty;
+        var css = post.CoverWidth is { Length: > 0 } w ? $"post-cover {w}" : "post-cover";
+        return $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, cover))}\" alt=\"\" loading=\"lazy\">";
+    }
 
     public static string BuildFeaturedLead(Post post, string basePath)
     {
@@ -148,10 +155,10 @@ public static class PostListRenderer
         if (older is null && newer is null) return string.Empty;
 
         var olderHtml = older is not null
-            ? $"<a class=\"post-nav-older\" rel=\"prev\" href=\"{UrlPaths.Href(basePath, older.Url)}\">← {LayoutProvider.HtmlEncode(older.Title)}</a>"
+            ? $"<a class=\"post-nav-link post-nav-older\" rel=\"prev\" href=\"{UrlPaths.Href(basePath, older.Url)}\"><span class=\"post-nav-label\">← Previous</span><span class=\"post-nav-title\">{LayoutProvider.HtmlEncode(older.Title)}</span></a>"
             : "<span></span>";
         var newerHtml = newer is not null
-            ? $"<a class=\"post-nav-newer\" rel=\"next\" href=\"{UrlPaths.Href(basePath, newer.Url)}\">{LayoutProvider.HtmlEncode(newer.Title)} →</a>"
+            ? $"<a class=\"post-nav-link post-nav-newer\" rel=\"next\" href=\"{UrlPaths.Href(basePath, newer.Url)}\"><span class=\"post-nav-label\">Next →</span><span class=\"post-nav-title\">{LayoutProvider.HtmlEncode(newer.Title)}</span></a>"
             : "<span></span>";
 
         return $"<nav class=\"post-nav\" aria-label=\"Adjacent posts\">{olderHtml}{newerHtml}</nav>";

@@ -79,6 +79,7 @@ public sealed class BlogPageResponder
 
         var seg = view.CanonicalPath.Trim('/');
         var siteNavHtml = SiteNavRenderer.Build(config, basePath, seg);
+        var footerLinksHtml = FooterMenuRenderer.Build(config?.FooterMenu, basePath);
         var pageSegment = seg.Length == 0 ? string.Empty : $"{seg}/";
         var rawPath = $"{basePath}/{pageSegment}".TrimStart('/');
         var canonicalUrl = $"{context.Request.Scheme}://{context.Request.Host}/{rawPath}";
@@ -120,7 +121,8 @@ public sealed class BlogPageResponder
             hasMermaid: view.ContentHtml.Contains("class=\"mermaid\"", StringComparison.Ordinal),
             rssDiscoveryHtml: rssDiscoveryHtml,
             isArticle: view.IsArticle,
-            siteNavHtml: siteNavHtml);
+            siteNavHtml: siteNavHtml,
+            footerLinksHtml: footerLinksHtml);
 
         context.Response.ContentType = "text/html; charset=utf-8";
         await context.Response.WriteAsync(fullHtml);

@@ -22,6 +22,9 @@ public class Config
     /// <summary>Header nav items. When present, replaces the default Posts/Tags/Archive/About menu.</summary>
     public List<MenuLink>? Menu { get; set; }
 
+    /// <summary>Footer links. When present, replaces the default RSS/Archive links in the footer.</summary>
+    public List<MenuLink>? FooterMenu { get; set; }
+
     /// <summary>Top reading-progress bar. Defaults to on; set false to hide it.</summary>
     public bool? ScrollIndicator { get; set; }
 

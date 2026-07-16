@@ -169,9 +169,6 @@ public static partial class LayoutProvider
         .top-nav-dropdown-link:hover {{
             background-color: var(--code-bg); color: var(--accent);
         }}
-        .top-nav-dropdown-link:nth-of-type(2n) {{
-            margin-top: 0.5em;
-        }}
         .layout {{
             display: grid;
             grid-template-columns: 270px 1fr 270px;
@@ -788,13 +785,13 @@ public static partial class LayoutProvider
             padding-left: 2.5rem;
         }}
         .content .line-numbers-wrapper {{
-            position: absolute; top: 3.3rem; left: 0; width: 2rem;
+            position: absolute; top: 3.5rem; left: 0; width: 2rem;
             text-align: right; color: var(--text-muted); font-family: var(--font-mono);
             font-size: 0.85rem; line-height: 1.6; user-select: none;
         }}
         /* Custom containers: ::: tip / warning / danger / info / details */
         .content .custom-block {{
-            margin: 1rem 0; padding: 1rem; border-radius: 8px;
+            margin: 1rem 0; padding: 1rem !important; border-radius: 8px;
             line-height: 1.5; font-size: 0.9rem; color: var(--text-muted);
             background-color: var(--accent-light);
         }}
@@ -1497,6 +1494,80 @@ public static partial class LayoutProvider
         .post-header {{
             margin-bottom: 0.5rem;
         }}
+        .share-trigger {{
+            display: inline-flex; align-items: center; gap: 0.35rem; margin-left: auto;
+            font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500;
+            color: var(--text-muted); background: none;
+            border: 1px solid var(--border); border-radius: 999px;
+            padding: 0.25rem 0.75rem; cursor: pointer;
+            transition: color 0.15s ease, border-color 0.15s ease;
+        }}
+        .share-trigger:hover {{
+            color: var(--accent);
+            border-color: var(--accent);
+        }}
+        .share-trigger svg {{
+            width: 15px;
+            height: 15px;
+        }}
+        .share-overlay {{
+            position: fixed; inset: 0; z-index: 1200; background-color: var(--overlay-bg);
+            display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+            opacity: 0; transition: opacity 0.15s ease;
+        }}
+        .share-overlay[hidden] {{
+            display: none;
+        }}
+        .share-overlay.open {{
+            opacity: 1;
+        }}
+        .share-modal {{
+            position: relative; width: 100%; max-width: 420px;
+            background-color: var(--bg-color); border: 1px solid var(--border); border-radius: 14px;
+            box-shadow: var(--shadow-lg); padding: 1.75rem;
+            transform: translateY(-12px) scale(0.98); transition: transform 0.15s ease;
+        }}
+        .share-overlay.open .share-modal {{
+            transform: translateY(0) scale(1);
+        }}
+        .share-modal-close {{
+            position: absolute; top: 0.85rem; right: 0.85rem;
+        }}
+        .share-modal-title {{
+            font-family: var(--font-display); font-size: 1.2rem; font-weight: 600;
+            letter-spacing: -0.01em; margin: 0 0 1.25rem;
+        }}
+        .share-actions {{
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;
+        }}
+        .share-action {{
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.7rem 0.9rem; border-radius: 10px;
+            border: 1px solid var(--border); background-color: var(--sidebar-bg);
+            color: var(--text-color); text-decoration: none;
+            font-family: var(--font-sans); font-size: 0.9rem; font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }}
+        .share-action:hover {{
+            border-color: var(--accent);
+            background-color: var(--accent-light);
+        }}
+        .share-action-icon {{
+            display: inline-flex; color: var(--text-muted);
+        }}
+        .share-action:hover .share-action-icon {{
+            color: var(--accent);
+        }}
+        .share-action-icon svg {{
+            width: 18px;
+            height: 18px;
+        }}
+        @media (max-width: 620px) {{
+            .share-actions {{
+                grid-template-columns: 1fr;
+            }}
+        }}
         .post-title {{
             font-family: var(--font-display);
             font-size: clamp(1.9rem, 1.2rem + 3vw, 3rem);
@@ -1526,28 +1597,63 @@ public static partial class LayoutProvider
             color: var(--text-color);
         }}
         .post-nav {{
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
             margin-top: 4rem;
             padding-top: 1.5rem;
             border-top: 1px solid var(--border);
-            font-size: 0.92rem;
         }}
-        .post-nav a {{
-            color: var(--accent);
+        .post-nav > span:empty {{
+            display: none;
+        }}
+        .post-nav-link {{
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding: 0.9rem 1.1rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
             text-decoration: none;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }}
+        .post-nav-link:hover {{
+            border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+            background-color: var(--accent-light);
         }}
         .post-nav-newer {{
             text-align: right;
-            margin-left: auto;
+            align-items: flex-end;
+        }}
+        .post-nav-label {{
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            text-decoration: none;
+        }}
+        .post-nav-title {{
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1.25;
+            color: var(--text-color);
+        }}
+        .post-nav-link:hover .post-nav-title {{
+            color: var(--accent);
+        }}
+        .page-header {{
+            margin: 0 0 2.75rem;
+            padding-top: 0.5rem;
         }}
         .page-title {{
             font-family: var(--font-display);
-            font-size: clamp(1.8rem, 1.2rem + 2.5vw, 2.6rem);
+            font-size: clamp(2rem, 1.2rem + 3.2vw, 3.1rem);
             font-weight: 600;
-            letter-spacing: -0.02em;
-            margin: 0.3rem 0 1.5rem;
+            line-height: 1.08;
+            letter-spacing: -0.025em;
+            margin: 0;
+            text-wrap: balance;
         }}
 
         .tag-cloud {{
@@ -1616,12 +1722,13 @@ public static partial class LayoutProvider
             grid-template-columns: 1.15fr 1fr;
             gap: clamp(1.75rem, 4vw, 3.5rem);
             align-items: start;
-            padding: 0 0 3rem;
+            padding: 2rem 0 3rem;
             border-bottom: 1px solid var(--border);
         }}
         .lead-cover {{
             display: block;
             order: 2;
+            margin-top: 0.4rem;
             aspect-ratio: 4 / 3;
             border-radius: 12px;
             overflow: hidden;
@@ -1640,7 +1747,7 @@ public static partial class LayoutProvider
         .lead-body {{
             order: 1;
         }}
-        .lead-title {{
+        .content .lead-title {{
             font-family: var(--font-display);
             font-size: clamp(1.7rem, 1rem + 2.2vw, 2.4rem);
             font-weight: 600;
@@ -1794,7 +1901,8 @@ public static partial class LayoutProvider
             border-radius: 10px;
             background: var(--sidebar-bg);
         }}
-        .content.reading p > img:only-child {{
+        .content.reading p > img:only-child,
+        .content.reading figure.image-figure img {{
             display: block;
             width: 100%;
             aspect-ratio: 16 / 9;
@@ -1804,12 +1912,31 @@ public static partial class LayoutProvider
             background: var(--sidebar-bg);
             margin: 1.75rem 0;
         }}
-        .content.reading img.natural, .content.reading p > img.natural:only-child {{
+        .content.reading figure.image-figure {{
+            margin: 1.75rem 0;
+        }}
+        .content.reading figure.image-figure img {{
+            margin: 0;
+        }}
+        .content.reading figure.image-figure figcaption {{
+            margin-top: 0.65rem;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            text-align: center;
+        }}
+        .content.reading img.natural,
+        .content.reading p > img.natural:only-child,
+        .content.reading figure.image-figure img.natural {{
             aspect-ratio: auto;
             object-fit: initial;
             width: auto;
+            max-width: 100%;
+            margin-inline: auto;
         }}
-        .content.reading img.plain, .content.reading p > img.plain:only-child {{
+        .content.reading img.plain,
+        .content.reading p > img.plain:only-child,
+        .content.reading figure.image-figure img.plain {{
             border: none;
             background: none;
             border-radius: 0;
@@ -1825,6 +1952,58 @@ public static partial class LayoutProvider
             width: min(45%, 20rem);
             margin: 0.4rem 0 1rem 1.4rem;
             aspect-ratio: auto;
+        }}
+        .content.reading img.wide,
+        .content.reading p > img.wide:only-child,
+        .content.reading figure.image-figure:has(img.wide) {{
+            width: min(var(--measure-wide), 94vw);
+            max-width: none;
+            margin-left: calc(50% - min(var(--measure-wide), 94vw) / 2);
+        }}
+        .content.reading img.full,
+        .content.reading p > img.full:only-child,
+        .content.reading figure.image-figure:has(img.full) {{
+            width: 100vw;
+            max-width: none;
+            margin-left: calc(50% - 50vw);
+            border-radius: 0;
+        }}
+        .content.reading figure.image-figure:has(img.full) img {{
+            border-radius: 0;
+        }}
+        .content.reading .gallery {{
+            display: flex;
+            gap: 0.75rem;
+            margin: 1.75rem 0;
+            align-items: stretch;
+        }}
+        .content.reading .gallery > p {{
+            display: contents;
+        }}
+        .content.reading .gallery > figure.image-figure {{
+            flex: 1 1 0;
+            min-width: 0;
+            margin: 0;
+        }}
+        .content.reading .gallery img {{
+            flex: 1 1 0;
+            min-width: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            border-radius: 10px;
+        }}
+        @media (max-width: 620px) {{
+            .content.reading .gallery {{
+                flex-direction: column;
+            }}
+            .content.reading .gallery > p {{
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+            }}
         }}
 
         .brand-mark {{
@@ -1903,12 +2082,11 @@ public static partial class LayoutProvider
                 display: block;
             }}
             .post-nav {{
-                flex-direction: column;
-                gap: 0.75rem;
+                grid-template-columns: 1fr;
             }}
             .post-nav-newer {{
                 text-align: left;
-                margin-left: 0;
+                align-items: flex-start;
             }}
             .site-footer-note {{
                 margin-right: 0;

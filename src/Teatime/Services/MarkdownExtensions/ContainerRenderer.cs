@@ -40,6 +40,16 @@ public sealed partial class ContainerRenderer : HtmlObjectRenderer<CustomContain
             return;
         }
 
+        if (name == "gallery")
+        {
+            renderer.EnsureLine();
+            renderer.Write("<div class=\"gallery\">");
+            renderer.WriteChildren(obj);
+            renderer.Write("</div>");
+            renderer.EnsureLine();
+            return;
+        }
+
         if (string.IsNullOrEmpty(name))
         {
             WriteCustomBlock(renderer, obj, "custom-block", "");

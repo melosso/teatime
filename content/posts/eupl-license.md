@@ -4,7 +4,7 @@ author: murdock
 date: 2026-07-15
 tags: [license, open-source]
 summary: A short look at the European Union Public Licence, and why it feels like a comfortable home for a small project.
-cover: /assets/eupl-cover.webp
+cover: /assets/eupl-cover.webp {.wide}
 ---
 
 Choosing a licence is one of those quiet decisions that quietly shapes how a project lives in the world. For Teatime, we felt right to settle on the European Union Public Licence, version 1.2, and this post will help you understand why.
@@ -15,7 +15,7 @@ The [EUPL](https://commission.europa.eu/about/departments-and-executive-agencies
 
 Copyleft licences sometimes carry a reputation for being awkward to combine with other projects. The EUPL takes a softer approach as it includes a compatibility clause. This means if you ever need to blend your work with something under the AGPL 3.0 or a handful of other well known licences, the licence steps aside gracefully and lets you relicense.
 
-![A quiet reminder that good licences are written to be read.](/assets/eupl-inline.webp){.natural}
+![A quiet reminder that good licences are written to be read.](/assets/eupl-inline.webp){.wide}
 
 ## Written in your language, quite literally
 

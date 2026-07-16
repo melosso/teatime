@@ -152,6 +152,52 @@ public static partial class LayoutProvider
                 }});
             }});
 
+            var shareTrigger = document.querySelector('[data-share]');
+            var shareOverlay = document.getElementById('share-overlay');
+            if (shareTrigger && shareOverlay) {{
+                var shareModalClose = document.getElementById('share-modal-close');
+                var shareCopy = document.getElementById('share-copy');
+                var shareCopyLabel = document.getElementById('share-copy-label');
+                var shareLastFocused = null;
+                var openShare = function() {{
+                    var url = location.href, eu = encodeURIComponent(url), et = encodeURIComponent(document.title);
+                    var x = document.getElementById('share-x');
+                    var li = document.getElementById('share-linkedin');
+                    var em = document.getElementById('share-email');
+                    if (x) x.href = 'https://twitter.com/intent/tweet?url=' + eu + '&text=' + et;
+                    if (li) li.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + eu;
+                    if (em) em.href = 'mailto:?subject=' + et + '&body=' + eu;
+                    shareLastFocused = document.activeElement;
+                    shareOverlay.hidden = false;
+                    requestAnimationFrame(function() {{ shareOverlay.classList.add('open'); }});
+                    document.documentElement.style.overflow = 'hidden';
+                    if (shareModalClose) shareModalClose.focus();
+                }};
+                var closeShare = function() {{
+                    shareOverlay.classList.remove('open');
+                    shareOverlay.hidden = true;
+                    document.documentElement.style.overflow = '';
+                    if (shareLastFocused && shareLastFocused.focus) shareLastFocused.focus();
+                }};
+                shareTrigger.addEventListener('click', openShare);
+                if (shareModalClose) shareModalClose.addEventListener('click', closeShare);
+                shareOverlay.addEventListener('mousedown', function(e) {{ if (e.target === shareOverlay) closeShare(); }});
+                document.addEventListener('keydown', function(e) {{ if (!shareOverlay.hidden && e.key === 'Escape') closeShare(); }});
+                if (shareCopy) {{
+                    shareCopy.addEventListener('click', function() {{
+                        navigator.clipboard.writeText(location.href).then(function() {{
+                            if (shareCopyLabel) {{
+                                shareCopyLabel.textContent = 'Copied';
+                                setTimeout(function() {{ shareCopyLabel.textContent = 'Copy link'; }}, 1800);
+                            }}
+                        }})['catch'](function() {{}});
+                    }});
+                }}
+                shareOverlay.addEventListener('click', function(e) {{
+                    if (e.target.closest('.share-action') && !e.target.closest('#share-copy')) closeShare();
+                }});
+            }}
+
             var topbarEl = document.querySelector('.topbar');
             if (topbarEl) {{
                 var syncTopbarHeight = function() {{

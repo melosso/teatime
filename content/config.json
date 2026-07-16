@@ -7,7 +7,7 @@
   "scrollIndicator": true,
   "footer": "© {year} {author}. Brewed with [Teatime](https://github.com/melosso/teatime){target=\"_blank\" rel=\"noopener\"}.",
   "menu": [
-    { "title": "Posts", "path": "/" },
+    { "title": "Home", "path": "/" },
     { "title": "Tags", "path": "/tags/" },
     { "title": "Archive", "path": "/archive/" },
     { "title": "About", "path": "/about/" },
@@ -15,9 +15,14 @@
       "title": "More",
       "items": [
         { "title": "Guide", "path": "/guide/" },
-        { "title": "GitHub", "path": "https://github.com/melosso/teatime" }
+        { "title": "GitHub", "path": "https://github.com/melosso/teatime", "external": true }
       ]
     }
+  ],
+  "footerMenu": [
+    { "title": "RSS", "path": "/feed.xml" },
+    { "title": "Privacy", "path": "/privacy/" },
+    { "title": "License", "path": "https://github.com/melosso/teatime/blob/main/LICENSE", "external": true }
   ],
   "socialLinks": [
     { "icon": "github", "url": "https://github.com/melosso/teatime", "title": "GitHub" },

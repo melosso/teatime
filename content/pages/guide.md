@@ -3,13 +3,11 @@ title: Guide
 description: A quick start guide to writing and publishing with Teatime.
 ---
 
-We'll walk you your first deployment. 
-
-# Getting Started
+We'll walk you through your first deployment.
 
 Teatime is built to be simple: you write in Markdown, and the server handles the rest. There is no database configuration or complex deployment process to manage.
 
-Please follow our [installation](#) or [Docker](/containers/) guide before starting.
+Please follow our [Installation](/deploy/install/) or [Docker](/deploy/containers/) guide before starting.
 
 Follow these steps to manage your content.
 
@@ -118,7 +116,7 @@ rsync -av --delete _site/ user@host:/var/www/blog/
 
 :::
 
-If you would rather run Teatime as a live service, a container is a comfortable fit. That path is written up separately so this page stays focused: see [running Teatime with Docker Compose](/containers/).
+If you would rather run Teatime as a live service, a container is a comfortable fit. That path is written up separately so this page stays focused: see [running Teatime with Docker](/deploy/containers/).
 
 ## 5. Format Your Writing
 
@@ -150,6 +148,29 @@ var app = builder.Build();
 app.MapGet("/", () => "Hello from Teatime"); // this line is highlighted
 app.Run();
 ```
+
+Images can carry a caption and choose their width. The alt text becomes a caption below the image, and a few attributes set the size:
+
+```md
+![A quiet caption for your image.](/assets/example.webp)
+```
+
+- `{.natural}` keeps the original size, and `{.plain}` drops the frame
+- `{.left}` and `{.right}` float the image beside your text
+- `{.wide}` reaches a little past the reading column, and
+- `{.full}` spans the whole viewport
+
+For a row of images side by side, wrap them in a gallery:
+
+```md
+::: gallery
+![](/assets/one.webp)
+![](/assets/two.webp)
+![](/assets/three.webp)
+:::
+```
+
+The post cover set in front matter accepts the same width attributes, so a full-bleed hero is one line: `cover: /assets/hero.webp {.full}`.
 
 Definition lists keep paired ideas tidy:
 

@@ -3,7 +3,7 @@ title: About
 description: A little about this blog and the person writing it.
 ---
 
-Welcome, and thanks for stopping by. This is Teatime, this can be your quiet corner of the web where you write things down and leave them somewhere anyone can find them.
+This is Teatime, this can be your quiet corner of the web where you write things down and leave them somewhere anyone can find them.
 
 What is it, you asked? It's a small blog engine. Every post here is just a Markdown file in a folder. There is no newsletter to sign up for and nothing to dismiss on your way in. If a piece happens to be useful to you, that is more than enough.
 

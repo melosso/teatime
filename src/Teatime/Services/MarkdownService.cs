@@ -90,6 +90,7 @@ public sealed partial class MarkdownService
         html = PrefixBodyContent(html, _basePath);
         html = AddExternalLinkAttributes(html);
         html = AddLazyLoading(html);
+        html = WrapImageFigures(html);
 
         return new MarkdownParseResult(
             html,
@@ -224,6 +225,22 @@ public sealed partial class MarkdownService
 
     [GeneratedRegex(@"<img\b[^>]*>", RegexOptions.IgnoreCase)]
     private static partial Regex ImgTagRegex();
+
+    private static string WrapImageFigures(string html) =>
+        ParagraphImageRegex().Replace(html, m =>
+        {
+            var img = m.Groups[1].Value;
+            var alt = ImgAltRegex().Match(img);
+            return alt.Success && alt.Groups[1].Value.Length > 0
+                ? $"<figure class=\"image-figure\">{img}<figcaption>{alt.Groups[1].Value}</figcaption></figure>"
+                : m.Value;
+        });
+
+    [GeneratedRegex(@"<p>\s*(<img\b[^>]*>)\s*</p>", RegexOptions.IgnoreCase)]
+    private static partial Regex ParagraphImageRegex();
+
+    [GeneratedRegex(@"\balt=""([^""]*)""", RegexOptions.IgnoreCase)]
+    private static partial Regex ImgAltRegex();
 
     // Renders inline markdown to plain text: strips links/bold/italic/code tags so
     // frontmatter descriptions are searchable and safe for <meta name="description">.

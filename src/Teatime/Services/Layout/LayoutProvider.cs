@@ -40,9 +40,11 @@ public static partial class LayoutProvider
         string? promoBarHtml = null,
         bool isArticle = false,
         string? siteNavHtml = null,
-        string? footerText = null)
+        string? footerText = null,
+        string? footerLinksHtml = null)
     {
         var scrollIndicatorHtml = showScrollIndicator ? @"<div id=""scroll-indicator""></div>" : "";
+        var shareOverlayHtml = isArticle ? BuildShareOverlay() : "";
         var faviconHtml = BuildFaviconLink(favicon, basePath);
         var homeHref = basePath.Length == 0 ? "/" : $"{basePath}/";
         var brandImageSrc = ResolveAssetUrl(brandImage, basePath);
@@ -57,6 +59,7 @@ public static partial class LayoutProvider
                     {tocHtml}
                 </ul>
             </details>";
+        content = InsertAfterHeader(content, tocDetailsHtml);
 
         const string darkVars = @"
                 color-scheme: dark;
@@ -125,7 +128,6 @@ public static partial class LayoutProvider
     {canonicalLink}
     {socialMeta}
     {rssDiscoveryHtml}
-    <link rel=""preload"" href=""{basePath}/fonts/Inter.woff2"" as=""font"" type=""font/woff2"" crossorigin>
     {faviconHtml}
     {headTagsHtml}
     {themeCss}
@@ -183,16 +185,16 @@ public static partial class LayoutProvider
             </ul>
         </div>
     </div>
+    {shareOverlayHtml}
     <main class=""main-container"" id=""main-content"" tabindex=""-1"">
-        {tocDetailsHtml}
         <article class=""{contentClass}"">
             {content}
         </article>
     </main>
     <footer class=""site-footer"">
         <span class=""site-footer-note"">{(!string.IsNullOrEmpty(footerText) ? footerText : $"© {DateTime.UtcNow.Year} {HtmlEncode(brandText ?? "Teatime")}")}</span>
-        <a href=""{basePath}/feed.xml"">RSS</a>
-        <a href=""{homeHref}archive/"">Archive</a>
+        {(string.IsNullOrEmpty(footerLinksHtml) ? $@"<a href=""{basePath}/feed.xml"">RSS</a>
+        <a href=""{homeHref}archive/"">Archive</a>" : footerLinksHtml)}
         {socialLinksHtml}
     </footer>
     {GetScripts(enableLiveReload, enableDarkMode, buildVersion, basePath, nonce, staticSearch)}
@@ -325,6 +327,41 @@ public static partial class LayoutProvider
         sb.AppendLine($"    <meta name=\"twitter:title\" content=\"{HtmlEncode(title)}\">");
         return sb.ToString();
     }
+
+    private static string InsertAfterHeader(string content, string toc)
+    {
+        if (toc.Length == 0) return content;
+        var idx = content.IndexOf("</header>", StringComparison.Ordinal);
+        return idx >= 0 ? content.Insert(idx + "</header>".Length, toc) : toc + content;
+    }
+
+    private static string BuildShareOverlay() => @"
+    <div class=""share-overlay"" id=""share-overlay"" hidden>
+        <div class=""share-modal"" role=""dialog"" aria-modal=""true"" aria-labelledby=""share-modal-label"">
+            <button type=""button"" class=""share-modal-close icon-btn"" id=""share-modal-close"" aria-label=""Close share"">
+                <svg viewBox=""0 0 24 24"" fill=""none"" stroke=""currentColor"" stroke-width=""2"" stroke-linecap=""round"" aria-hidden=""true""><path d=""M18 6L6 18M6 6l12 12""/></svg>
+            </button>
+            <h2 id=""share-modal-label"" class=""share-modal-title"">Share this post</h2>
+            <div class=""share-actions"">
+                <button type=""button"" class=""share-action"" id=""share-copy"">
+                    <span class=""share-action-icon""><svg viewBox=""0 0 24 24"" fill=""none"" stroke=""currentColor"" stroke-width=""2"" stroke-linecap=""round"" stroke-linejoin=""round"" aria-hidden=""true""><path d=""M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71""/><path d=""M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71""/></svg></span>
+                    <span class=""share-action-label"" id=""share-copy-label"">Copy link</span>
+                </button>
+                <a class=""share-action"" id=""share-x"" target=""_blank"" rel=""noopener noreferrer"">
+                    <span class=""share-action-icon""><svg viewBox=""0 0 24 24"" fill=""currentColor"" aria-hidden=""true""><path d=""M18.9 2H22l-7 8 8.2 12h-6.4l-5-7.3L6 22H3l7.5-8.6L2.5 2h6.6l4.5 6.7L18.9 2Zm-1.1 18h1.8L7.3 4H5.4l12.4 16Z""/></svg></span>
+                    <span class=""share-action-label"">X</span>
+                </a>
+                <a class=""share-action"" id=""share-linkedin"" target=""_blank"" rel=""noopener noreferrer"">
+                    <span class=""share-action-icon""><svg viewBox=""0 0 24 24"" fill=""currentColor"" aria-hidden=""true""><path d=""M6.94 5a1.94 1.94 0 1 1-3.88 0 1.94 1.94 0 0 1 3.88 0ZM3.3 8.5h3.4V21H3.3V8.5Zm5.5 0h3.26v1.7h.05c.45-.86 1.56-1.77 3.2-1.77 3.42 0 4.05 2.25 4.05 5.18V21h-3.4v-5.5c0-1.3-.02-3-1.83-3-1.83 0-2.11 1.43-2.11 2.9V21H8.8V8.5Z""/></svg></span>
+                    <span class=""share-action-label"">LinkedIn</span>
+                </a>
+                <a class=""share-action"" id=""share-email"">
+                    <span class=""share-action-icon""><svg viewBox=""0 0 24 24"" fill=""none"" stroke=""currentColor"" stroke-width=""2"" stroke-linecap=""round"" stroke-linejoin=""round"" aria-hidden=""true""><path d=""m22 7-8.99 5.73a2 2 0 0 1-2.02 0L2 7""/><rect x=""2"" y=""4"" width=""20"" height=""16"" rx=""2""/></svg></span>
+                    <span class=""share-action-label"">Email</span>
+                </a>
+            </div>
+        </div>
+    </div>";
 
     private static string GetNonceAttr(string? nonce) =>
         nonce is { Length: > 0 } ? $" nonce=\"{nonce}\"" : string.Empty;
