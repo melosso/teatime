@@ -1180,7 +1180,7 @@ public static partial class LayoutProvider
             height: 13px;
         }}
         .site-nav .top-nav-dropdown-menu {{
-            display: block; opacity: 0; visibility: hidden;
+            display: flex; flex-direction: column; gap: 0.2rem; opacity: 0; visibility: hidden;
             top: 100%; left: 50%; transform: translateX(-50%) translateY(6px);
             margin-top: 0.5rem; min-width: 170px; padding: 0.3rem;
             background: var(--bg-color); border: 1px solid var(--border);
@@ -1192,14 +1192,20 @@ public static partial class LayoutProvider
         }}
         .site-nav .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
         .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
-            opacity: 1; visibility: visible;
+            display: flex; opacity: 1; visibility: visible;
             transform: translateX(-50%) translateY(0);
         }}
         .site-nav .top-nav-dropdown-link {{
             justify-content: flex-start; padding: 0.5rem 0.7rem; border-radius: 7px;
             font-size: 0.875rem; color: var(--text-color); white-space: nowrap;
         }}
-        .site-nav .top-nav-dropdown-link:hover, .site-nav .top-nav-dropdown-link.here {{
+        .site-nav .top-nav-dropdown-link:hover {{
+            background: var(--code-bg); color: var(--text-color);
+        }}
+        .site-nav .top-nav-dropdown-link.here {{
+            background: var(--accent-light); color: var(--accent); font-weight: 600;
+        }}
+        .site-nav .top-nav-dropdown-link.here:hover {{
             background: var(--accent-light); color: var(--accent);
         }}
 
@@ -1980,12 +1986,12 @@ public static partial class LayoutProvider
             }}
             .site-nav .top-nav-dropdown-menu {{
                 display: none; opacity: 1; visibility: visible;
-                top: 100%; left: auto; right: 0; transform: none;
+                top: 100%; left: 0; right: auto; transform: none;
                 margin-top: 0.4rem; min-width: 160px;
             }}
             .site-nav .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
             .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
-                display: block;
+                display: flex;
             }}
             .post-nav {{
                 grid-template-columns: 1fr;
