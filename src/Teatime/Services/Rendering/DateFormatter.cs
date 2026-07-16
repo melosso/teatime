@@ -9,9 +9,11 @@ namespace Teatime.Services.Rendering;
 /// The active instance is swapped atomically when <c>config.json</c> reloads.</summary>
 public sealed partial class DateFormatter
 {
-    // Default matches the historical output so blogs without a configured locale are unchanged.
-    private const string DefaultMedium = "MMM d, yyyy";
-    private const string DefaultMonthDay = "MMM d";
+    // en-GB is the built-in default when no locale is configured (day-first, English months).
+    private static readonly CultureInfo DefaultCulture = CultureInfo.GetCultureInfo("en-GB");
+    // Guard fallbacks (used only if a culture's derived pattern is unusable); en-GB order.
+    private const string DefaultMedium = "d MMM yyyy";
+    private const string DefaultMonthDay = "d MMM";
 
     private static volatile DateFormatter _current = From(null);
 
@@ -33,13 +35,10 @@ public sealed partial class DateFormatter
         _monthDayPattern = monthDayPattern;
     }
 
-    /// <summary>Builds a formatter from locale config. Unset or unknown culture keeps the invariant default.</summary>
+    /// <summary>Builds a formatter from locale config. Unset or unknown culture falls back to en-GB.</summary>
     public static DateFormatter From(LocaleOptions? locale)
     {
         var culture = ResolveCulture(locale?.Culture);
-        if (culture.Equals(CultureInfo.InvariantCulture))
-            return new DateFormatter(culture, DefaultMedium, DefaultMonthDay);
-
         var medium = MediumPattern(culture);
         return new DateFormatter(culture, medium, MonthDayPattern(medium));
     }
@@ -56,9 +55,9 @@ public sealed partial class DateFormatter
     private static CultureInfo ResolveCulture(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            return CultureInfo.InvariantCulture;
+            return DefaultCulture;
         try { return CultureInfo.GetCultureInfo(name); }
-        catch (CultureNotFoundException) { return CultureInfo.InvariantCulture; }
+        catch (CultureNotFoundException) { return DefaultCulture; }
     }
 
     // Derive a "medium" pattern from the culture's long date: drop the weekday and abbreviate the
