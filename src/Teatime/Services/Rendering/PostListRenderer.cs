@@ -78,7 +78,7 @@ public static partial class PostListRenderer
     {
         if (post.Cover is not { Length: > 0 } cover) return string.Empty;
         var css = post.CoverWidth is { Length: > 0 } w ? $"post-cover {w}" : "post-cover";
-        return $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, cover))}\" alt=\"\" loading=\"lazy\">";
+        return $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, cover))}\" alt=\"\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\">";
     }
 
     public static string BuildCover(string? rawCover, string basePath)
@@ -93,7 +93,7 @@ public static partial class PostListRenderer
             width = m.Groups[2].Value.ToLowerInvariant();
         }
         var css = width is not null ? $"post-cover {width}" : "post-cover";
-        return $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, url))}\" alt=\"\" loading=\"lazy\">";
+        return $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, url))}\" alt=\"\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\">";
     }
 
     private static readonly System.Collections.Generic.HashSet<string> AllowedCoverClasses =
@@ -106,7 +106,7 @@ public static partial class PostListRenderer
     {
         var href = UrlPaths.Href(basePath, post.Url);
         var cover = post.Cover is { Length: > 0 } c
-            ? $"<a class=\"lead-cover\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\"><img src=\"{LayoutProvider.HtmlEncode(Asset(basePath, c))}\" alt=\"\" loading=\"lazy\"></a>"
+            ? $"<a class=\"lead-cover\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\"><img src=\"{LayoutProvider.HtmlEncode(Asset(basePath, c))}\" alt=\"\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\"></a>"
             : $"<a class=\"lead-cover lead-cover-empty\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\"></a>";
 
         var sb = new StringBuilder();

@@ -197,7 +197,9 @@ try
             FileProvider = new PhysicalFileProvider(assetsDir),
             RequestPath = "/assets",
             ContentTypeProvider = assetContentTypes,
-            ServeUnknownFileTypes = false
+            ServeUnknownFileTypes = false,
+            OnPrepareResponse = ctx =>
+                ctx.Context.Response.Headers.CacheControl = "public,max-age=604800"
         });
     }
 
