@@ -58,7 +58,6 @@ Standalone pages under `content/pages/` understand a few extras of their own.
 | `page-next`                  | Adds a "Next" link at the foot of the page, resolved to the target page's title |
 | `page-prev`, `page-previous` | The matching "Previous" link. Either spelling works                 |
 | `pagination`                 | Set to `false` to hide those previous and next links entirely       |
-| `toc`                        | Set to `false` to leave off the "On this page" table of contents    |
 | `enabled`                    | Set to `false` on a custom `tags` or `archive` page to turn that surface off |
 
 ## Search and metadata

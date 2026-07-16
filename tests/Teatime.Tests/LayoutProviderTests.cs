@@ -10,7 +10,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Test Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null);
 
@@ -22,23 +22,11 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>Hello World</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null);
 
         Assert.Contains("Hello World", html);
-    }
-
-    [Fact]
-    public void GetLayout_ContainsToc()
-    {
-        var html = LayoutProvider.GetLayout(
-            "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>Section One</li>",
-            "<a href='/'>Home</a>", "<nav>pagination</nav>",
-            null);
-
-        Assert.Contains("Section One", html);
     }
 
     [Fact]
@@ -47,7 +35,7 @@ public sealed class LayoutProviderTests
         var themeCss = "<style>:root { --primary-color: red; }</style>";
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             themeCss);
 
@@ -59,7 +47,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Test <script>alert('xss')</script>", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null);
 
@@ -72,7 +60,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null,
             description: "desc <script>alert('xss')</script>");
@@ -86,7 +74,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null);
 
@@ -98,7 +86,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null,
             lang: "fr");
@@ -112,7 +100,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null,
             headTagsHtml: "<meta name=\"robots\" content=\"noindex\">");
@@ -226,7 +214,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null,
             brandImage: "/brand.svg",
@@ -240,7 +228,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null,
             brandImage: "/brand.svg");
@@ -253,7 +241,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null,
             brandImage: "https://cdn.example.com/logo.svg",
@@ -267,7 +255,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null,
             favicon: "/icon.ico",
@@ -281,7 +269,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null,
             favicon: "https://example.com/favicon.ico",
@@ -295,7 +283,7 @@ public sealed class LayoutProviderTests
     {
         var html = LayoutProvider.GetLayout(
             "Title", "<p>content</p>",
-            "<nav>nav</nav>", "<li>toc</li>",
+            "<nav>nav</nav>",
             "<a href='/'>Home</a>", "<nav>pagination</nav>",
             null,
             favicon: "🔥");

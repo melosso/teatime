@@ -103,7 +103,6 @@ public sealed partial class MarkdownService
             frontMatter?.Pagination ?? true,
             frontMatter?.Redirect,
             frontMatter?.Updated ?? frontMatter?.Date,
-            frontMatter?.Toc ?? true,
             frontMatter?.Date,
             frontMatter?.Tags is { Count: > 0 } tags ? tags.AsReadOnly() : null,
             frontMatter?.Draft ?? false,

@@ -12,7 +12,6 @@ public sealed record MarkdownParseResult(
     bool ShowPagination = true,
     string? Redirect = null,
     DateTime? FrontmatterDate = null,
-    bool ShowToc = true,
     DateTime? PublishDate = null,
     IReadOnlyList<string>? Tags = null,
     bool Draft = false,

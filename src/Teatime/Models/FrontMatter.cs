@@ -28,8 +28,6 @@ public sealed record FrontMatter
     /// <summary>Set to <c>false</c> to hide prev/next pagination links on this page.</summary>
     public bool? Pagination { get; init; }
 
-    /// <summary>Set to <c>false</c> to hide the table of contents on this page.</summary>
-    public bool? Toc { get; init; }
 
     /// <summary>When set, the page issues a 307 redirect to this URL instead of rendering.
     /// Root-relative paths (starting with <c>/</c>) are prefixed with the configured base path.

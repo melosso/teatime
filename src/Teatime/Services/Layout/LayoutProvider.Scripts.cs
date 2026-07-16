@@ -47,10 +47,6 @@ public static partial class LayoutProvider
         }}, true);
         {themeSyncScript}
         document.addEventListener('DOMContentLoaded', function() {{
-            var headings = document.querySelectorAll('.content h1, .content h2, .content h3, .content h4');
-            var tocItems = document.querySelectorAll('.toc-item');
-            var tocIndicator = document.querySelector('.toc-indicator');
-            var tocListWrapper = document.querySelector('.toc-list-wrapper');
             var scrollIndicator = document.getElementById('scroll-indicator');
             var themeToggle = document.getElementById('theme-toggle');
 
@@ -217,69 +213,6 @@ public static partial class LayoutProvider
             }}
 
             window.addEventListener('scroll', updateScrollProgress);
-
-            function updateTocIndicator() {{
-                if (!tocIndicator || !tocListWrapper) return;
-                var activeLink = tocListWrapper.querySelector('.toc-item.active > a');
-                if (!activeLink) {{
-                    tocIndicator.classList.remove('visible');
-                    return;
-                }}
-                var wrapperTop = tocListWrapper.getBoundingClientRect().top;
-                var linkRect = activeLink.getBoundingClientRect();
-                tocIndicator.style.transform = 'translateY(' + (linkRect.top - wrapperTop) + 'px)';
-                tocIndicator.style.height = linkRect.height + 'px';
-                tocIndicator.classList.add('visible');
-            }}
-
-            // toc-item markup renders twice (tablet dropdown + desktop sidebar), so activation is keyed by heading id.
-            function setActiveTocId(id) {{
-                tocItems.forEach(function(item) {{
-                    var link = item.querySelector('a');
-                    var matches = link && link.getAttribute('href') === '#' + id;
-                    item.classList.toggle('active', !!matches);
-                }});
-                updateTocIndicator();
-            }}
-
-            var observer = new IntersectionObserver(function(entries) {{
-                entries.forEach(function(entry) {{
-                    if (entry.isIntersecting) {{
-                        setActiveTocId(entry.target.getAttribute('id'));
-                    }}
-                }});
-            }}, {{ root: null, rootMargin: '-5% 0px -75% 0px', threshold: 0 }});
-
-            headings.forEach(function(h) {{ observer.observe(h); }});
-
-            // Native #hash scroll happens before JS; a heading flush at the top sits outside the observer rootMargin and never fires.
-            if (location.hash) {{
-                setActiveTocId(location.hash.slice(1));
-            }}
-            window.addEventListener('hashchange', function() {{
-                if (location.hash) setActiveTocId(location.hash.slice(1));
-            }});
-
-            // At page bottom the last heading can sit above the observer rootMargin, leaving the wrong item active.
-            function checkScrolledToBottom() {{
-                var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
-                if (atBottom && headings.length > 0) {{
-                    setActiveTocId(headings[headings.length - 1].getAttribute('id'));
-                }}
-            }}
-
-            window.addEventListener('scroll', checkScrolledToBottom, {{ passive: true }});
-            window.addEventListener('resize', updateTocIndicator);
-            checkScrolledToBottom();
-
-            tocItems.forEach(function(item) {{
-                var link = item.querySelector('a');
-                if (link) {{
-                    link.addEventListener('click', function() {{
-                        setActiveTocId(link.getAttribute('href').slice(1));
-                    }});
-                }}
-            }});
 
             var searchTrigger = document.getElementById('search-trigger');
             var searchTriggerKbd = document.getElementById('search-trigger-kbd');

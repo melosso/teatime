@@ -217,21 +217,6 @@ $$
         Assert.Equal("", result);
     }
 
-    [Fact]
-    public void Parse_TocFalse_ShowTocFalse()
-    {
-        var md = "---\ntoc: false\n---\n\n# Content\n";
-        var result = _service.Parse(md);
-        Assert.False(result.ShowToc);
-    }
-
-    [Fact]
-    public void Parse_NoTocField_ShowTocTrue()
-    {
-        var md = "---\ntitle: Test\n---\n\n# Content\n";
-        var result = _service.Parse(md);
-        Assert.True(result.ShowToc);
-    }
 
     [Fact]
     public void Parse_PaginationFalse_ShowPaginationFalse()

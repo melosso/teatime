@@ -122,9 +122,6 @@ internal static class BlogEndpoints
         var authorName = author?.Name ?? post.AuthorId ?? config?.Author;
         var authorImage = author?.Image ?? config?.AuthorImage;
         var (older, newer) = await posts.GetPrevNextAsync(post.Slug, ctx.RequestAborted);
-        var tocHtml = post.ShowToc && post.Headings.Count > 0
-            ? TocHtmlRenderer.BuildTocHtml(post.Headings)
-            : null;
 
         var body = PostListRenderer.BuildPostHeader(post, basePath, authorName, authorImage, author?.Url)
                  + PostListRenderer.BuildCover(post, basePath)
@@ -136,8 +133,7 @@ internal static class BlogEndpoints
             ContentHtml: body,
             Description: post.Description ?? post.Excerpt,
             CanonicalPath: post.Url,
-            IsArticle: true,
-            TocHtml: tocHtml));
+            IsArticle: true));
     }
 
     private static async Task RenderTagIndex(HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content)

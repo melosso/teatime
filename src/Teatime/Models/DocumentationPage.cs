@@ -13,7 +13,6 @@ public sealed record DocumentationPage(
     IReadOnlyList<string>? Keywords = null,
     bool ShowPagination = true,
     string? Redirect = null,
-    bool ShowToc = true,
     DateTime? Date = null,
     IReadOnlyList<string>? Tags = null,
     bool Draft = false,
@@ -38,8 +37,7 @@ public sealed record DocumentationPage(
         string? originalRelativePath = null,
         IReadOnlyList<string>? keywords = null,
         bool showPagination = true,
-        string? redirect = null,
-        bool showToc = true
+        string? redirect = null
     ) : this(
         path,
         title,
@@ -52,7 +50,6 @@ public sealed record DocumentationPage(
         originalRelativePath,
         keywords,
         showPagination,
-        redirect,
-        showToc
+        redirect
     ) { }
 }

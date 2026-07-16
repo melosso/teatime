@@ -553,8 +553,6 @@ public static partial class LayoutProvider
         .content h2, .content h3, .content h4, .content h5, .content h6 {{
             position: relative;
         }}
-        /* Jumping to a heading or footnote via URL hash (TOC links, footnote refs/back-refs)
-           should visibly show where you landed, not just scroll there silently. */
         .content h1:target, .content h2:target, .content h3:target,
         .content h4:target, .content h5:target, .content h6:target {{
             animation: teatime-target-flash 2s ease-out;
@@ -1045,60 +1043,6 @@ public static partial class LayoutProvider
             position: sticky; top: var(--topbar-height); align-self: start;
             height: calc(100vh - var(--topbar-height)); overflow-y: auto;
         }}
-        .toc-title {{
-            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
-            color: var(--text-muted); margin-bottom: 1rem; font-weight: 600;
-        }}
-        /* Containing block for .toc-indicator, which JS positions absolutely regardless of
-           .toc-list/.toc-sublist nesting depth. */
-        .toc-list-wrapper {{
-            position: relative;
-        }}
-        /* Faint always-visible track; .toc-indicator overlays it and slides to the active item. */
-        .toc-list-wrapper::before {{
-            content: """"; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
-            border-radius: 2px; background-color: var(--accent-light);
-        }}
-        .toc-indicator {{
-            position: absolute; left: 0; top: 0; width: 2px; border-radius: 2px;
-            background-color: var(--accent); opacity: 0; height: 0;
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, height 0.2s ease;
-            will-change: transform;
-        }}
-        .toc-indicator.visible {{
-            opacity: 1;
-        }}
-        .toc-list {{
-            list-style: none; font-size: 0.875rem; padding-left: 0.9rem;
-        }}
-        .toc-sublist {{
-            list-style: none; padding-left: 0.9rem;
-        }}
-        .toc-item {{
-            margin-bottom: 0.1rem;
-        }}
-        /* Levels differ by indentation and weight/size, not color -- the accent bar is the only color cue. */
-        .toc-list > .toc-item > a {{
-            font-weight: 500;
-        }}
-        .toc-list > .toc-item > .toc-sublist > .toc-item > a {{
-            font-weight: 400;
-        }}
-        .toc-list > .toc-item > .toc-sublist > .toc-item > .toc-sublist > .toc-item > a {{
-            font-weight: 400; font-size: 0.8rem;
-        }}
-        .toc-item a {{
-            display: block; color: var(--text-muted); line-height: 1.5;
-            text-decoration: none; padding: 0.3rem 0.8rem;
-            transition: color 0.15s ease;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }}
-        .toc-item a:hover {{
-            color: var(--text-color);
-        }}
-        .toc-item.active > a {{
-            color: var(--accent);
-        }}
         .social-links {{
             display: flex; align-items: center; gap: 0.25rem;
         }}
@@ -1125,17 +1069,11 @@ public static partial class LayoutProvider
         .sidebar-overlay {{
             display: none;
         }}
-        .toc-inline {{
-            display: none;
-        }}
         /* Bump touch targets to 44px on coarse-pointer devices, not just by viewport width. */
         @media (hover: none) and (pointer: coarse) {{
             .icon-btn {{
                 width: 40px;
                 height: 40px;
-            }}
-            .toc-item a {{
-                min-height: 44px; display: flex; align-items: center;
             }}
             .theme-toggle::after {{
                 content: ""; position: absolute; left: 0; right: 0;
@@ -1154,35 +1092,6 @@ public static partial class LayoutProvider
             }}
             .main-container {{
                 padding: 2rem 1.5rem;
-            }}
-        }}
-        @media (min-width: 769px) and (max-width: 1024px) {{
-            .toc-inline {{
-                display: block; margin-bottom: 2rem;
-                border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 1rem;
-            }}
-            .toc-inline summary {{
-                cursor: pointer; font-size: 0.8rem; font-weight: 600;
-                text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);
-                padding: 0.5rem 0; list-style: none;
-                display: flex; align-items: center; justify-content: space-between;
-            }}
-            .toc-inline summary::-webkit-details-marker {{
-                display: none;
-            }}
-            .toc-inline summary::after {{
-                content: ""; display: inline-block; width: 6px; height: 6px; flex-shrink: 0;
-                border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted);
-                transform: rotate(-45deg); transition: transform 0.2s ease;
-            }}
-            .toc-inline[open] summary::after {{
-                transform: rotate(45deg);
-            }}
-            .toc-inline .toc-list {{
-                padding-bottom: 0.5rem;
-            }}
-            .toc-inline .toc-item a {{
-                padding-left: 0.5rem; border-left: none;
             }}
         }}
         @media (max-width: 768px) {{

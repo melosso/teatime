@@ -231,7 +231,6 @@ public sealed partial class ContentService : IHostedService, IDisposable
                 Keywords: parsed.Keywords,
                 ShowPagination: parsed.ShowPagination,
                 Redirect: parsed.Redirect,
-                ShowToc: parsed.ShowToc,
                 Date: parsed.PublishDate,
                 Tags: parsed.Tags,
                 Draft: parsed.Draft,

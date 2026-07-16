@@ -8,7 +8,6 @@ public static partial class LayoutProvider
         string title,
         string content,
         string navigationHtml,
-        string? tocHtml,
         string breadcrumbHtml,
         string paginationHtml,
         string? themeCss = null,
@@ -321,12 +320,6 @@ public static partial class LayoutProvider
         return sb.ToString();
     }
 
-    private static string InsertAfterHeader(string content, string toc)
-    {
-        if (toc.Length == 0) return content;
-        var idx = content.IndexOf("</header>", StringComparison.Ordinal);
-        return idx >= 0 ? content.Insert(idx + "</header>".Length, toc) : toc + content;
-    }
 
     private static string BuildShareOverlay() => @"
     <div class=""share-overlay"" id=""share-overlay"" hidden>

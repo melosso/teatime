@@ -12,8 +12,7 @@ public sealed record BlogPageView(
     string ContentHtml,
     string? Description = null,
     string CanonicalPath = "",
-    bool IsArticle = false,
-    string? TocHtml = null);
+    bool IsArticle = false);
 
 public sealed class BlogPageResponder
 {
@@ -95,7 +94,6 @@ public sealed class BlogPageResponder
             title: PageTitleRenderer.ComputeTitle(view.Title, config),
             content: view.ContentHtml,
             navigationHtml: string.Empty,
-            tocHtml: view.TocHtml,
             breadcrumbHtml: string.Empty,
             paginationHtml: string.Empty,
             themeCss: themeCss + customCssLink + customJsScript,

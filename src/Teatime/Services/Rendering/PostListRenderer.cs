@@ -5,7 +5,7 @@ using Teatime.Services.Layout;
 
 namespace Teatime.Services.Rendering;
 
-public static class PostListRenderer
+public static partial class PostListRenderer
 {
     private const string ShareIcon =
         "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><path d=\"M8.6 13.5l6.8 4M15.4 6.5l-6.8 4\"/></svg>";
@@ -80,6 +80,27 @@ public static class PostListRenderer
         var css = post.CoverWidth is { Length: > 0 } w ? $"post-cover {w}" : "post-cover";
         return $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, cover))}\" alt=\"\" loading=\"lazy\">";
     }
+
+    public static string BuildCover(string? rawCover, string basePath)
+    {
+        if (string.IsNullOrWhiteSpace(rawCover)) return string.Empty;
+        var url = rawCover.Trim();
+        string? width = null;
+        var m = CoverAttrRegex().Match(rawCover);
+        if (m.Success && AllowedCoverClasses.Contains(m.Groups[2].Value))
+        {
+            url = m.Groups[1].Value.Trim();
+            width = m.Groups[2].Value.ToLowerInvariant();
+        }
+        var css = width is not null ? $"post-cover {width}" : "post-cover";
+        return $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, url))}\" alt=\"\" loading=\"lazy\">";
+    }
+
+    private static readonly System.Collections.Generic.HashSet<string> AllowedCoverClasses =
+        new(System.StringComparer.OrdinalIgnoreCase) { "natural", "plain", "wide", "full" };
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"^(.*?)\s*\{\.([a-z-]+)\}\s*$")]
+    private static partial System.Text.RegularExpressions.Regex CoverAttrRegex();
 
     public static string BuildFeaturedLead(Post post, string basePath)
     {

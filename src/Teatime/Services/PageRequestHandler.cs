@@ -49,20 +49,16 @@ public sealed class PageRequestHandler
             return;
         }
 
-        var tocHtml = page.ShowToc && page.Headings.Count > 0
-            ? TocHtmlRenderer.BuildTocHtml(page.Headings)
-            : null;
-
         var header = $"<header class=\"page-header\"><h1 class=\"page-title\">{Layout.LayoutProvider.HtmlEncode(page.Title)}</h1></header>";
+        var cover = PostListRenderer.BuildCover(page.Cover, _responder.BasePath);
         var pageNav = await BuildPageNav(page, context.RequestAborted);
 
         await _responder.WriteAsync(context, new BlogPageView(
             Title: page.Title,
-            ContentHtml: header + page.HtmlContent + pageNav,
+            ContentHtml: header + cover + page.HtmlContent + pageNav,
             Description: page.Description,
             CanonicalPath: normalized,
-            IsArticle: true,
-            TocHtml: tocHtml));
+            IsArticle: true));
     }
 
     private async Task<string> BuildPageNav(Models.DocumentationPage page, CancellationToken ct)
