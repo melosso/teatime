@@ -1,7 +1,8 @@
 ---
 title: Running Teatime with Docker
 description: A take on deploying Teatime as a container.
-page-next: /guide/
+page-prev: /deploy/
+page-next: /examples/
 ---
 
 Teatime is built to be published as a containerized image, so it'll run anywhere Docker does. To get started, create a `docker-compose.yml`:

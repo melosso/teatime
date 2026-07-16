@@ -1,0 +1,12 @@
+---
+title: Deployment
+page-prev: /guide/
+page-next: /deploy/install/
+---
+
+We've set-up the following pages for you:
+
+1. [Installation](/deploy/install) covering the installation process on all supported environments.
+2. [Docker](/deploy/containers) going through the set-up process with Docker.
+
+Have fun reading.

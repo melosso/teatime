@@ -1,7 +1,8 @@
 ---
 title: Installation
 description: Run Teatime with Docker, or on Windows with IIS.
-page-next: /guide/
+page-prev: /deploy/
+page-next: /examples/
 ---
 
 The quickest way to run Teatime is the published container image, which has everything bundled and ready. If you would rather host on Windows, a ready to run build ships with every release.

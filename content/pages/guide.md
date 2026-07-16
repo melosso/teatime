@@ -1,6 +1,7 @@
 ---
 title: Guide
 description: A quick start guide to writing and publishing with Teatime.
+page-next: /deploy/
 ---
 
 We'll walk you through your first deployment.
