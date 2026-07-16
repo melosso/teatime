@@ -31,7 +31,7 @@ Two fields carry most of the weight. Everything else is a refinement.
 | Field         | What it does                                                        |
 | ------------- | ------------------------------------------------------------------ |
 | `title`       | The page heading and the browser tab text                          |
-| `description` | Feeds the meta description and social tags, and is not shown on the page |
+| `description` | Sets the meta description and social preview text. It is not shown on the page, and when a post leaves it out, the summary steps in |
 
 ## Posts
 
@@ -42,7 +42,7 @@ These shape how a post appears in your listings, feed, and archive.
 | `date`    | The primary sort key, so newer posts rise to the top of the home page and feed |
 | `updated` | A later revision date, shown as a "Last updated" note when it is newer than `date` |
 | `tags`    | A list like `[meta, writing]` that drives the tag pages and the tag index |
-| `summary` | The excerpt on cards, feeds, and social previews, falling back to the first paragraph |
+| `summary` | The excerpt on cards. It also stands in for the description on feeds and social previews, and falls back to the first paragraph when unset |
 | `cover`   | A feature image. It accepts the same width attributes as inline images, so `cover: /assets/hero.webp {.full}` gives you a full width hero |
 | `author`  | An id pointing at a file in `content/authors/`. When no match is found, the value is shown as written, and otherwise it falls back to the site author |
 | `slug`    | A friendlier URL, replacing the file name in the address              |

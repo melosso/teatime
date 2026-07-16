@@ -40,6 +40,8 @@ Only `title` and `date` are needed. Everything else is optional, and sensible de
 | `slug`    | A URL override, otherwise the filename is used          |
 | `summary` | An excerpt override for cards, feeds, and social previews |
 
+Those are the fields you reach for every day. The full set, including the ones that tune metadata and standalone pages, lives in the [front matter reference](/examples/frontmatter/).
+
 Before you publish, a quick checklist can help:
 
 - [x] A `title` and a `date` are set
