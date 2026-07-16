@@ -1,9 +1,9 @@
 ---
-title: Example Gallery
-toc: true
+title: Gallery
+summary: A short example page with images.
 ---
 
-Here is some text.
+Here is some text. But perhaps you'd like the images a bit more:
 
 ::: gallery
 ![](/assets/two.webp)

@@ -160,7 +160,7 @@ Images can carry a caption and choose their width. The alt text becomes a captio
 - `{.wide}` reaches a little past the reading column, and
 - `{.full}` spans the whole viewport
 
-For a row of images side by side, wrap them in a gallery (you can find an example [here](/examples/gallery/)).
+For a row of images side by side, wrap them in a [gallery](/examples/gallery/) (you can find an example [here](/examples/gallery/)).
 
 ```md
 ::: gallery
