@@ -34,7 +34,7 @@ public static class AuthorRenderer
         sb.Append(Avatar(author, basePath, "author-header-avatar"));
         sb.Append("<h1 class=\"author-name\">").Append(LayoutProvider.HtmlEncode(author.Name)).Append("</h1>");
         if (author.BioHtml is { Length: > 0 })
-            sb.Append("<div class=\"author-bio\">").Append(author.BioHtml).Append("</div>");
+            sb.Append("<div class=\"author-bio prose\">").Append(author.BioHtml).Append("</div>");
         sb.Append("</header>");
         return sb.ToString();
     }

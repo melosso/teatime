@@ -548,23 +548,23 @@ public static partial class LayoutProvider
             color: var(--text-color);
             font-weight: 500;
         }}
-        .content h1 {{
+        .prose h1 {{
             font-size: 2.2rem; font-weight: 600; letter-spacing: -0.03em;
             margin-bottom: 1rem; scroll-margin-top: calc(var(--topbar-height) + 1rem);
         }}
-        .content h2, .content h3, .content h4, .content h5, .content h6 {{
+        .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {{
             position: relative;
         }}
-        .content h1:target, .content h2:target, .content h3:target,
-        .content h4:target, .content h5:target, .content h6:target {{
+        .prose h1:target, .prose h2:target, .prose h3:target,
+        .prose h4:target, .prose h5:target, .prose h6:target {{
             animation: teatime-target-flash 2s ease-out;
         }}
-        .content a.footnote-ref:target,
-        .content a.footnote-back-ref:target {{
+        .prose a.footnote-ref:target,
+        .prose a.footnote-back-ref:target {{
             background-color: var(--accent-light); outline: 2px solid var(--accent);
             border-radius: 4px; padding: 0 0.2em; scroll-margin-top: calc(var(--topbar-height) + 1rem);
         }}
-        .content .footnotes li:target {{
+        .prose .footnotes li:target {{
             background-color: var(--accent-light); outline: 2px solid var(--accent);
             border-radius: 6px; padding: 0.25rem 0.6rem; margin-left: -0.6rem;
             scroll-margin-top: calc(var(--topbar-height) + 1rem);
@@ -578,8 +578,8 @@ public static partial class LayoutProvider
             }}
         }}
         @media (prefers-reduced-motion: reduce) {{
-            .content h1:target, .content h2:target, .content h3:target,
-            .content h4:target, .content h5:target, .content h6:target {{
+            .prose h1:target, .prose h2:target, .prose h3:target,
+            .prose h4:target, .prose h5:target, .prose h6:target {{
                 animation: none; background-color: var(--accent-light);
             }}
         }}
@@ -596,49 +596,49 @@ public static partial class LayoutProvider
         .header-anchor:hover {{
             color: var(--accent);
         }}
-        .content h2:hover .header-anchor, .content h3:hover .header-anchor,
-        .content h4:hover .header-anchor, .content h5:hover .header-anchor,
-        .content h6:hover .header-anchor, .header-anchor:focus {{
+        .prose h2:hover .header-anchor, .prose h3:hover .header-anchor,
+        .prose h4:hover .header-anchor, .prose h5:hover .header-anchor,
+        .prose h6:hover .header-anchor, .header-anchor:focus {{
             opacity: 1;
         }}
-        .content h2 {{
+        .prose h2 {{
             font-size: 1.4rem; font-weight: 500; letter-spacing: -0.02em;
             margin-top: 2.5rem; margin-bottom: 1rem; padding-bottom: 0.3rem;
             border-bottom: 1px solid var(--border); scroll-margin-top: calc(var(--topbar-height) + 1rem);
         }}
-        .content p {{
+        .prose p {{
             color: var(--text-color); margin-bottom: 1.25rem;
             text-decoration-color: var(--border); text-underline-offset: 2px;
         }}
-        .content a {{
+        .prose a {{
             color: var(--accent); text-decoration: underline;
             text-decoration-color: var(--border); text-underline-offset: 2px;
             transition: text-decoration-color 0.15s ease;
         }}
-        .content a:hover {{
+        .prose a:hover {{
             text-decoration-color: var(--accent);
         }}
-        .content ul, .content ol {{
+        .prose ul, .prose ol {{
             padding-left: 1.5rem; margin-bottom: 1.25rem;
         }}
-        .content li {{
+        .prose li {{
             margin-bottom: 0.4rem;
         }}
-        .content li > ul, .content li > ol {{
+        .prose li > ul, .prose li > ol {{
             margin-top: 0.4rem; margin-bottom: 0;
         }}
-        .content hr {{
+        .prose hr {{
             border: none; border-top: 1px solid var(--border); margin: 2.5rem 0;
         }}
-        .content h3 {{
+        .prose h3 {{
             font-size: 1.15rem; font-weight: 500; letter-spacing: -0.01em;
             margin-top: 2rem; margin-bottom: 0.75rem; scroll-margin-top: calc(var(--topbar-height) + 1rem);
         }}
-        .content h4 {{
+        .prose h4 {{
             font-size: 1rem; font-weight: 500;
             margin-top: 1.5rem; margin-bottom: 0.5rem; scroll-margin-top: calc(var(--topbar-height) + 1rem);
         }}
-        .content h5, .content h6 {{
+        .prose h5, .prose h6 {{
             font-size: 0.9rem; font-weight: 600;
             margin-top: 1.25rem; margin-bottom: 0.5rem; scroll-margin-top: calc(var(--topbar-height) + 1rem);
         }}
@@ -662,57 +662,57 @@ public static partial class LayoutProvider
         pre code {{
             padding: 0; background-color: transparent; border-radius: 0;
         }}
-        .content dl {{
+        .prose dl {{
             margin: 1.25rem 0;
             padding: 0;
         }}
-        .content dt {{
+        .prose dt {{
             font-weight: 600;
             color: var(--text-color);
             margin-top: 1rem;
         }}
-        .content dl > dt:first-child {{
+        .prose dl > dt:first-child {{
             margin-top: 0;
         }}
-        .content dd {{
+        .prose dd {{
             margin: 0.3rem 0 0;
             padding-left: 1rem;
             border-left: 2px solid var(--border);
             color: var(--text-muted);
         }}
-        .content h1 code, .content h2 code, .content h3 code,
-        .content h4 code, .content h5 code, .content h6 code {{
+        .prose h1 code, .prose h2 code, .prose h3 code,
+        .prose h4 code, .prose h5 code, .prose h6 code {{
             background: none; padding: 0; border-radius: 0; font-size: inherit;
         }}
         /* Fenced code block chrome */
-        .content div[class^=""language-""] {{
+        .prose div[class^=""language-""] {{
             position: relative;
             margin: 1.5rem 0;
             background-color: var(--code-bg);
             border: 1px solid var(--border);
             border-radius: 8px;
         }}
-        .content div[class^=""language-""] pre {{
+        .prose div[class^=""language-""] pre {{
             margin: 0; border: none; border-radius: 0; padding-top: 2rem;
         }}
         /* Lang badge top-left; Copy/Download buttons (injected by JS) occupy top-right. */
-        .content div[class^=""language-""] .lang {{
+        .prose div[class^=""language-""] .lang {{
             position: absolute; top: 0.6rem; left: 1rem; right: auto;
             font-size: 0.7rem; color: var(--text-muted);
             font-family: var(--font-sans); text-transform: lowercase;
             user-select: none; z-index: 1;
         }}
-        .content div[class^=""language-""] button.copy {{
+        .prose div[class^=""language-""] button.copy {{
             display: none;
         }}
-        .content div[class^=""language-""] .code-title {{
+        .prose div[class^=""language-""] .code-title {{
             padding: 0.6rem 1rem; font-size: 0.8rem; font-family: var(--font-mono);
             color: var(--text-muted); border-bottom: 1px solid var(--border);
         }}
-        .content div[class^=""language-""].has-title .lang {{
+        .prose div[class^=""language-""].has-title .lang {{
             display: none;
         }}
-        .content div[class^=""language-""].has-title pre {{
+        .prose div[class^=""language-""].has-title pre {{
             padding-top: 0.75rem;
         }}
         /* Resolves the --shiki-light/dark vars TextMateSyntaxHighlighter writes per token,
@@ -745,130 +745,130 @@ public static partial class LayoutProvider
         :root[data-theme=""dark""] .tab-icon {{
             filter: brightness(0) invert(1);
         }}
-        .content .line {{
+        .prose .line {{
             display: inline-block;
             width: 100%;
             min-height: 1.4em;
         }}
-        .content .line.highlighted {{
+        .prose .line.highlighted {{
             background-color: var(--accent-light);
             margin: 0 -1.25rem; padding: 0 1.25rem;
             box-shadow: 2px 0 0 var(--accent) inset;
         }}
-        .content .line.highlighted.error {{
+        .prose .line.highlighted.error {{
             box-shadow: 2px 0 0 var(--alert-caution) inset;
         }}
-        .content .line.highlighted.warning {{
+        .prose .line.highlighted.warning {{
             box-shadow: 2px 0 0 var(--alert-warning) inset;
         }}
-        .content .line.diff {{
+        .prose .line.diff {{
             margin: 0 -1.25rem;
             padding: 0 1.25rem;
         }}
-        .content .line.diff.add {{
+        .prose .line.diff.add {{
             background-color: color-mix(in srgb, var(--alert-tip) 15%, transparent);
         }}
-        .content .line.diff.remove {{
+        .prose .line.diff.remove {{
             background-color: color-mix(in srgb, var(--alert-caution) 15%, transparent);
             opacity: 0.7;
         }}
-        .content div[class^=""language-""].has-focused-lines .line {{
+        .prose div[class^=""language-""].has-focused-lines .line {{
             opacity: 0.5;
             filter: blur(0.06rem);
             transition: opacity 0.2s, filter 0.2s;
         }}
-        .content div[class^=""language-""].has-focused-lines .line.has-focus {{
+        .prose div[class^=""language-""].has-focused-lines .line.has-focus {{
             opacity: 1;
             filter: none;
         }}
-        .content .line-numbers-mode pre {{
+        .prose .line-numbers-mode pre {{
             padding-left: 2.5rem;
         }}
-        .content .line-numbers-wrapper {{
+        .prose .line-numbers-wrapper {{
             position: absolute; top: 3.5rem; left: 0; width: 2rem;
             text-align: right; color: var(--text-muted); font-family: var(--font-mono);
             font-size: 0.85rem; line-height: 1.6; user-select: none;
         }}
         /* Custom containers: ::: tip / warning / danger / info / details */
-        .content .custom-block {{
+        .prose .custom-block {{
             margin: 1rem 0; padding: 1rem !important; border-radius: 8px;
             line-height: 1.5; font-size: 0.95rem; color: var(--text-muted);
             background-color: var(--accent-light);
         }}
-        .content .custom-block p:not(.custom-block-title) {{
+        .prose .custom-block p:not(.custom-block-title) {{
             margin: 0;
         }}
-        .content .custom-block.tip {{
+        .prose .custom-block.tip {{
             color: var(--alert-tip);
             background-color: color-mix(in srgb, var(--alert-tip) 10%, var(--bg-color));
         }}
-        .content .custom-block.info {{
+        .prose .custom-block.info {{
             color: var(--alert-note);
             background-color: color-mix(in srgb, var(--alert-note) 10%, var(--bg-color));
         }}
-        .content .custom-block.warning {{
+        .prose .custom-block.warning {{
             color: var(--alert-warning);
             background-color: color-mix(in srgb, var(--alert-warning) 10%, var(--bg-color));
         }}
-        .content .custom-block.danger {{
+        .prose .custom-block.danger {{
             color: var(--alert-caution);
             background-color: color-mix(in srgb, var(--alert-caution) 10%, var(--bg-color));
         }}
-        .content .custom-block-title {{
+        .prose .custom-block-title {{
             font-weight: 700;
             margin: 0 0 0.5rem;
         }}
-        .content .custom-block a {{
+        .prose .custom-block a {{
             color: inherit; font-weight: 600; text-decoration: underline;
             text-decoration-color: currentColor; text-underline-offset: 2px;
         }}
-        .content .custom-block a:hover {{
+        .prose .custom-block a:hover {{
             opacity: 0.75;
         }}
-        .content details.custom-block > summary {{
+        .prose details.custom-block > summary {{
             font-weight: 700;
             cursor: pointer;
             margin: 0;
         }}
-        .content details.custom-block[open] > summary {{
+        .prose details.custom-block[open] > summary {{
             padding-bottom: 0.6rem;
         }}
-        .content details.custom-block:not([open]) {{
+        .prose details.custom-block:not([open]) {{
             padding-bottom: 0;
         }}
-        .content details.custom-block[open] > :last-child {{
+        .prose details.custom-block[open] > :last-child {{
             margin-bottom: 0;
         }}
         /* code-group tabs */
-        .content .teatime-code-group {{
+        .prose .teatime-code-group {{
             margin: 1.5rem 0;
         }}
-        .content .teatime-code-group .tabs {{
+        .prose .teatime-code-group .tabs {{
             display: flex; gap: 0.25rem; border-bottom: 1px solid var(--border);
         }}
-        .content .teatime-code-group .tabs input {{
+        .prose .teatime-code-group .tabs input {{
             display: none;
         }}
-        .content .teatime-code-group .tabs label {{
+        .prose .teatime-code-group .tabs label {{
             display: inline-flex; align-items: center; gap: 0.35rem;
             padding: 0.5rem 0.9rem; font-size: 0.85rem; color: var(--text-muted);
             cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
         }}
-        .content .teatime-code-group .tabs .tab-icon {{
+        .prose .teatime-code-group .tabs .tab-icon {{
             width: 14px;
             height: 14px;
             flex-shrink: 0;
         }}
-        .content .teatime-code-group .blocks > div[class^=""language-""] {{
+        .prose .teatime-code-group .blocks > div[class^=""language-""] {{
             display: none;
             margin-top: 0;
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }}
-        .content .teatime-code-group .blocks > div[class^=""language-""].active {{
+        .prose .teatime-code-group .blocks > div[class^=""language-""].active {{
             display: block;
         }}
-        .content .teatime-code-group .tabs label.active-tab {{
+        .prose .teatime-code-group .tabs label.active-tab {{
             color: var(--text-color);
             border-bottom-color: var(--accent);
         }}
@@ -880,22 +880,22 @@ public static partial class LayoutProvider
             width: 1em; height: 1em; margin: 0 0.4em 0 0;
             vertical-align: middle;
         }}
-        .content table {{
+        .prose table {{
             width: 100%; border-collapse: collapse;
             font-size: 0.875rem;
         }}
-        .content th, .content td {{
+        .prose th, .prose td {{
             padding: 0.6rem 1rem; border: 1px solid var(--border);
             text-align: left; vertical-align: top;
         }}
-        .content th {{
+        .prose th {{
             background-color: var(--accent-light); font-weight: 600;
             color: var(--text-color);
         }}
-        .content tr:nth-child(even) {{
+        .prose tr:nth-child(even) {{
             background-color: var(--code-bg);
         }}
-        .content tr:nth-child(even) code {{
+        .prose tr:nth-child(even) code {{
             background-color: color-mix(in srgb, var(--accent) 8%, var(--code-bg));
         }}
         .code-block-wrapper {{
@@ -1324,22 +1324,20 @@ public static partial class LayoutProvider
             line-height: 1;
             color: var(--accent);
         }}
-        .content .post-card-title {{
+        .post-card-title {{
             font-family: var(--font-display);
             font-size: var(--card-title-size);
             font-weight: 600;
             line-height: 1.2;
             letter-spacing: -0.015em;
             margin: 0 0 0.4rem;
-            padding-bottom: 0;
-            border-bottom: none;
         }}
-        .content .post-card-title a {{
+        .post-card-title a {{
             color: var(--text-color);
             text-decoration: none;
             transition: color 0.15s ease;
         }}
-        .content .post-card-title a:hover {{
+        .post-card-title a:hover {{
             color: var(--accent);
         }}
         .post-excerpt {{
@@ -1625,6 +1623,7 @@ public static partial class LayoutProvider
         }}
         .archive-year h2 {{
             font-size: 1.2rem;
+            font-weight: 500;
             color: var(--text-muted);
             font-variant-numeric: tabular-nums;
             margin-bottom: 0.75rem;
@@ -1687,10 +1686,6 @@ public static partial class LayoutProvider
             height: 100%;
             object-fit: cover;
             display: block;
-        }}
-        .content a.card-cover, .content a.card-cover:hover,
-        .content a.lead-cover, .content a.lead-cover:hover {{
-            text-decoration: none;
         }}
         .slug-tint {{
             display: flex;
@@ -2250,7 +2245,7 @@ public static partial class LayoutProvider
             max-width: 200px;
             min-height: 128px;
         }}
-        .content .kg-bookmark-card .kg-bookmark-thumbnail img {{
+        .prose .kg-bookmark-card .kg-bookmark-thumbnail img {{
             position: absolute;
             inset: 0;
             width: 100%;

@@ -52,7 +52,7 @@ public static partial class LayoutProvider
             ? $"<meta name=\"description\" content=\"{HtmlEncode(description)}\">"
             : "";
 
-        var contentClass = isArticle ? "content reading" : "content";
+        var contentClass = isArticle ? "content reading prose" : "content";
 
         const string darkVars = @"
                 color-scheme: dark;
