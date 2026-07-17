@@ -78,17 +78,10 @@ public sealed class BlogPageResponder
 
         var seg = view.CanonicalPath.Trim('/');
         var siteNavHtml = SiteNavRenderer.Build(config, basePath, seg);
-        var footerLinksHtml = FooterMenuRenderer.Build(config?.FooterMenu, basePath);
+        var footerHtml = FooterRenderer.Build(config, basePath, brandText, socialLinksHtml, _markdown);
         var pageSegment = seg.Length == 0 ? string.Empty : $"{seg}/";
         var rawPath = $"{basePath}/{pageSegment}".TrimStart('/');
         var canonicalUrl = $"{context.Request.Scheme}://{context.Request.Host}/{rawPath}";
-
-        var footerText = config?.Footer?
-            .Replace("{year}", DateTime.UtcNow.Year.ToString())
-            .Replace("{author}", config.Author ?? string.Empty)
-            .Replace("{title}", config.Title ?? string.Empty);
-        if (!string.IsNullOrEmpty(footerText))
-            footerText = _markdown.ToHtml(footerText).Replace("<p>", "").Replace("</p>", "").Trim();
 
         var fullHtml = LayoutProvider.GetLayout(
             title: PageTitleRenderer.ComputeTitle(view.Title, config),
@@ -97,8 +90,6 @@ public sealed class BlogPageResponder
             brandText: brandText,
             brandImage: config?.BrandImage,
             themeMode: ThemeProvider.ResolveMode(_theme),
-            footerText: footerText,
-            socialLinksHtml: socialLinksHtml,
             enableLiveReload: _docsOptions.EnableHotReload,
             staticSearch: _docsOptions.IsStaticExport,
             buildVersion: _content.BuildVersion,
@@ -116,7 +107,7 @@ public sealed class BlogPageResponder
             rssDiscoveryHtml: rssDiscoveryHtml,
             isArticle: view.IsArticle,
             siteNavHtml: siteNavHtml,
-            footerLinksHtml: footerLinksHtml);
+            footerHtml: footerHtml);
 
         context.Response.ContentType = "text/html; charset=utf-8";
         await context.Response.WriteAsync(fullHtml);

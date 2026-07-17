@@ -12,8 +12,6 @@ public static partial class LayoutProvider
         string? brandText = null,
         string? brandImage = null,
         ThemeMode themeMode = ThemeMode.Auto,
-        string? footerHtml = null,
-        string? socialLinksHtml = null,
         bool enableLiveReload = false,
         bool staticSearch = false,
         long buildVersion = 0,
@@ -33,8 +31,7 @@ public static partial class LayoutProvider
         string? promoBarHtml = null,
         bool isArticle = false,
         string? siteNavHtml = null,
-        string? footerText = null,
-        string? footerLinksHtml = null)
+        string? footerHtml = null)
     {
         var scrollIndicatorHtml = showScrollIndicator ? @"<div id=""scroll-indicator""></div>" : "";
         var shareOverlayHtml = isArticle ? BuildShareOverlay() : "";
@@ -192,12 +189,7 @@ public static partial class LayoutProvider
             {content}
         </article>
     </main>
-    <footer class=""site-footer"">
-        <span class=""site-footer-note"">{(!string.IsNullOrEmpty(footerText) ? footerText : $"© {DateTime.UtcNow.Year} {HtmlEncode(brandText ?? "Teatime")}")}</span>
-        {(string.IsNullOrEmpty(footerLinksHtml) ? $@"<a href=""{basePath}/feed.xml"">RSS</a>
-        <a href=""{homeHref}archive/"">Archive</a>" : footerLinksHtml)}
-        {socialLinksHtml}
-    </footer>
+    {footerHtml}
     {GetScripts(enableLiveReload, enableDarkMode, buildVersion, basePath, nonce, staticSearch)}
 </body>
 </html>";
