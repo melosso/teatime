@@ -189,4 +189,16 @@ External links can open in a new tab with a small attribute as standardized in [
 
 [^1]: Footnotes render at the bottom of the page with a link back to where you were reading.
 
+## 6. Translate the Interface
+
+The interface text, like "Keep reading" and the 404 page, reads from `content/locale/`. English is the default. Point `locale.code` at a locale file to switch:
+
+```json [content/config.json]
+{
+  "locale": { "code": "nl" }
+}
+```
+
+For your own, copy `en.json` to `{code}.json` and translate the values. Missing keys fall back to English, so a partial file is fine.
+
 That's all. Happy publishing!
