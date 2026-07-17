@@ -12,10 +12,16 @@ public static class AuthorRenderer
         var l = Localization.Current;
         sb.Append("<h1 class=\"list-heading\">").Append(LayoutProvider.HtmlEncode(l.AuthorsHeading)).Append("</h1>");
         sb.Append("<p class=\"list-intro\">").Append(LayoutProvider.HtmlEncode(l.AuthorsIntro)).Append("</p>");
+        sb.Append(BuildGrid(authors, basePath));
+        return sb.ToString();
+    }
 
+    public static string BuildGrid(IReadOnlyList<Author> authors, string basePath)
+    {
         if (authors.Count == 0)
-            return sb.Append("<p class=\"list-empty\">").Append(LayoutProvider.HtmlEncode(l.AuthorsEmpty)).Append("</p>").ToString();
+            return $"<p class=\"list-empty\">{LayoutProvider.HtmlEncode(Localization.Current.AuthorsEmpty)}</p>";
 
+        var sb = new StringBuilder();
         sb.Append("<ul class=\"author-grid\">");
         foreach (var author in authors)
         {

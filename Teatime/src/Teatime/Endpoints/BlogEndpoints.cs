@@ -44,8 +44,9 @@ internal static class BlogEndpoints
         if (TryRedirect(ctx, custom, basePath))
             return;
 
-        var list = AuthorRenderer.BuildIndex(authors.GetListed(), basePath);
-        var html = custom is not null ? Inject(custom.HtmlContent, list, route.Slug) : list;
+        var html = custom is not null
+            ? Inject(custom.HtmlContent, AuthorRenderer.BuildGrid(authors.GetListed(), basePath), route.Slug)
+            : AuthorRenderer.BuildIndex(authors.GetListed(), basePath);
 
         await responder.WriteAsync(ctx, new BlogPageView(
             Title: custom?.Title ?? route.Title,
