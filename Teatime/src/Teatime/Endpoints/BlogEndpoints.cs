@@ -253,9 +253,9 @@ internal static class BlogEndpoints
     {
         var token = $"{{{{{name}}}}}";
         if (contentHtml.Contains(token, StringComparison.Ordinal))
-            return contentHtml
+            return $"<div class=\"prose\">{contentHtml
                 .Replace($"<p>{token}</p>", listHtml, StringComparison.Ordinal)
-                .Replace(token, listHtml, StringComparison.Ordinal);
-        return contentHtml + listHtml;
+                .Replace(token, listHtml, StringComparison.Ordinal)}</div>";
+        return $"<div class=\"prose\">{contentHtml}</div>{listHtml}";
     }
 }

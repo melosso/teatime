@@ -206,6 +206,32 @@ public sealed class IntegrationTests : IClassFixture<TeatimeWebApplicationFactor
     }
 }
 
+/// <summary>Own factory instance; a custom archive page must not leak into the shared fixture</summary>
+public sealed class CustomReservedPageTests
+{
+    private sealed class ArchiveFactory : TeatimeWebApplicationFactory
+    {
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+            base.ConfigureWebHost(builder);
+            File.WriteAllText(Path.Combine(ContentDir, "pages", "archive.md"),
+                "---\ntitle: Archive\n---\n\nBrowse the [authors](/authors/) here.\n");
+        }
+    }
+
+    [Fact]
+    public async Task CustomArchive_RendersMarkdownBodyInProse()
+    {
+        using var factory = new ArchiveFactory();
+        var client = factory.CreateClient();
+
+        var html = await client.GetStringAsync("/archive");
+
+        Assert.Contains("<div class=\"prose\">", html);
+        Assert.Contains("<a href=\"/authors/\">authors</a>", html);
+    }
+}
+
 /// <summary>Own factory instance; the author files must not leak into the shared fixture's search and sitemap tests</summary>
 public sealed class HiddenAuthorTests
 {
