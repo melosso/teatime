@@ -8,8 +8,9 @@ public static class TagListRenderer
     public static string BuildIndex(IReadOnlyList<TagInfo> tags, string basePath)
     {
         var sb = new StringBuilder();
-        sb.Append("<h1 class=\"list-heading\">Tags</h1>");
-        sb.Append("<p class=\"list-intro\">Browse writing by topic.</p>");
+        var l = Localization.Current;
+        sb.Append("<h1 class=\"list-heading\">").Append(LayoutProvider.HtmlEncode(l.TagsHeading)).Append("</h1>");
+        sb.Append("<p class=\"list-intro\">").Append(LayoutProvider.HtmlEncode(l.TagsIntro)).Append("</p>");
         sb.Append(BuildCloud(tags, basePath));
         return sb.ToString();
     }
@@ -17,7 +18,7 @@ public static class TagListRenderer
     public static string BuildCloud(IReadOnlyList<TagInfo> tags, string basePath)
     {
         if (tags.Count == 0)
-            return "<p class=\"list-empty\">No tags yet.</p>";
+            return $"<p class=\"list-empty\">{LayoutProvider.HtmlEncode(Localization.Current.TagsEmpty)}</p>";
 
         var sb = new StringBuilder();
         sb.Append("<ul class=\"tag-cloud\">");

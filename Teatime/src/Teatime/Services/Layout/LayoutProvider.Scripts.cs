@@ -4,6 +4,7 @@ public static partial class LayoutProvider
 {
     private static string GetScripts(bool enableLiveReload, bool enableDarkMode, long buildVersion, string basePath, string? nonce = null, bool staticSearch = false)
     {
+        var l = Rendering.Localization.Current;
         // Non-toggle theme swaps (bfcache/other tab/OS flip) hit an already-painted page: suppress transitions or every element cross-fades.
         var themeSyncScript = enableDarkMode
             ? @"var themeRoot = document.documentElement;
@@ -493,7 +494,7 @@ public static partial class LayoutProvider
                     searchModalStatus.textContent = '';
                     return;
                 }}
-                searchModalResults.innerHTML = '<div class=""search-result-empty"" role=""status"">Searching&hellip;</div>';
+                searchModalResults.innerHTML = '<div class=""search-result-empty"" role=""status"">{Rendering.Localization.JsEncode(l.SearchSearching)}&hellip;</div>';
                 var requestId = searchRequestId;
                 searchTimeout = setTimeout(function() {{
                     teatimeRunSearch(query)
@@ -504,14 +505,14 @@ public static partial class LayoutProvider
                             var posts = data.posts || [];
                             var total = authors.length + tags.length + posts.length;
                             if (total === 0) {{
-                                searchModalResults.innerHTML = '<div class=""search-result-empty"" role=""status"">No results found.</div>';
-                                searchModalStatus.textContent = 'No results found.';
+                                searchModalResults.innerHTML = '<div class=""search-result-empty"" role=""status"">{Rendering.Localization.JsEncode(l.SearchNoResults)}</div>';
+                                searchModalStatus.textContent = '{Rendering.Localization.JsEncode(l.SearchNoResults)}';
                             }} else {{
                                 var terms = query.split(/\s+/).filter(Boolean);
                                 var html = '';
                                 var i = 0;
                                 if (authors.length) {{
-                                    html += '<div class=""search-group""><h3 class=""search-group-label"">Authors</h3>';
+                                    html += '<div class=""search-group""><h3 class=""search-group-label"">{Rendering.Localization.JsEncode(l.SearchGroupAuthors)}</h3>';
                                     authors.forEach(function(a) {{
                                         var avatar = a.image
                                             ? '<img class=""search-hit-avatar"" src=""' + escapeHtml(a.image) + '"" alt="""" loading=""lazy"">'
@@ -523,7 +524,7 @@ public static partial class LayoutProvider
                                     html += '</div>';
                                 }}
                                 if (tags.length) {{
-                                    html += '<div class=""search-group""><h3 class=""search-group-label"">Tags</h3>';
+                                    html += '<div class=""search-group""><h3 class=""search-group-label"">{Rendering.Localization.JsEncode(l.SearchGroupTags)}</h3>';
                                     tags.forEach(function(t) {{
                                         html += '<a href=""{basePath}/' + t.url + '/"" class=""search-result-item search-hit-media"" role=""option"" id=""search-result-' + i + '"" aria-selected=""false"" tabindex=""-1"">' +
                                             '<span class=""search-hit-tag"" aria-hidden=""true"">#</span>' +
@@ -534,7 +535,7 @@ public static partial class LayoutProvider
                                     html += '</div>';
                                 }}
                                 if (posts.length) {{
-                                    html += '<div class=""search-group""><h3 class=""search-group-label"">Posts</h3>';
+                                    html += '<div class=""search-group""><h3 class=""search-group-label"">{Rendering.Localization.JsEncode(l.SearchGroupPosts)}</h3>';
                                     posts.forEach(function(r) {{
                                         html += '<a href=""{basePath}/' + r.path + '/"" class=""search-result-item"" role=""option"" id=""search-result-' + i + '"" aria-selected=""false"" tabindex=""-1"">' +
                                             '<div class=""search-result-title"">' + highlightMatches(r.title, terms) + '</div>' +
@@ -545,14 +546,14 @@ public static partial class LayoutProvider
                                     html += '</div>';
                                 }}
                                 searchModalResults.innerHTML = html;
-                                searchModalStatus.textContent = total + (total === 1 ? ' result found.' : ' results found.');
+                                searchModalStatus.textContent = total + ' ' + (total === 1 ? '{Rendering.Localization.JsEncode(l.SearchResultSingular)}' : '{Rendering.Localization.JsEncode(l.SearchResultPlural)}');
                             }}
                             searchModalInput.setAttribute('aria-expanded', 'true');
                         }})
                         ['catch'](function() {{
                             if (requestId !== searchRequestId) return;
-                            searchModalResults.innerHTML = '<div class=""search-result-empty"" role=""status"">Something went wrong. Try again.</div>';
-                            searchModalStatus.textContent = 'Search failed.';
+                            searchModalResults.innerHTML = '<div class=""search-result-empty"" role=""status"">{Rendering.Localization.JsEncode(l.SearchError)}</div>';
+                            searchModalStatus.textContent = '{Rendering.Localization.JsEncode(l.SearchFailed)}';
                         }});
                 }}, 200);
             }});

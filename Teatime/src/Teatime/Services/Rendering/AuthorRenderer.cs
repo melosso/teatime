@@ -9,11 +9,12 @@ public static class AuthorRenderer
     public static string BuildIndex(IReadOnlyList<Author> authors, string basePath)
     {
         var sb = new StringBuilder();
-        sb.Append("<h1 class=\"list-heading\">Authors</h1>");
-        sb.Append("<p class=\"list-intro\">The people behind the writing.</p>");
+        var l = Localization.Current;
+        sb.Append("<h1 class=\"list-heading\">").Append(LayoutProvider.HtmlEncode(l.AuthorsHeading)).Append("</h1>");
+        sb.Append("<p class=\"list-intro\">").Append(LayoutProvider.HtmlEncode(l.AuthorsIntro)).Append("</p>");
 
         if (authors.Count == 0)
-            return sb.Append("<p class=\"list-empty\">No authors yet.</p>").ToString();
+            return sb.Append("<p class=\"list-empty\">").Append(LayoutProvider.HtmlEncode(l.AuthorsEmpty)).Append("</p>").ToString();
 
         sb.Append("<ul class=\"author-grid\">");
         foreach (var author in authors)

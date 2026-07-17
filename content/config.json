@@ -1,9 +1,10 @@
 {
   "title": "Teatime",
   "description": "A personal blog published with Teatime.",
-  "lang": "en",
+  "lang": "nl",
   "locale": { "culture": "en-GB" },
   "author": "Melosso",
+  "titleTemplate": ":title · Teatime",
   "favicon": "🍵",
   "scrollIndicator": true,
   "bookmarks": { "enabled": true },

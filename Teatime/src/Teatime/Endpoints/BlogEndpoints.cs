@@ -1,5 +1,6 @@
 using Teatime.Configuration;
 using Teatime.Services;
+using Teatime.Services.Layout;
 using Teatime.Services.Rendering;
 
 namespace Teatime.Endpoints;
@@ -74,11 +75,11 @@ internal static class BlogEndpoints
         var slice = all.Skip((page - 1) * options.PageSize).Take(options.PageSize).ToList();
         var nextUrl = page < totalPages ? UrlPaths.Href(basePath, $"{author.Url}/page/{page + 1}") : null;
         var html = AuthorRenderer.BuildHeader(author, basePath)
-                 + PostListRenderer.BuildList(slice, basePath, emptyMessage: "No posts here yet.")
+                 + PostListRenderer.BuildList(slice, basePath, emptyMessage: Localization.Current.AuthorEmpty)
                  + PostListRenderer.BuildLoadMore(nextUrl);
 
         await responder.WriteAsync(ctx, new BlogPageView(
-            Title: page > 1 ? $"{author.Name}, page {page}" : author.Name,
+            Title: page > 1 ? Localization.Current.AuthorPagedTitle(author.Name, page) : author.Name,
             ContentHtml: html,
             CanonicalPath: page > 1 ? $"{author.Url}/page/{page}" : author.Url));
     }
@@ -102,7 +103,7 @@ internal static class BlogEndpoints
         string content;
         if (slice.Count == 0)
         {
-            content = PostListRenderer.BuildList(slice, basePath, emptyMessage: "No posts yet. Drop a Markdown file in content/posts/.");
+            content = PostListRenderer.BuildList(slice, basePath, emptyMessage: Localization.Current.HomeEmpty);
         }
         else if (page == 1)
         {
@@ -116,11 +117,11 @@ internal static class BlogEndpoints
         }
         content += PostListRenderer.BuildPager(page, totalPages, basePath);
 
-        var heading = page > 1 ? $"Posts, page {page}" : "Latest posts";
-        content = $"<h1 class=\"sr-only\">{heading}</h1>" + content;
+        var heading = page > 1 ? Localization.Current.HomeHeadingPaged(page) : Localization.Current.HomeHeadingLatest;
+        content = $"<h1 class=\"sr-only\">{LayoutProvider.HtmlEncode(heading)}</h1>" + content;
 
         await responder.WriteAsync(ctx, new BlogPageView(
-            Title: page > 1 ? $"Page {page}" : string.Empty,
+            Title: page > 1 ? Localization.Current.PageTitlePaged(page) : string.Empty,
             ContentHtml: content,
             CanonicalPath: page > 1 ? $"page/{page}" : ""));
     }
@@ -200,11 +201,12 @@ internal static class BlogEndpoints
 
         var slice = matches.Skip((page - 1) * options.PageSize).Take(options.PageSize).ToList();
         var nextUrl = page < totalPages ? UrlPaths.Href(basePath, $"tags/{slug}/page/{page + 1}") : null;
-        var html = PostListRenderer.BuildList(slice, basePath, heading: page > 1 ? $"Tagged “{tag}”, page {page}" : $"Tagged “{tag}”")
+        var l = Localization.Current;
+        var html = PostListRenderer.BuildList(slice, basePath, heading: page > 1 ? l.TaggedHeadingPaged(tag, page) : l.TaggedHeading(tag))
                  + PostListRenderer.BuildLoadMore(nextUrl);
 
         await responder.WriteAsync(ctx, new BlogPageView(
-            Title: page > 1 ? $"Tagged {tag}, page {page}" : $"Tagged {tag}",
+            Title: page > 1 ? l.TaggedTitlePaged(tag, page) : l.TaggedTitle(tag),
             ContentHtml: html,
             CanonicalPath: page > 1 ? $"tags/{slug}/page/{page}" : $"tags/{slug}"));
     }

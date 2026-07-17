@@ -40,7 +40,7 @@ public class Config
 
     public List<SocialLink>? SocialLinks { get; set; }
 
-    /// <summary>Locale settings, later implemnt. for i18n. See <see cref="LocaleOptions"/>.</summary>
+    /// <summary>Locale settings: date culture and the UI string table. See <see cref="LocaleOptions"/>.</summary>
     public LocaleOptions? Locale { get; set; }
 
     /// <summary>Bookmark card rendering for standalone links. Off unless enabled. See <see cref="BookmarkOptions"/>.</summary>

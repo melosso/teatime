@@ -64,7 +64,8 @@ public sealed class PageRequestHandler
         if (!page.ShowLastUpdated || page.Updated is not { } when)
             return string.Empty;
         var human = DateFormatter.Current.Medium(when);
-        return $"<p class=\"page-updated\">Last updated on <time datetime=\"{DateFormatter.Iso(when)}\">{human}</time></p>";
+        var label = Layout.LayoutProvider.HtmlEncode(Localization.Current.LastUpdated);
+        return $"<p class=\"page-updated\">{label} <time datetime=\"{DateFormatter.Iso(when)}\">{human}</time></p>";
     }
 
     private async Task<string> BuildPageNav(Models.DocumentationPage page, CancellationToken ct)
@@ -74,7 +75,7 @@ public sealed class PageRequestHandler
 
         var (prevHref, prevTitle) = await ResolvePageLink(page.PagePrev, ct);
         var (nextHref, nextTitle) = await ResolvePageLink(page.PageNext, ct);
-        return PostListRenderer.BuildAdjacentNav(prevHref, prevTitle, nextHref, nextTitle, "Adjacent pages");
+        return PostListRenderer.BuildAdjacentNav(prevHref, prevTitle, nextHref, nextTitle, Localization.Current.PageNavAria);
     }
 
     private async ValueTask<(string? Href, string? Title)> ResolvePageLink(string? target, CancellationToken ct)

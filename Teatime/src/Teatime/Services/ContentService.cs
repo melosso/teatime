@@ -20,6 +20,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
     private FileSystemWatcher? _watcher;
     private FileSystemWatcher? _configWatcher;
     private FileSystemWatcher? _assetsWatcher;
+    private FileSystemWatcher? _localeWatcher;
     private readonly CancellationTokenSource _shutdownCts = new();
 
     // All read state lives in one immutable snapshot swapped atomically after a full build; readers never see half-built state
@@ -111,6 +112,21 @@ public sealed partial class ContentService : IHostedService, IDisposable
                 _assetsWatcher.Renamed += OnFileRenamed;
             }
 
+            // Main watcher filters *.md; locale JSON needs its own.
+            var localePath = Path.Combine(docsPath, "locale");
+            if (Directory.Exists(localePath))
+            {
+                _localeWatcher = new FileSystemWatcher(localePath)
+                {
+                    Filter = "*.json",
+                    EnableRaisingEvents = true
+                };
+                _localeWatcher.Changed += OnFileChanged;
+                _localeWatcher.Created += OnFileChanged;
+                _localeWatcher.Deleted += OnFileChanged;
+                _localeWatcher.Renamed += OnFileRenamed;
+            }
+
             _ = FileWatcherConsumerAsync(_shutdownCts.Token);
 
             _logger.LogInformation("Hot reload enabled, watching {DocsPath}", docsPath);
@@ -123,6 +139,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
         _watcher?.Dispose();
         _configWatcher?.Dispose();
         _assetsWatcher?.Dispose();
+        _localeWatcher?.Dispose();
         return Task.CompletedTask;
     }
 
@@ -134,6 +151,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
         _watcher?.Dispose();
         _configWatcher?.Dispose();
         _assetsWatcher?.Dispose();
+        _localeWatcher?.Dispose();
         _buildLock.Dispose();
         _disposed = true;
     }
@@ -208,6 +226,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
         var config = LoadConfig(docsPath);
         DateFormatter.Current = DateFormatter.From(config?.Locale);
         TitleMonogram.Current = TitleMonogram.From(config?.Locale);
+        Localization.Current = Localization.From(docsPath, config, _logger);
         _bookmarks?.Configure(config?.Bookmarks);
 
         // Sorted for deterministic hashing, regardless of FS enumeration order.
@@ -283,6 +302,13 @@ public sealed partial class ContentService : IHostedService, IDisposable
         var configPath = Path.Combine(docsPath, "config.json");
         if (File.Exists(configPath))
             hashInput.Append(await File.ReadAllTextAsync(configPath, cancellationToken));
+
+        // Locale JSON drives the UI string table only, never enumerated as pages; hash it so an edit bumps BuildVersion.
+        var localeDir = Path.Combine(docsPath, "locale");
+        if (Directory.Exists(localeDir))
+            foreach (var localeFile in Directory.GetFiles(localeDir, "*.json").Order())
+                hashInput.Append(Path.GetFileName(localeFile)).Append('\0')
+                         .Append(await File.ReadAllTextAsync(localeFile, cancellationToken)).Append('\0');
 
         // Fold asset size+timestamp into the hash so a media change bumps BuildVersion (live-reload trigger).
         var assetsDir = Path.Combine(docsPath, "assets");
