@@ -53,18 +53,23 @@ public static class SiteNavRenderer
 
     private static void AppendDropdown(StringBuilder sb, string text, List<MenuLink> children, string basePath, string currentPath)
     {
-        var anyActive = children.Any(c => !string.IsNullOrWhiteSpace(c.Path) && !IsExternal(c.Path!)
-            && IsActive(c.Path!.Trim('/').ToLowerInvariant(), currentPath));
+        // Only mark the exact page as "here," not parent sections that happen to match part of the name
+        var activeSeg = children
+            .Where(c => !string.IsNullOrWhiteSpace(c.Path) && !IsExternal(c.Path!))
+            .Select(c => c.Path!.Trim('/').ToLowerInvariant())
+            .Where(seg => IsActive(seg, currentPath))
+            .OrderByDescending(seg => seg.Length)
+            .FirstOrDefault();
 
         sb.Append("<div class=\"top-nav-item has-dropdown\">");
-        sb.Append("<button type=\"button\" class=\"top-nav-link").Append(anyActive ? " active" : "")
+        sb.Append("<button type=\"button\" class=\"top-nav-link").Append(activeSeg is not null ? " active" : "")
           .Append("\" aria-expanded=\"false\" aria-haspopup=\"true\">")
           .Append(LayoutProvider.HtmlEncode(text)).Append(' ').Append(Chevron).Append("</button>");
         sb.Append("<div class=\"top-nav-dropdown-menu\">");
         foreach (var child in children)
         {
             if (string.IsNullOrWhiteSpace(child.Title) || string.IsNullOrWhiteSpace(child.Path)) continue;
-            AppendDropdownLink(sb, child.Title!, child.Path!, basePath, currentPath, child.External);
+            AppendDropdownLink(sb, child.Title!, child.Path!, basePath, currentPath, activeSeg, child.External);
         }
         sb.Append("</div></div>");
     }
@@ -86,7 +91,7 @@ public static class SiteNavRenderer
         sb.Append('>').Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
     }
 
-    private static void AppendDropdownLink(StringBuilder sb, string text, string link, string basePath, string currentPath, bool external = false)
+    private static void AppendDropdownLink(StringBuilder sb, string text, string link, string basePath, string currentPath, string? activeSeg, bool external = false)
     {
         if (IsExternal(link))
         {
@@ -97,7 +102,7 @@ public static class SiteNavRenderer
 
         var seg = link.Trim('/').ToLowerInvariant();
         var href = UrlPaths.Href(basePath, seg);
-        sb.Append("<a class=\"top-nav-dropdown-link").Append(IsActive(seg, currentPath) ? " here" : "")
+        sb.Append("<a class=\"top-nav-dropdown-link").Append(seg == activeSeg ? " here" : "")
           .Append("\" href=\"").Append(href).Append('"');
         if (external) sb.Append(" target=\"_blank\" rel=\"noopener noreferrer\"");
         sb.Append('>').Append(LayoutProvider.HtmlEncode(text)).Append("</a>");
