@@ -172,6 +172,7 @@ try
     // Restrict to a media/document allowlist: only these extensions get a content type, and
     // ServeUnknownFileTypes stays false, so anything else (scripts, html, archives, ...) 404s.
     var assetsDir = Path.Combine(Path.GetFullPath(docsOptions.RootPath), "assets");
+    AssetVersioning.Current = new AssetVersioning(assetsDir);
     if (Directory.Exists(assetsDir))
     {
         var assetContentTypes = new FileExtensionContentTypeProvider(
@@ -200,9 +201,10 @@ try
             ContentTypeProvider = assetContentTypes,
             ServeUnknownFileTypes = false,
             OnPrepareResponse = ctx =>
-                ctx.Context.Response.Headers.CacheControl = app.Environment.IsDevelopment()
-                    ? "no-cache"
-                    : "public,max-age=604800"
+                ctx.Context.Response.Headers.CacheControl =
+                    !app.Environment.IsDevelopment() && ctx.Context.Request.Query.ContainsKey("v")
+                        ? "public,max-age=31536000,immutable"
+                        : "no-cache"
         });
     }
 

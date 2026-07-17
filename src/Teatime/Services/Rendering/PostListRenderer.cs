@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using Teatime.Models;
+using Teatime.Services;
 using Teatime.Services.Layout;
 
 namespace Teatime.Services.Rendering;
@@ -137,10 +138,13 @@ public static partial class PostListRenderer
         return $"<span class=\"avatar\" aria-hidden=\"true\">{initial}</span>";
     }
 
-    private static string Asset(string basePath, string url) =>
-        url.StartsWith('/') && !url.StartsWith("//", StringComparison.Ordinal)
+    private static string Asset(string basePath, string url)
+    {
+        var resolved = url.StartsWith('/') && !url.StartsWith("//", StringComparison.Ordinal)
             ? $"{basePath}{url}"
             : url;
+        return AssetVersioning.Current.Apply(resolved);
+    }
 
     private static void AppendCard(StringBuilder sb, Post post, string basePath)
     {

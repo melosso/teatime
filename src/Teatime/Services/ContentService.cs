@@ -19,6 +19,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
     private readonly string _basePathSegment;
     private FileSystemWatcher? _watcher;
     private FileSystemWatcher? _configWatcher;
+    private FileSystemWatcher? _assetsWatcher;
     private readonly CancellationTokenSource _shutdownCts = new();
 
     // All read state lives in one immutable snapshot swapped atomically after a full build; readers never see half-built state
@@ -96,6 +97,20 @@ public sealed partial class ContentService : IHostedService, IDisposable
             _configWatcher.Deleted += OnFileChanged;
             _configWatcher.Renamed += OnFileRenamed;
 
+            var assetsPath = Path.Combine(docsPath, "assets");
+            if (Directory.Exists(assetsPath))
+            {
+                _assetsWatcher = new FileSystemWatcher(assetsPath)
+                {
+                    IncludeSubdirectories = true,
+                    EnableRaisingEvents = true
+                };
+                _assetsWatcher.Changed += OnFileChanged;
+                _assetsWatcher.Created += OnFileChanged;
+                _assetsWatcher.Deleted += OnFileChanged;
+                _assetsWatcher.Renamed += OnFileRenamed;
+            }
+
             _ = FileWatcherConsumerAsync(_shutdownCts.Token);
 
             _logger.LogInformation("Hot reload enabled, watching {DocsPath}", docsPath);
@@ -107,6 +122,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
         _shutdownCts.Cancel();
         _watcher?.Dispose();
         _configWatcher?.Dispose();
+        _assetsWatcher?.Dispose();
         return Task.CompletedTask;
     }
 
@@ -117,6 +133,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
         _shutdownCts.Dispose();
         _watcher?.Dispose();
         _configWatcher?.Dispose();
+        _assetsWatcher?.Dispose();
         _buildLock.Dispose();
         _disposed = true;
     }
@@ -229,6 +246,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
 
             var html = WrapTables(parsed.Html);
             html = _bookmarks?.Render(html) ?? html;
+            html = VersionAssets(html);
             var lastModified = parsed.FrontmatterDate ?? File.GetLastWriteTimeUtc(file);
 
             var page = new DocumentationPage(
@@ -264,6 +282,17 @@ public sealed partial class ContentService : IHostedService, IDisposable
         var configPath = Path.Combine(docsPath, "config.json");
         if (File.Exists(configPath))
             hashInput.Append(await File.ReadAllTextAsync(configPath, cancellationToken));
+
+        // Fold asset size+timestamp into the hash so a media change bumps BuildVersion (live-reload trigger).
+        var assetsDir = Path.Combine(docsPath, "assets");
+        if (Directory.Exists(assetsDir))
+            foreach (var asset in Directory.GetFiles(assetsDir, "*", SearchOption.AllDirectories).Order())
+            {
+                var info = new FileInfo(asset);
+                hashInput.Append(Path.GetRelativePath(assetsDir, asset)).Append('\0')
+                         .Append(info.LastWriteTimeUtc.Ticks).Append('\0')
+                         .Append(info.Length).Append('\0');
+            }
 
         var contentHash = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(hashInput.ToString())));
 
@@ -367,6 +396,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
             || href.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase)
             || href.StartsWith("tel:", StringComparison.OrdinalIgnoreCase)
             || href.StartsWith("#")
+            || href.Contains("/assets/", StringComparison.OrdinalIgnoreCase)
             || href == "/";
     }
 
@@ -404,6 +434,17 @@ public sealed partial class ContentService : IHostedService, IDisposable
 
     private static string WrapTables(string html) =>
         TableRegex().Replace(html, m => $"<div class=\"table-wrapper\">{m.Value}</div>");
+
+    private static string VersionAssets(string html) =>
+        AssetSrcHrefRegex().Replace(html, m =>
+        {
+            var url = m.Groups[2].Value;
+            var versioned = AssetVersioning.Current.Apply(url);
+            return versioned == url ? m.Value : $"{m.Groups[1].Value}=\"{versioned}\"";
+        });
+
+    [GeneratedRegex(@"(src|href)=""([^""]+)""", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex AssetSrcHrefRegex();
 
     private static Config? LoadConfig(string docsPath)
     {
