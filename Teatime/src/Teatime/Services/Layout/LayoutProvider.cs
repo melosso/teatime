@@ -47,7 +47,7 @@ public static partial class LayoutProvider
         var shareOverlayHtml = isArticle ? BuildShareOverlay() : "";
         var faviconHtml = BuildFaviconLink(favicon, basePath);
         var homeHref = basePath.Length == 0 ? "/" : $"{basePath}/";
-        var brandImageSrc = ResolveAssetUrl(brandImage, basePath);
+        var brandMarkHtml = BuildBrandMark(brandImage, basePath);
         var descriptionHtml = !string.IsNullOrWhiteSpace(description)
             ? $"<meta name=\"description\" content=\"{HtmlEncode(description)}\">"
             : "";
@@ -158,7 +158,7 @@ public static partial class LayoutProvider
             </a>
             {themeToggleHtml}
         </div>
-        <a class=""brand"" href=""{homeHref}"">{(brandImageSrc is not null ? $"<img src=\"{HtmlEncode(brandImageSrc)}\" alt=\"\">" : "<span class=\"brand-mark\" aria-hidden=\"true\">\U0001F375</span>")}{brandText ?? "Teatime"}</a>
+        <a class=""brand"" href=""{homeHref}"">{brandMarkHtml}{brandText ?? "Teatime"}</a>
         {siteNavHtml}
     </header>
     <div class=""search-overlay"" id=""search-overlay"" hidden>
@@ -367,6 +367,22 @@ public static partial class LayoutProvider
 
     private static string GetNonceAttr(string? nonce) =>
         nonce is { Length: > 0 } ? $" nonce=\"{nonce}\"" : string.Empty;
+
+    private static string BuildBrandMark(string? brandImage, string basePath)
+    {
+        if (string.IsNullOrWhiteSpace(brandImage))
+            return "<span class=\"brand-mark\" aria-hidden=\"true\">\U0001F375</span>";
+
+        // Emoji or plain text mark; not a URL or path
+        if (!brandImage.StartsWith('/')
+            && !brandImage.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            && !brandImage.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+            && !brandImage.Contains('/')
+            && !brandImage.Contains('.'))
+            return $"<span class=\"brand-mark\" aria-hidden=\"true\">{HtmlEncode(brandImage)}</span>";
+
+        return $"<img src=\"{HtmlEncode(ResolveAssetUrl(brandImage, basePath))}\" alt=\"\">";
+    }
 
     private static string BuildFaviconLink(string? favicon, string basePath = "")
     {

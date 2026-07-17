@@ -251,6 +251,46 @@ public sealed class LayoutProviderTests
     }
 
     [Fact]
+    public void GetLayout_BrandImageEmoji_RendersMarkSpan()
+    {
+        var html = LayoutProvider.GetLayout(
+            "Title", "<p>content</p>",
+            "<nav>nav</nav>",
+            "<a href='/'>Home</a>", "<nav>pagination</nav>",
+            null,
+            brandImage: "\U0001F33F",
+            basePath: "/docs");
+
+        Assert.Contains("<span class=\"brand-mark\" aria-hidden=\"true\">&#127807;</span>", html);
+        Assert.DoesNotContain("<img src=\"/docs/\U0001F33F\"", html);
+    }
+
+    [Fact]
+    public void GetLayout_BrandImageRelativePath_StillRendersImg()
+    {
+        var html = LayoutProvider.GetLayout(
+            "Title", "<p>content</p>",
+            "<nav>nav</nav>",
+            "<a href='/'>Home</a>", "<nav>pagination</nav>",
+            null,
+            brandImage: "assets/logo.svg");
+
+        Assert.Contains("<img src=\"assets/logo.svg\"", html);
+    }
+
+    [Fact]
+    public void GetLayout_NoBrandImage_KeepsDefaultMark()
+    {
+        var html = LayoutProvider.GetLayout(
+            "Title", "<p>content</p>",
+            "<nav>nav</nav>",
+            "<a href='/'>Home</a>", "<nav>pagination</nav>",
+            null);
+
+        Assert.Contains("<span class=\"brand-mark\" aria-hidden=\"true\">\U0001F375</span>", html);
+    }
+
+    [Fact]
     public void GetLayout_FaviconRootRelative_WithBasePath()
     {
         var html = LayoutProvider.GetLayout(

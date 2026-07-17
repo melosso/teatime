@@ -1304,6 +1304,7 @@ public static partial class LayoutProvider
         }}
         .card-cover {{
             display: block;
+            text-decoration: none;
             margin-top: var(--card-cap-inset);
             aspect-ratio: 4 / 3;
             border-radius: 8px;
@@ -1673,6 +1674,7 @@ public static partial class LayoutProvider
         }}
         .lead-cover {{
             display: block;
+            text-decoration: none;
             order: 2;
             margin-top: var(--lead-cap-inset);
             aspect-ratio: 4 / 3;
@@ -1695,11 +1697,6 @@ public static partial class LayoutProvider
         }}
         .slug-tint .lead-cover-mark, .slug-tint .card-cover-mark {{
             color: hsl(var(--slug-hue, 145) 38% 30%);
-        }}
-        .slug-tint a:hover, 
-        .slug-tint a:focus {{
-            text-decoration: none;
-            cursor: default; 
         }}
         @media (prefers-color-scheme: dark) {{
             :root:not([data-theme=""light""]) .slug-tint {{
