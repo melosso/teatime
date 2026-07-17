@@ -41,3 +41,5 @@ Each release ships a ready to run build for Windows:
 5. Start the site and browse to it.
 
 The zip already includes a `web.config` wired for in process hosting, so no manual edits are needed. A `*-Linux_x64.zip` build is attached to each release as well, though we have yet to document this installation process.
+
+Have fun writing!
