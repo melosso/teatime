@@ -1874,6 +1874,12 @@ public static partial class LayoutProvider
             background: var(--sidebar-bg);
             margin: 1.75rem 0 0;
         }}
+        .post-cover.short {{ 
+            aspect-ratio: 3 / 1; 
+        }}
+        .post-cover.tall {{ 
+            aspect-ratio: 5 / 4;
+        }}
         .content.reading img {{
             max-width: 100%;
             height: auto;

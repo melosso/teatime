@@ -173,7 +173,7 @@ For a row of images side by side, wrap them in a [gallery](/examples/gallery/) (
 :::
 ```
 
-The post cover set in [front matter](/examples/frontmatter/) accepts the same width attributes, so a full-bleed hero is one line: `cover: /assets/hero.webp {.full}`.
+The post cover set in [front matter](/examples/frontmatter/) accepts the same width attributes, so a full-bleed hero is one line: `cover: /assets/hero.webp {.full}`. Two height attributes tune how tall it sits: `{.short}` crops it to a slim band, `{.tall}` gives it more room. They combine with a width, as in `cover: /assets/hero.webp {.wide .short}`.
 
 Definition lists keep paired ideas tidy:
 

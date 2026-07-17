@@ -84,22 +84,16 @@ public static partial class PostListRenderer
     public static string BuildCover(Post post, string basePath)
     {
         if (post.Cover is not { Length: > 0 } cover) return string.Empty;
-        var css = post.CoverWidth is { Length: > 0 } w ? $"post-cover {w}" : "post-cover";
+        var css = post.CoverClasses is { Length: > 0 } c ? $"post-cover {c}" : "post-cover";
         return RenderCover(cover, css, basePath);
     }
 
     public static string BuildCover(string? rawCover, string basePath)
     {
         if (string.IsNullOrWhiteSpace(rawCover)) return string.Empty;
-        var url = rawCover.Trim();
-        string? width = null;
-        var m = CoverAttrRegex().Match(rawCover);
-        if (m.Success && AllowedCoverClasses.Contains(m.Groups[2].Value))
-        {
-            url = m.Groups[1].Value.Trim();
-            width = m.Groups[2].Value.ToLowerInvariant();
-        }
-        var css = width is not null ? $"post-cover {width}" : "post-cover";
+        var (url, classes) = CoverAttributes.Parse(rawCover);
+        if (url.Length == 0) return string.Empty;
+        var css = classes is { Length: > 0 } ? $"post-cover {classes}" : "post-cover";
         return RenderCover(url, css, basePath);
     }
 
@@ -107,12 +101,6 @@ public static partial class PostListRenderer
         CoverColor.TryParse(cover, out var hex)
             ? $"<div class=\"{css}\" style=\"background:{hex}\" aria-hidden=\"true\"></div>"
             : $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, cover))}\" alt=\"\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\">";
-
-    private static readonly System.Collections.Generic.HashSet<string> AllowedCoverClasses =
-        new(System.StringComparer.OrdinalIgnoreCase) { "natural", "plain", "wide", "full" };
-
-    [System.Text.RegularExpressions.GeneratedRegex(@"^(.*?)\s*\{\.([a-z-]+)\}\s*$")]
-    private static partial System.Text.RegularExpressions.Regex CoverAttrRegex();
 
     public static string BuildFeaturedLead(Post post, string basePath)
     {
