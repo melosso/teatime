@@ -8,7 +8,7 @@ Requires the [.NET 11 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/11
 
 ```bash
 git clone https://github.com/melosso/teatime.git
-cd teatime
+cd teatime/Teatime
 dotnet restore
 dotnet watch --project src/Teatime
 ```

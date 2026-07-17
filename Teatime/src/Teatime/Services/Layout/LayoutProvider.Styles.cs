@@ -1696,6 +1696,11 @@ public static partial class LayoutProvider
         .slug-tint .lead-cover-mark, .slug-tint .card-cover-mark {{
             color: hsl(var(--slug-hue, 145) 38% 30%);
         }}
+        .slug-tint a:hover, 
+        .slug-tint a:focus {{
+            text-decoration: none;
+            cursor: default; 
+        }}
         @media (prefers-color-scheme: dark) {{
             :root:not([data-theme=""light""]) .slug-tint {{
                 background: hsl(var(--slug-hue, 145) 20% 19%);

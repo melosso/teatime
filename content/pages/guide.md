@@ -57,11 +57,11 @@ Because Teatime reads content in memory, your changes appear the moment you save
 ::: code-group
 
 ```bash [watch]
-dotnet watch --project src/Teatime
+cd Teatime && dotnet watch --project src/Teatime
 ```
 
 ```bash [run]
-dotnet run --project src/Teatime
+cd Teatime && dotnet run --project src/Teatime
 ```
 
 :::
@@ -77,13 +77,13 @@ A post marked `draft: true` still shows while you develop, yet it stays out of l
 When a post is ready, export the whole blog as static HTML. One command crawls every page, post, tag, archive, and feed, then writes plain files any host can serve.
 
 ```bash [Export]
-dotnet run --project src/Teatime -- --export ./_site --base-url https://example.com
+cd Teatime && dotnet run --project src/Teatime -- --export ./_site --base-url https://example.com
 ```
 
 The `--base-url` value is woven into your feed, sitemap, and social tags, so it is worth setting to your real domain. If your blog lives in a subdirectory, add a base path so every internal link resolves correctly:
 
 ```bash {2} [Subdirectory export]
-dotnet run --project src/Teatime -- --export ./_site \
+cd Teatime && dotnet run --project src/Teatime -- --export ./_site \
   --base-url https://example.com/blog --base-path /blog
 ```
 

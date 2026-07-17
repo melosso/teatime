@@ -23,9 +23,11 @@ jobs:
         dotnet-version: '11.0.x'
 
     - name: Publish Teatime (Windows x64)
+      working-directory: Teatime
       run: dotnet publish src/Teatime/Teatime.csproj -c Release -r win-x64 --self-contained false -o ${{ github.workspace }}/publish_win
 
     - name: Publish Teatime (Linux x64)
+      working-directory: Teatime
       run: dotnet publish src/Teatime/Teatime.csproj -c Release -r linux-x64 --self-contained false -o ${{ github.workspace }}/publish_lin
 
     - name: Remove Debug Files

@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="../../content/**/*" LinkBase="content" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../content/**/*" LinkBase="content" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

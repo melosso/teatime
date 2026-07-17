@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'content/**'
-      - 'src/Teatime/**'
+      - 'Teatime/src/Teatime/**'
       - '.github/workflows/teatime-deployment.yml'
   workflow_dispatch: {}
 
@@ -37,6 +37,7 @@ jobs:
         dotnet-version: '11.0.x'
 
     - name: Build Teatime blog
+      working-directory: Teatime
       run: |
         dotnet publish src/Teatime/Teatime.csproj -c Release -o ${{ github.workspace }}/publish
 

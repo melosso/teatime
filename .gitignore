@@ -12,4 +12,4 @@
 [Oo]bj/
 
 # Generated bookmark card cache + downloaded images
-src/Teatime/wwwroot/bookmarks/
+Teatime/src/Teatime/wwwroot/bookmarks/
