@@ -1927,6 +1927,7 @@ public static partial class LayoutProvider
         }}
         .content.reading img.natural,
         .content.reading p > img.natural:only-child,
+        .content.reading p.natural > img:only-child,
         .content.reading figure.image-figure img.natural {{
             aspect-ratio: auto;
             object-fit: initial;
@@ -1936,18 +1937,21 @@ public static partial class LayoutProvider
         }}
         .content.reading img.plain,
         .content.reading p > img.plain:only-child,
+        .content.reading p.plain > img:only-child,
         .content.reading figure.image-figure img.plain {{
             border: none;
             background: none;
             border-radius: 0;
         }}
-        .content.reading img.left, .content.reading p > img.left:only-child {{
+        .content.reading img.left, .content.reading p > img.left:only-child,
+        .content.reading p.left > img:only-child {{
             float: left;
             width: min(45%, 20rem);
             margin: 0.4rem 1.4rem 1rem 0;
             aspect-ratio: auto;
         }}
-        .content.reading img.right, .content.reading p > img.right:only-child {{
+        .content.reading img.right, .content.reading p > img.right:only-child,
+        .content.reading p.right > img:only-child {{
             float: right;
             width: min(45%, 20rem);
             margin: 0.4rem 0 1rem 1.4rem;
@@ -1955,6 +1959,7 @@ public static partial class LayoutProvider
         }}
         .content.reading img.wide,
         .content.reading p > img.wide:only-child,
+        .content.reading p.wide > img:only-child,
         .content.reading figure.image-figure:has(img.wide) {{
             width: min(var(--measure-wide), 94vw);
             max-width: none;
@@ -1962,6 +1967,7 @@ public static partial class LayoutProvider
         }}
         .content.reading img.full,
         .content.reading p > img.full:only-child,
+        .content.reading p.full > img:only-child,
         .content.reading figure.image-figure:has(img.full) {{
             width: 100vw;
             max-width: none;
