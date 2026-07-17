@@ -86,7 +86,7 @@ public sealed class BlogPageResponder
         var fullHtml = LayoutProvider.GetLayout(
             title: PageTitleRenderer.ComputeTitle(view.Title, config),
             content: view.ContentHtml,
-            themeCss: themeCss + customCssLink + customJsScript,
+            themeCss: themeCss,
             brandText: brandText,
             brandImage: config?.BrandImage,
             themeMode: ThemeProvider.ResolveMode(_theme),
@@ -108,7 +108,9 @@ public sealed class BlogPageResponder
             isArticle: view.IsArticle,
             siteNavHtml: siteNavHtml,
             footerHtml: footerHtml,
-            pageId: seg.Length == 0 ? "home" : seg.Replace('/', '-'));
+            pageId: seg.Length == 0 ? "home" : seg.Replace('/', '-'),
+            // User theme assets load last so custom.css overrides engine styles at equal specificity.
+            customAssetsHtml: customCssLink + customJsScript);
 
         context.Response.ContentType = "text/html; charset=utf-8";
         await context.Response.WriteAsync(fullHtml);

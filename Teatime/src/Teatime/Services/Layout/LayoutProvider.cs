@@ -33,7 +33,8 @@ public static partial class LayoutProvider
         bool isArticle = false,
         string? siteNavHtml = null,
         string? footerHtml = null,
-        string? pageId = null)
+        string? pageId = null,
+        string? customAssetsHtml = null)
     {
         var l = Localization.Current;
         var scrollIndicatorHtml = showScrollIndicator ? @"<div id=""scroll-indicator""></div>" : "";
@@ -134,6 +135,7 @@ public static partial class LayoutProvider
     {headTagsHtml}
     {themeCss}
     {GetStyles(darkModeMediaQuery, basePath, nonce)}
+    {customAssetsHtml}
     {(hasMath ? $"<link rel=\"stylesheet\" href=\"{basePath}/css/katex.min.css\">" : "")}
     {(hasMermaid ? $"<script defer src=\"{basePath}/js/mermaid.min.js\"></script>" : "")}
 </head>
