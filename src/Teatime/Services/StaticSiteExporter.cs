@@ -23,6 +23,11 @@ public static class StaticSiteExporter
         var docs = app.Services.GetRequiredService<ContentService>();
         var postService = app.Services.GetRequiredService<PostService>();
         var options = app.Services.GetRequiredService<DocsOptions>();
+
+        var bookmarks = app.Services.GetRequiredService<BookmarkService>();
+        await bookmarks.ResolveAllPendingAsync(cancellationToken);
+        await docs.ForceRebuildAsync(cancellationToken);
+
         var pages = await docs.GetAllPagesAsync(cancellationToken);
         var view = await postService.GetViewAsync(cancellationToken);
 

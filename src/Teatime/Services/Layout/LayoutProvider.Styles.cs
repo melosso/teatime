@@ -433,10 +433,6 @@ public static partial class LayoutProvider
         .nav-item.active a {{
             color: var(--accent); background-color: var(--nav-active-bg); font-weight: 500;
         }}
-        /* .sidebar-group-title stays a plain <div>; <summary> can't be fully de-styled across
-           engines, so summary.sidebar-group-summary just wraps it as a click target. */
-        /* Each .sidebar-group-items adds 0.9rem left padding; depth compounds via nesting,
-           no per-level overrides needed. Root list gets no padding. */
         .sidebar-tree {{
             font-size: 0.9rem;
         }}
@@ -582,7 +578,7 @@ public static partial class LayoutProvider
             }}
         }}
         .header-anchor {{
-            position: absolute; left: -1.2rem; top: 0; bottom: 0;
+            position: absolute; left: -1.5rem; top: 0; bottom: 0;
             display: inline-flex; align-items: center;
             opacity: 0; text-decoration: none; font-weight: 400;
             color: var(--text-muted);
@@ -790,7 +786,7 @@ public static partial class LayoutProvider
         /* Custom containers: ::: tip / warning / danger / info / details */
         .content .custom-block {{
             margin: 1rem 0; padding: 1rem !important; border-radius: 8px;
-            line-height: 1.5; font-size: 0.9rem; color: var(--text-muted);
+            line-height: 1.5; font-size: 0.95rem; color: var(--text-muted);
             background-color: var(--accent-light);
         }}
         .content .custom-block p:not(.custom-block-title) {{
@@ -1654,7 +1650,18 @@ public static partial class LayoutProvider
             display: block;
         }}
         .lead-cover-empty {{
-            background: var(--sidebar-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-light);
+        }}
+        .lead-cover-mark {{
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 600;
+            line-height: 1;
+            color: var(--accent);
+            opacity: 0.72;
         }}
         .lead-body {{
             order: 1;
@@ -1829,6 +1836,31 @@ public static partial class LayoutProvider
         }}
         .content.reading figure.image-figure img {{
             margin: 0;
+        }}
+        .content.reading video {{
+            display: block;
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #000;
+            margin: 1.75rem 0;
+        }}
+        .content.reading iframe {{
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #000;
+            margin: 1.75rem 0;
+        }}
+        .content.reading audio {{
+            display: block;
+            width: 100%;
+            margin: 1.75rem 0;
         }}
         .content.reading figure.image-figure figcaption {{
             margin-top: 0.65rem;
@@ -2028,6 +2060,142 @@ public static partial class LayoutProvider
             }}
             .lead-body {{
                 order: 2;
+            }}
+        }}
+        .bookmark-embed {{
+            display: block;
+            margin: 2rem 0;
+            padding: 0.9rem 1.1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-color);
+            word-break: break-word;
+        }}
+        .bookmark-embed a {{
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }}
+        .bookmark-embed a:hover {{
+            text-decoration: underline;
+        }}
+        .kg-bookmark-card {{
+            margin: 2rem 0;
+        }}
+        .kg-bookmark-container {{
+            display: flex;
+            min-height: 128px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: inherit;
+            text-decoration: none;
+            overflow: hidden;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+        }}
+        .kg-bookmark-container:hover {{
+            border-color: var(--accent);
+            box-shadow: 0 6px 20px rgba(20, 24, 20, 0.08);
+            transform: translateY(-1px);
+        }}
+        .kg-bookmark-card a.kg-bookmark-container,
+        .kg-bookmark-card a.kg-bookmark-container:hover {{
+            text-decoration: none;
+        }}
+        .kg-bookmark-content {{
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex: 1 1 auto;
+            padding: 1.05rem 1.25rem;
+            min-width: 0;
+        }}
+        .kg-bookmark-title {{
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.98rem;
+            line-height: 1.35;
+            color: var(--text-color);
+        }}
+        .kg-bookmark-description {{
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-top: 0.35rem;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }}
+        .kg-bookmark-metadata {{
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: auto;
+            padding-top: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }}
+        .kg-bookmark-icon {{
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            object-fit: contain;
+        }}
+        .kg-bookmark-icon-fallback {{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            background: var(--accent-light);
+            color: var(--accent);
+        }}
+        .kg-bookmark-author::after {{
+            content: ""•"";
+            margin-left: 0.5rem;
+            color: var(--text-muted);
+        }}
+        .kg-bookmark-publisher {{
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }}
+        .kg-bookmark-thumbnail {{
+            position: relative;
+            flex: 0 0 30%;
+            max-width: 200px;
+            min-height: 128px;
+        }}
+        .content .kg-bookmark-card .kg-bookmark-thumbnail img {{
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            aspect-ratio: auto;
+            margin: 0;
+            border: 0;
+            border-radius: 0;
+            object-fit: cover;
+        }}
+        @media (max-width: 640px) {{
+            .kg-bookmark-container {{
+                flex-direction: column-reverse;
+            }}
+            .kg-bookmark-thumbnail {{
+                flex-basis: 160px;
+                max-width: none;
+                width: 100%;
+            }}
+        }}
+        @media (prefers-reduced-motion: reduce) {{
+            .kg-bookmark-container {{
+                transition: none;
+            }}
+            .kg-bookmark-container:hover {{
+                transform: none;
             }}
         }}
 </style>

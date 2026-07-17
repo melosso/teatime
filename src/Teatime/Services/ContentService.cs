@@ -14,6 +14,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
 {
     private readonly DocsOptions _options;
     private readonly MarkdownService _markdown;
+    private readonly BookmarkService? _bookmarks;
     private readonly ILogger<ContentService> _logger;
     private readonly string _basePathSegment;
     private FileSystemWatcher? _watcher;
@@ -44,13 +45,22 @@ public sealed partial class ContentService : IHostedService, IDisposable
     public ContentService(
         DocsOptions options,
         MarkdownService markdown,
-        ILogger<ContentService> logger)
+        ILogger<ContentService> logger,
+        BookmarkService? bookmarks = null)
     {
         _options = options;
         _markdown = markdown;
+        _bookmarks = bookmarks;
         _logger = logger;
         _basePathSegment = _options.BasePath?.Trim('/').ToLowerInvariant() ?? "";
+        if (_bookmarks is not null)
+            _bookmarks.RebuildRequested = RequestRebuild;
     }
+
+    public void RequestRebuild() =>
+        _fileChannel.Writer.TryWrite(new FileSystemEventArgs(WatcherChangeTypes.Changed, _options.RootPath, "bookmark"));
+
+    public Task ForceRebuildAsync(CancellationToken cancellationToken) => RebuildAsync(cancellationToken);
 
     public Config? SiteConfig => _snapshot.Config;
     public long BuildVersion { get; private set; }
@@ -180,6 +190,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
 
         var config = LoadConfig(docsPath);
         DateFormatter.Current = DateFormatter.From(config?.Locale);
+        _bookmarks?.Configure(config?.Bookmarks);
 
         // Sorted for deterministic hashing, regardless of FS enumeration order.
         var allFiles = Directory.GetFiles(docsPath, "*.md", SearchOption.AllDirectories).Order().ToArray();
@@ -217,6 +228,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
             var parsed = _markdown.Parse(content, defaultTitle, filePath: normalizedRelativePath);
 
             var html = WrapTables(parsed.Html);
+            html = _bookmarks?.Render(html) ?? html;
             var lastModified = parsed.FrontmatterDate ?? File.GetLastWriteTimeUtc(file);
 
             var page = new DocumentationPage(

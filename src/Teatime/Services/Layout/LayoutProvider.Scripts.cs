@@ -155,12 +155,21 @@ public static partial class LayoutProvider
                 var shareCopy = document.getElementById('share-copy');
                 var shareCopyLabel = document.getElementById('share-copy-label');
                 var shareLastFocused = null;
+                var shareMastodon = document.getElementById('share-mastodon');
+                if (shareMastodon) shareMastodon.addEventListener('click', function() {{
+                    var saved = window.localStorage.getItem('mastodon-instance') || 'fosstodon.org';
+                    var host = window.prompt('Your Mastodon instance', saved);
+                    if (!host) return;
+                    host = host.trim().replace(/^https?:\/\//, '').replace(/\/+$/, '');
+                    if (!host) return;
+                    window.localStorage.setItem('mastodon-instance', host);
+                    var text = encodeURIComponent(document.title + ' ' + location.href);
+                    window.open('https://' + host + '/share?text=' + text, '_blank', 'noopener');
+                }});
                 var openShare = function() {{
                     var url = location.href, eu = encodeURIComponent(url), et = encodeURIComponent(document.title);
-                    var x = document.getElementById('share-x');
                     var li = document.getElementById('share-linkedin');
                     var em = document.getElementById('share-email');
-                    if (x) x.href = 'https://twitter.com/intent/tweet?url=' + eu + '&text=' + et;
                     if (li) li.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + eu;
                     if (em) em.href = 'mailto:?subject=' + et + '&body=' + eu;
                     shareLastFocused = document.activeElement;

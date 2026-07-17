@@ -107,7 +107,7 @@ public static partial class PostListRenderer
         var href = UrlPaths.Href(basePath, post.Url);
         var cover = post.Cover is { Length: > 0 } c
             ? $"<a class=\"lead-cover\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\"><img src=\"{LayoutProvider.HtmlEncode(Asset(basePath, c))}\" alt=\"\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\"></a>"
-            : $"<a class=\"lead-cover lead-cover-empty\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\"></a>";
+            : $"<a class=\"lead-cover lead-cover-empty\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\"><span class=\"lead-cover-mark\">{Monogram(post.Title)}</span></a>";
 
         var sb = new StringBuilder();
         sb.Append("<article class=\"lead\">").Append(cover);
@@ -120,6 +120,13 @@ public static partial class PostListRenderer
         sb.Append("<a class=\"readmore\" href=\"").Append(href).Append("\">Keep reading <span>→</span></a>");
         sb.Append("</div></article>");
         return sb.ToString();
+    }
+
+    private static string Monogram(string title)
+    {
+        var trimmed = title.TrimStart();
+        var initial = trimmed.Length > 0 ? char.ToUpperInvariant(trimmed[0]) : 'T';
+        return LayoutProvider.HtmlEncode(initial.ToString());
     }
 
     private static string Avatar(string author, string? authorImage, string basePath)

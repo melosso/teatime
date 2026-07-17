@@ -88,6 +88,7 @@ public sealed partial class MarkdownService
 
         var html = UnescapeBraces(AddHeadingAnchors(Markdown.ToHtml(markdown, _pipeline)));
         html = PrefixBodyContent(html, _basePath);
+        html = MarkStandaloneBookmarks(html);
         html = AddExternalLinkAttributes(html);
         html = AddLazyLoading(html);
         html = WrapImageFigures(html);
@@ -200,6 +201,25 @@ public sealed partial class MarkdownService
 
     [GeneratedRegex(@"(href|src)=""(/(?!/)[^""]*)""")]
     private static partial Regex BodyContentUrlRegex();
+
+    // A bare URL alone on its own line (link text == href) becomes a bookmark placeholder that doubles as a
+    // plain-link fallback. A labelled link [text](url) has text != href, so it stays an ordinary link.
+    private static string MarkStandaloneBookmarks(string html) =>
+        StandaloneLinkRegex().Replace(html, m =>
+        {
+            var href = m.Groups[1].Value;
+            var text = m.Groups[2].Value.Trim();
+            if (!UrlEqualsText(href, text))
+                return m.Value;
+
+            return $"<div class=\"bookmark-embed\" data-bookmark-url=\"{href}\"><a href=\"{href}\">{m.Groups[2].Value}</a></div>";
+        });
+
+    private static bool UrlEqualsText(string href, string text) =>
+        string.Equals(href.TrimEnd('/'), text.TrimEnd('/'), StringComparison.Ordinal);
+
+    [GeneratedRegex(@"<p>\s*<a href=""(https?://[^""]+)"">(.*?)</a>\s*</p>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    private static partial Regex StandaloneLinkRegex();
 
     // External links (absolute http/https) open in a new tab safely, unless the author set target explicitly.
     private static string AddExternalLinkAttributes(string html) =>

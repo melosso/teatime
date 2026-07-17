@@ -68,6 +68,7 @@ try
         sp.GetRequiredService<CodeGroupIconOptions>(),
         sp.GetRequiredService<MathRenderer>(),
         sp.GetRequiredService<ILogger<MarkdownService>>()));
+    builder.Services.AddSingleton<BookmarkService>();
     builder.Services.AddSingleton<ContentService>();
     builder.Services.AddHostedService(sp => sp.GetRequiredService<ContentService>());
     builder.Services.AddSingleton<PostService>();
@@ -199,7 +200,9 @@ try
             ContentTypeProvider = assetContentTypes,
             ServeUnknownFileTypes = false,
             OnPrepareResponse = ctx =>
-                ctx.Context.Response.Headers.CacheControl = "public,max-age=604800"
+                ctx.Context.Response.Headers.CacheControl = app.Environment.IsDevelopment()
+                    ? "no-cache"
+                    : "public,max-age=604800"
         });
     }
 
