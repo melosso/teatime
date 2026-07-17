@@ -24,9 +24,7 @@ public sealed class PageRequestHandler
     public async Task HandleAsync(string? path, HttpContext context)
     {
         var normalized = (path ?? string.Empty).Trim('/').ToLowerInvariant();
-        if (normalized.Length == 0
-            || normalized.StartsWith("posts/", StringComparison.Ordinal)
-            || normalized.StartsWith("authors/", StringComparison.Ordinal))
+        if (normalized.Length == 0 || Models.ReservedRoutes.IsContentPrefixed(normalized))
         {
             await _responder.Write404Async(context);
             return;
@@ -35,9 +33,7 @@ public sealed class PageRequestHandler
         var page = await _content.GetPageAsync($"pages/{normalized}", context.RequestAborted)
                    ?? await _content.GetPageAsync(normalized, context.RequestAborted);
 
-        if (page is null
-            || page.Path.StartsWith("posts/", StringComparison.Ordinal)
-            || page.Path.StartsWith("authors/", StringComparison.Ordinal))
+        if (page is null || Models.ReservedRoutes.IsContentPrefixed(page.Path))
         {
             await _responder.Write404Async(context);
             return;
@@ -93,7 +89,7 @@ public sealed class PageRequestHandler
         return (UrlPaths.Href(_responder.BasePath, norm), targetPage?.Title ?? norm);
     }
 
-    private static string ResolveRedirect(string target, string basePath)
+    internal static string ResolveRedirect(string target, string basePath)
     {
         if (target.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
             || target.StartsWith("https://", StringComparison.OrdinalIgnoreCase))

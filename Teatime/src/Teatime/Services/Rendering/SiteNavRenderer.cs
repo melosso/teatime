@@ -12,8 +12,8 @@ public static class SiteNavRenderer
     private static readonly (string Text, string Path)[] Default =
     [
         ("Posts", ""),
-        ("Tags", "tags"),
-        ("Archive", "archive"),
+        (ReservedRoutes.Tags.Title, ReservedRoutes.Tags.Slug),
+        (ReservedRoutes.Archive.Title, ReservedRoutes.Archive.Slug),
         ("About", "about"),
     ];
 

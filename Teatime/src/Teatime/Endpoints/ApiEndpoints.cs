@@ -26,7 +26,7 @@ internal static class ApiEndpoints
 
         var postHits = docs.Search(q);
         var view = await posts.GetViewAsync(cancellationToken);
-        var grouped = GroupedSearch.Build(q, postHits, authors.GetAll(), view.Tags, settings.BasePath);
+        var grouped = GroupedSearch.Build(q, postHits, authors.GetListed(), view.Tags, settings.BasePath);
         return TypedResults.Ok(grouped);
     }
 

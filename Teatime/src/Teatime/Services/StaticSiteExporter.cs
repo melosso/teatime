@@ -53,25 +53,26 @@ public static class StaticSiteExporter
         }
 
         var config = docs.SiteConfig;
-        if (config?.Tags != false)
+        if (ReservedRoutes.Tags.IsEnabled(config))
         {
-            routes.Add(("/tags", "tags"));
+            var tags = ReservedRoutes.Tags.Slug;
+            routes.Add(($"/{tags}", tags));
             foreach (var tag in view.Tags)
             {
-                routes.Add(($"/tags/{tag.Slug}", $"tags/{tag.Slug}"));
+                routes.Add(($"/{tags}/{tag.Slug}", $"{tags}/{tag.Slug}"));
                 var tagPages = Math.Max(1, (int)Math.Ceiling(tag.Count / (double)options.PageSize));
                 for (var n = 2; n <= tagPages; n++)
-                    routes.Add(($"/tags/{tag.Slug}/page/{n}", $"tags/{tag.Slug}/page/{n}"));
+                    routes.Add(($"/{tags}/{tag.Slug}/page/{n}", $"{tags}/{tag.Slug}/page/{n}"));
             }
         }
-        if (config?.Archive != false)
-            routes.Add(("/archive", "archive"));
+        if (ReservedRoutes.Archive.IsEnabled(config))
+            routes.Add(($"/{ReservedRoutes.Archive.Slug}", ReservedRoutes.Archive.Slug));
 
         var authorService = app.Services.GetRequiredService<AuthorService>();
-        var authors = authorService.GetAll();
+        var authors = authorService.GetListed();
         if (authors.Count > 0)
         {
-            routes.Add(("/authors", "authors"));
+            routes.Add(($"/{ReservedRoutes.Authors.Slug}", ReservedRoutes.Authors.Slug));
             foreach (var author in authors)
             {
                 routes.Add(($"/{author.Url}", author.Url));

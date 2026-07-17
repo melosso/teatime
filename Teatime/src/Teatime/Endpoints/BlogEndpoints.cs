@@ -29,16 +29,34 @@ internal static class BlogEndpoints
         return app;
     }
 
-    private static async Task RenderAuthorIndex(HttpContext ctx, AuthorService authors, BlogPageResponder responder)
+    private static async Task RenderAuthorIndex(HttpContext ctx, AuthorService authors, BlogPageResponder responder, ContentService content)
     {
-        var html = AuthorRenderer.BuildIndex(authors.GetAll(), responder.BasePath);
-        await responder.WriteAsync(ctx, new BlogPageView("Authors", html, CanonicalPath: "authors"));
+        var route = Models.ReservedRoutes.Authors;
+        var basePath = responder.BasePath;
+        var custom = await LookupCustom(content, route.Slug, ctx.RequestAborted);
+        if (!route.IsEnabled(content.SiteConfig) || custom?.Enabled == false)
+        {
+            await responder.Write404Async(ctx);
+            return;
+        }
+
+        if (TryRedirect(ctx, custom, basePath))
+            return;
+
+        var list = AuthorRenderer.BuildIndex(authors.GetListed(), basePath);
+        var html = custom is not null ? Inject(custom.HtmlContent, list, route.Slug) : list;
+
+        await responder.WriteAsync(ctx, new BlogPageView(
+            Title: custom?.Title ?? route.Title,
+            ContentHtml: html,
+            Description: custom?.Description,
+            CanonicalPath: route.Slug));
     }
 
     private static async Task RenderAuthor(string slug, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options, int page)
     {
         var author = authors.GetBySlug(slug);
-        if (author is null || page < 1)
+        if (author is null || author.Hidden || page < 1)
         {
             await responder.Write404Async(ctx);
             return;
@@ -123,7 +141,7 @@ internal static class BlogEndpoints
         var authorImage = author?.Image ?? config?.AuthorImage;
         var (older, newer) = await posts.GetPrevNextAsync(post.Slug, ctx.RequestAborted);
 
-        var body = PostListRenderer.BuildPostHeader(post, basePath, authorName, authorImage, author?.Url)
+        var body = PostListRenderer.BuildPostHeader(post, basePath, authorName, authorImage, author is { Hidden: false } ? author.Url : null)
                  + PostListRenderer.BuildCover(post, basePath)
                  + post.HtmlContent
                  + PostListRenderer.BuildPostNav(older, newer, basePath);
@@ -138,30 +156,34 @@ internal static class BlogEndpoints
 
     private static async Task RenderTagIndex(HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content)
     {
+        var route = Models.ReservedRoutes.Tags;
         var view = await posts.GetViewAsync(ctx.RequestAborted);
         var basePath = responder.BasePath;
-        var custom = await LookupCustom(content, "tags", ctx.RequestAborted);
-        if (content.SiteConfig?.Tags == false || custom?.Enabled == false)
+        var custom = await LookupCustom(content, route.Slug, ctx.RequestAborted);
+        if (!route.IsEnabled(content.SiteConfig) || custom?.Enabled == false)
         {
             await responder.Write404Async(ctx);
             return;
         }
 
+        if (TryRedirect(ctx, custom, basePath))
+            return;
+
         var html = custom is not null
-            ? Inject(custom.HtmlContent, TagListRenderer.BuildCloud(view.Tags, basePath), "tags")
+            ? Inject(custom.HtmlContent, TagListRenderer.BuildCloud(view.Tags, basePath), route.Slug)
             : TagListRenderer.BuildIndex(view.Tags, basePath);
 
         await responder.WriteAsync(ctx, new BlogPageView(
-            Title: custom?.Title ?? "Tags",
+            Title: custom?.Title ?? route.Title,
             ContentHtml: html,
             Description: custom?.Description,
-            CanonicalPath: "tags"));
+            CanonicalPath: route.Slug));
     }
 
     private static async Task RenderTag(string tag, HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content, DocsOptions options, int page)
     {
         var matches = await posts.GetByTagAsync(tag, ctx.RequestAborted);
-        if (content.SiteConfig?.Tags == false || matches.Count == 0 || page < 1)
+        if (!Models.ReservedRoutes.Tags.IsEnabled(content.SiteConfig) || matches.Count == 0 || page < 1)
         {
             await responder.Write404Async(ctx);
             return;
@@ -189,30 +211,43 @@ internal static class BlogEndpoints
 
     private static async Task RenderArchive(HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content)
     {
+        var route = Models.ReservedRoutes.Archive;
         var years = await posts.GetArchiveAsync(ctx.RequestAborted);
         var basePath = responder.BasePath;
-        var custom = await LookupCustom(content, "archive", ctx.RequestAborted);
-        if (content.SiteConfig?.Archive == false || custom?.Enabled == false)
+        var custom = await LookupCustom(content, route.Slug, ctx.RequestAborted);
+        if (!route.IsEnabled(content.SiteConfig) || custom?.Enabled == false)
         {
             await responder.Write404Async(ctx);
             return;
         }
 
+        if (TryRedirect(ctx, custom, basePath))
+            return;
+
         var html = custom is not null
-            ? Inject(custom.HtmlContent, ArchiveRenderer.BuildYears(years, basePath), "archive")
+            ? Inject(custom.HtmlContent, ArchiveRenderer.BuildYears(years, basePath), route.Slug)
             : ArchiveRenderer.Build(years, basePath);
 
         await responder.WriteAsync(ctx, new BlogPageView(
-            Title: custom?.Title ?? "Archive",
+            Title: custom?.Title ?? route.Title,
             ContentHtml: html,
             Description: custom?.Description,
-            CanonicalPath: "archive"));
+            CanonicalPath: route.Slug));
     }
 
     // A user-authored content/pages/{name}.md (or content/{name}.md) that owns the title,
     // description, and heading, with {{name}} marking where the generated list is injected.
     private static async ValueTask<Models.DocumentationPage?> LookupCustom(ContentService content, string name, CancellationToken ct) =>
         await content.GetPageAsync($"pages/{name}", ct) ?? await content.GetPageAsync(name, ct);
+
+    private static bool TryRedirect(HttpContext ctx, Models.DocumentationPage? custom, string basePath)
+    {
+        if (custom?.Redirect is not { Length: > 0 } target)
+            return false;
+
+        ctx.Response.Redirect(PageRequestHandler.ResolveRedirect(target, basePath), permanent: false);
+        return true;
+    }
 
     private static string Inject(string contentHtml, string listHtml, string name)
     {

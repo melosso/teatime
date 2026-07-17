@@ -61,7 +61,29 @@ Standalone pages under `content/pages/` understand a few extras of their own.
 | `page-next`                  | Adds a "Next" link at the foot of the page, resolved to the target page's title |
 | `page-prev`, `page-previous` | The matching "Previous" link. Either spelling works                 |
 | `pagination`                 | Set to `false` to hide those previous and next links entirely       |
-| `enabled`                    | Set to `false` on a custom `tags` or `archive` page to turn that surface off |
+| `enabled`                    | Set to `false` on a custom `tags`, `archive`, or `authors` page to turn that surface off |
+
+## Authors
+
+Files in `content/authors/` describe the people behind the posts. A post points at one with its `author` field.
+
+```md [content/authors/jane.md]
+---
+id: jane
+name: Jane Doe
+image: /assets/jane.webp
+hidden: false
+---
+
+A short bio, written in Markdown.
+```
+
+| Field    | What it does                                                              |
+| -------- | ------------------------------------------------------------------------ |
+| `id`     | The value posts use in their `author` field. Defaults to the file name   |
+| `name`   | The display name shown on bylines and the author page                    |
+| `image`  | A portrait for the byline and author card                               |
+| `hidden` | Set to `true` to withdraw an author from the site. They lose their page, and drop out of the index, sitemap, and search. Their posts stay published and still carry their name, as plain text rather than a link |
 
 ## Search and metadata
 

@@ -12,6 +12,7 @@ public sealed class AuthorService
         public string? Id { get; init; }
         public string? Name { get; init; }
         public string? Image { get; init; }
+        public bool Hidden { get; init; }
     }
 
     private readonly DocsOptions _options;
@@ -23,6 +24,7 @@ public sealed class AuthorService
     private long _cachedVersion = -1;
     private IReadOnlyDictionary<string, Author> _byId = new Dictionary<string, Author>();
     private IReadOnlyList<Author> _all = [];
+    private IReadOnlyList<Author> _listed = [];
 
     public AuthorService(DocsOptions options, MarkdownService markdown, ContentService content)
     {
@@ -35,10 +37,11 @@ public sealed class AuthorService
             .Build();
     }
 
-    public IReadOnlyList<Author> GetAll()
+    /// <summary>Public authors. Hidden ones still resolve by id and slug, for the byline name only.</summary>
+    public IReadOnlyList<Author> GetListed()
     {
         Ensure();
-        return _all;
+        return _listed;
     }
 
     public Author? GetById(string? id)
@@ -65,12 +68,14 @@ public sealed class AuthorService
 
         var authors = Load();
         var byId = authors.ToDictionary(a => a.Id, StringComparer.OrdinalIgnoreCase);
+        var listed = authors.Where(a => !a.Hidden).ToList();
 
         lock (_gate)
         {
             _cachedVersion = version;
             _all = authors;
             _byId = byId;
+            _listed = listed;
         }
     }
 
@@ -88,7 +93,7 @@ public sealed class AuthorService
             if (id.Length == 0) continue;
             var name = fm.Name ?? id;
             var bio = _markdown.ToHtml(text);
-            authors.Add(new Author(id, PagePath.SlugifySegment(id), name, fm.Image, bio));
+            authors.Add(new Author(id, PagePath.SlugifySegment(id), name, fm.Image, bio, fm.Hidden));
         }
 
         return authors

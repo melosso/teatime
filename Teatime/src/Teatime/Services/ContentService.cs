@@ -336,7 +336,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
                 if (resolved.Length == 0
                     || pageMap.ContainsKey(resolved)
                     || pageMap.ContainsKey($"pages/{resolved}")
-                    || IsKnownRoute(resolved))
+                    || ReservedRoutes.IsKnown(resolved))
                     continue;
 
                 deadSources.Add(page.Path);
@@ -382,12 +382,6 @@ public sealed partial class ContentService : IHostedService, IDisposable
         }
         return string.Join("/", segments).ToLowerInvariant();
     }
-
-    private static bool IsKnownRoute(string resolved) =>
-        resolved is "tags" or "archive" or "authors" or "feed.xml" or "sitemap.xml" or "robots.txt" or "llms.txt"
-        || resolved.StartsWith("tags/", StringComparison.Ordinal)
-        || resolved.StartsWith("authors/", StringComparison.Ordinal)
-        || resolved.StartsWith("page/", StringComparison.Ordinal);
 
     private static bool ShouldSkipHref(string href)
     {

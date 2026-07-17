@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 namespace Teatime.Tests;
 
 /// <summary>Boots the real app in-memory against a temp content dir; real routing, middleware, rate limiter, CSP and ETag flow</summary>
-public sealed class TeatimeWebApplicationFactory : WebApplicationFactory<Program>
+public class TeatimeWebApplicationFactory : WebApplicationFactory<Program>
 {
     public string ContentDir { get; } =
         Path.Combine(Path.GetTempPath(), "teatime-integration-" + Guid.NewGuid().ToString("N"));
@@ -203,6 +203,105 @@ public sealed class IntegrationTests : IClassFixture<TeatimeWebApplicationFactor
         var feed = await client.GetAsync("/feed.xml");
         Assert.Equal(HttpStatusCode.OK, feed.StatusCode);
         Assert.Contains("<rss", await feed.Content.ReadAsStringAsync());
+    }
+}
+
+/// <summary>Own factory instance; the author files must not leak into the shared fixture's search and sitemap tests</summary>
+public sealed class HiddenAuthorTests
+{
+    private sealed class AuthorFactory : TeatimeWebApplicationFactory
+    {
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+            base.ConfigureWebHost(builder);
+            Directory.CreateDirectory(Path.Combine(ContentDir, "authors"));
+            File.WriteAllText(Path.Combine(ContentDir, "authors", "visible.md"),
+                "---\nid: visible\nname: Visible Author\n---\n\nBio.\n");
+            File.WriteAllText(Path.Combine(ContentDir, "authors", "ghost.md"),
+                "---\nid: ghost\nname: Ghost Author\nhidden: true\n---\n\nBio.\n");
+            File.WriteAllText(Path.Combine(ContentDir, "posts", "ghost-written.md"),
+                "---\ntitle: Ghost Written\ndate: 2026-01-09\nauthor: ghost\n---\n\nWords.\n");
+        }
+    }
+
+    [Fact]
+    public async Task AuthorIndex_OmitsHiddenAuthor()
+    {
+        using var factory = new AuthorFactory();
+        var client = factory.CreateClient();
+
+        var html = await client.GetStringAsync("/authors");
+
+        Assert.Contains("Visible Author", html);
+        Assert.DoesNotContain("Ghost Author", html);
+    }
+
+    [Fact]
+    public async Task HiddenAuthor_PageReturns404()
+    {
+        using var factory = new AuthorFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/authors/ghost");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task HiddenAuthor_BylineNamesThemWithoutLinking()
+    {
+        using var factory = new AuthorFactory();
+        var client = factory.CreateClient();
+
+        var html = await client.GetStringAsync("/posts/ghost-written");
+
+        Assert.Contains("Ghost Author", html);
+        Assert.DoesNotContain("authors/ghost", html);
+    }
+
+    [Fact]
+    public async Task Sitemap_OmitsHiddenAuthor()
+    {
+        using var factory = new AuthorFactory();
+        var client = factory.CreateClient();
+
+        var sitemap = await client.GetStringAsync("/sitemap.xml");
+
+        Assert.Contains("authors/visible", sitemap);
+        Assert.DoesNotContain("authors/ghost", sitemap);
+    }
+}
+
+/// <summary>Own factory instance; the reserved-route pages must not leak into the shared fixture's tag/archive tests</summary>
+public sealed class ReservedRouteRedirectTests
+{
+    private sealed class RedirectFactory : TeatimeWebApplicationFactory
+    {
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+            base.ConfigureWebHost(builder);
+            File.WriteAllText(Path.Combine(ContentDir, "pages", "tags.md"),
+                "---\ntitle: Tags\nredirect: /\n---\n");
+            File.WriteAllText(Path.Combine(ContentDir, "pages", "archive.md"),
+                "---\ntitle: Archive\nredirect: /about\n---\n");
+            File.WriteAllText(Path.Combine(ContentDir, "pages", "authors.md"),
+                "---\ntitle: Authors\nredirect: /about\n---\n");
+        }
+    }
+
+    [Theory]
+    [InlineData("/tags", "/")]
+    [InlineData("/archive", "/about/")]
+    [InlineData("/authors", "/about/")]
+    public async Task ReservedRoute_WithRedirectFrontMatter_Redirects(string route, string expected)
+    {
+        using var factory = new RedirectFactory();
+        var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+
+        var response = await client.GetAsync(route);
+
+        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+        Assert.Equal(expected, response.Headers.Location?.ToString());
     }
 }
 

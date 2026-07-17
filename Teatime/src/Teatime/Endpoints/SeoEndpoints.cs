@@ -74,18 +74,16 @@ internal static class SeoEndpoints
             sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, slug)}</loc><lastmod>{lastMod}</lastmod><priority>0.5</priority></url>");
         }
 
-        var authors = authorService.GetAll();
+        var authors = authorService.GetListed();
         if (authors.Count > 0)
         {
-            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "authors")}</loc><priority>0.3</priority></url>");
+            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, ReservedRoutes.Authors.Slug)}</loc><priority>0.3</priority></url>");
             foreach (var author in authors)
                 sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, author.Url)}</loc><priority>0.3</priority></url>");
         }
 
-        if (config?.Tags != false)
-            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "tags")}</loc><priority>0.3</priority></url>");
-        if (config?.Archive != false)
-            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "archive")}</loc><priority>0.3</priority></url>");
+        foreach (var route in new[] { ReservedRoutes.Tags, ReservedRoutes.Archive }.Where(r => r.IsEnabled(config)))
+            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, route.Slug)}</loc><priority>0.3</priority></url>");
         sb.AppendLine("</urlset>");
         return TypedResults.Text(sb.ToString(), "application/xml", Encoding.UTF8);
     }
