@@ -137,7 +137,7 @@ public static partial class PostListRenderer
         if (post.Cover is { Length: > 0 } c)
         {
             if (CoverColor.TryParse(c, out var hex))
-                return $"<a class=\"{coverClass}\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\" style=\"background:{hex}\">"
+                return $"<a class=\"{coverClass} cover-mono\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\" style=\"background:{hex}\">"
                      + $"<span class=\"{markClass}\" style=\"color:{CoverColor.InkFor(hex)}\">{Monogram(post.Title)}</span></a>";
 
             var loading = eager ? "loading=\"eager\" fetchpriority=\"high\"" : "loading=\"lazy\"";
@@ -146,7 +146,7 @@ public static partial class PostListRenderer
         }
 
         var hue = SlugColor.HueFor(post.Slug);
-        return $"<a class=\"{coverClass} slug-tint\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\" style=\"--slug-hue:{hue.ToString(CultureInfo.InvariantCulture)}\">"
+        return $"<a class=\"{coverClass} slug-tint cover-mono\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\" style=\"--slug-hue:{hue.ToString(CultureInfo.InvariantCulture)}\">"
              + $"<span class=\"{markClass}\">{Monogram(post.Title)}</span></a>";
     }
 

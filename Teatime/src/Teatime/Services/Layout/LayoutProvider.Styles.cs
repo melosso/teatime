@@ -1689,10 +1689,12 @@ public static partial class LayoutProvider
             object-fit: cover;
             display: block;
         }}
-        .slug-tint {{
+        .cover-mono {{
             display: flex;
             align-items: center;
             justify-content: center;
+        }}
+        .slug-tint {{
             background: hsl(var(--slug-hue, 145) 30% 88%);
         }}
         .slug-tint .lead-cover-mark, .slug-tint .card-cover-mark {{
