@@ -31,6 +31,12 @@ public static partial class LayoutProvider
             --measure: 680px;
             --measure-wide: 760px;
 
+            --card-title-size: 1.4rem;
+            --lead-title-size: clamp(1.7rem, 1rem + 2.2vw, 2.4rem);
+            --inter-ascender-to-cap: 0.242;
+            --card-cap-inset: calc(var(--card-title-size) * (0.1 + var(--inter-ascender-to-cap)));
+            --lead-cap-inset: calc(var(--lead-title-size) * (0.07 + var(--inter-ascender-to-cap)));
+
             --search-bg: var(--sidebar-bg);
             --search-border: var(--border);
             --search-hover-border: var(--accent);
@@ -1282,25 +1288,58 @@ public static partial class LayoutProvider
             padding: 2rem 0;
         }}
         .post-card {{
-            display: block;
+            display: grid;
+            grid-template-columns: 1fr 104px;
+            gap: clamp(1rem, 3vw, 1.75rem);
+            align-items: start;
             padding: 2.15rem 0;
             border-bottom: 1px solid var(--border);
             text-decoration: none;
         }}
-        .post-card-title {{
+        .post-card.post-card-plain {{
+            grid-template-columns: 1fr;
+        }}
+        .post-card-body {{
+            min-width: 0;
+        }}
+        .card-cover {{
+            display: block;
+            margin-top: var(--card-cap-inset);
+            aspect-ratio: 4 / 3;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--accent-light);
+        }}
+        .card-cover img {{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }}
+        .card-cover-mark {{
             font-family: var(--font-display);
-            font-size: 1.4rem;
+            font-size: 2rem;
+            font-weight: 600;
+            line-height: 1;
+            color: var(--accent);
+        }}
+        .content .post-card-title {{
+            font-family: var(--font-display);
+            font-size: var(--card-title-size);
             font-weight: 600;
             line-height: 1.2;
             letter-spacing: -0.015em;
-            margin: 0.45rem 0 0.4rem;
+            margin: 0 0 0.4rem;
+            padding-bottom: 0;
+            border-bottom: none;
         }}
-        .post-card-title a {{
+        .content .post-card-title a {{
             color: var(--text-color);
             text-decoration: none;
             transition: color 0.15s ease;
         }}
-        .post-card-title a:hover {{
+        .content .post-card-title a:hover {{
             color: var(--accent);
         }}
         .post-excerpt {{
@@ -1636,7 +1675,7 @@ public static partial class LayoutProvider
         .lead-cover {{
             display: block;
             order: 2;
-            margin-top: 0.4rem;
+            margin-top: var(--lead-cap-inset);
             aspect-ratio: 4 / 3;
             border-radius: 12px;
             overflow: hidden;
@@ -1649,11 +1688,34 @@ public static partial class LayoutProvider
             object-fit: cover;
             display: block;
         }}
-        .lead-cover-empty {{
+        .content a.card-cover, .content a.card-cover:hover,
+        .content a.lead-cover, .content a.lead-cover:hover {{
+            text-decoration: none;
+        }}
+        .slug-tint {{
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--accent-light);
+            background: hsl(var(--slug-hue, 145) 30% 88%);
+        }}
+        .slug-tint .lead-cover-mark, .slug-tint .card-cover-mark {{
+            color: hsl(var(--slug-hue, 145) 38% 30%);
+        }}
+        @media (prefers-color-scheme: dark) {{
+            :root:not([data-theme=""light""]) .slug-tint {{
+                background: hsl(var(--slug-hue, 145) 20% 19%);
+            }}
+            :root:not([data-theme=""light""]) .slug-tint .lead-cover-mark,
+            :root:not([data-theme=""light""]) .slug-tint .card-cover-mark {{
+                color: hsl(var(--slug-hue, 145) 28% 70%);
+            }}
+        }}
+        :root[data-theme=""dark""] .slug-tint {{
+            background: hsl(var(--slug-hue, 145) 20% 19%);
+        }}
+        :root[data-theme=""dark""] .slug-tint .lead-cover-mark,
+        :root[data-theme=""dark""] .slug-tint .card-cover-mark {{
+            color: hsl(var(--slug-hue, 145) 28% 70%);
         }}
         .lead-cover-mark {{
             font-family: var(--font-display);
@@ -1661,14 +1723,13 @@ public static partial class LayoutProvider
             font-weight: 600;
             line-height: 1;
             color: var(--accent);
-            opacity: 0.72;
         }}
         .lead-body {{
             order: 1;
         }}
         .content .lead-title {{
             font-family: var(--font-display);
-            font-size: clamp(1.7rem, 1rem + 2.2vw, 2.4rem);
+            font-size: var(--lead-title-size);
             font-weight: 600;
             line-height: 1.14;
             letter-spacing: -0.02em;
@@ -2057,9 +2118,30 @@ public static partial class LayoutProvider
             }}
             .lead-cover {{
                 order: 1;
+                margin-top: 0;
             }}
             .lead-body {{
                 order: 2;
+            }}
+            .post-card {{
+                grid-template-columns: 1fr 64px;
+                gap: 1rem;
+            }}
+            .card-cover {{
+                aspect-ratio: 1 / 1;
+                border-radius: 6px;
+            }}
+            .card-cover-mark {{
+                font-size: 1.35rem;
+            }}
+        }}
+        @media (max-width: 380px) {{
+            .post-card {{
+                grid-template-columns: 1fr 52px;
+                gap: 0.75rem;
+            }}
+            .card-cover-mark {{
+                font-size: 1.05rem;
             }}
         }}
         .bookmark-embed {{

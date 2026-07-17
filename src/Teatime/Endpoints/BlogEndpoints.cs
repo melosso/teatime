@@ -90,11 +90,11 @@ internal static class BlogEndpoints
         {
             var rest = slice.Skip(1).ToList();
             content = PostListRenderer.BuildFeaturedLead(slice[0], basePath)
-                    + (rest.Count > 0 ? PostListRenderer.BuildList(rest, basePath) : string.Empty);
+                    + (rest.Count > 0 ? PostListRenderer.BuildList(rest, basePath, showPreview: true) : string.Empty);
         }
         else
         {
-            content = PostListRenderer.BuildList(slice, basePath);
+            content = PostListRenderer.BuildList(slice, basePath, showPreview: true);
         }
         content += PostListRenderer.BuildPager(page, totalPages, basePath);
 

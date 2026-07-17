@@ -11,7 +11,12 @@ public static partial class PostListRenderer
     private const string ShareIcon =
         "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><path d=\"M8.6 13.5l6.8 4M15.4 6.5l-6.8 4\"/></svg>";
 
-    public static string BuildList(IReadOnlyList<Post> posts, string basePath, string? heading = null, string? emptyMessage = null)
+    public static string BuildList(
+        IReadOnlyList<Post> posts,
+        string basePath,
+        string? heading = null,
+        string? emptyMessage = null,
+        bool showPreview = false)
     {
         var sb = new StringBuilder();
         if (heading is { Length: > 0 })
@@ -26,7 +31,7 @@ public static partial class PostListRenderer
         }
 
         foreach (var post in posts)
-            AppendCard(sb, post, basePath);
+            AppendCard(sb, post, basePath, showPreview);
 
         return sb.ToString();
     }
@@ -106,9 +111,7 @@ public static partial class PostListRenderer
     public static string BuildFeaturedLead(Post post, string basePath)
     {
         var href = UrlPaths.Href(basePath, post.Url);
-        var cover = post.Cover is { Length: > 0 } c
-            ? $"<a class=\"lead-cover\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\"><img src=\"{LayoutProvider.HtmlEncode(Asset(basePath, c))}\" alt=\"\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\"></a>"
-            : $"<a class=\"lead-cover lead-cover-empty\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\"><span class=\"lead-cover-mark\">{Monogram(post.Title)}</span></a>";
+        var cover = Preview(post, basePath, href, "lead-cover", "lead-cover-mark", eager: true);
 
         var sb = new StringBuilder();
         sb.Append("<article class=\"lead\">").Append(cover);
@@ -123,12 +126,22 @@ public static partial class PostListRenderer
         return sb.ToString();
     }
 
-    private static string Monogram(string title)
+    private static string Preview(Post post, string basePath, string href, string coverClass, string markClass, bool eager)
     {
-        var trimmed = title.TrimStart();
-        var initial = trimmed.Length > 0 ? char.ToUpperInvariant(trimmed[0]) : 'T';
-        return LayoutProvider.HtmlEncode(initial.ToString());
+        if (post.Cover is { Length: > 0 } c)
+        {
+            var loading = eager ? "loading=\"eager\" fetchpriority=\"high\"" : "loading=\"lazy\"";
+            return $"<a class=\"{coverClass}\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\">"
+                 + $"<img src=\"{LayoutProvider.HtmlEncode(Asset(basePath, c))}\" alt=\"\" {loading} decoding=\"async\"></a>";
+        }
+
+        var hue = SlugColor.HueFor(post.Slug);
+        return $"<a class=\"{coverClass} slug-tint\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\" style=\"--slug-hue:{hue.ToString(CultureInfo.InvariantCulture)}\">"
+             + $"<span class=\"{markClass}\">{Monogram(post.Title)}</span></a>";
     }
+
+    private static string Monogram(string title) =>
+        LayoutProvider.HtmlEncode(TitleMonogram.Current.Letter(title));
 
     private static string Avatar(string author, string? authorImage, string basePath)
     {
@@ -146,15 +159,19 @@ public static partial class PostListRenderer
         return AssetVersioning.Current.Apply(resolved);
     }
 
-    private static void AppendCard(StringBuilder sb, Post post, string basePath)
+    private static void AppendCard(StringBuilder sb, Post post, string basePath, bool showPreview)
     {
         var href = UrlPaths.Href(basePath, post.Url);
-        sb.Append("<article class=\"post-card\">");
+        sb.Append(showPreview ? "<article class=\"post-card\">" : "<article class=\"post-card post-card-plain\">");
+        sb.Append("<div class=\"post-card-body\">");
         sb.Append("<h2 class=\"post-card-title\"><a href=\"").Append(href).Append("\">")
           .Append(LayoutProvider.HtmlEncode(post.Title)).Append("</a></h2>");
         sb.Append("<div class=\"post-meta\">").Append(MetaLine(post, basePath)).Append("</div>");
         if (post.Excerpt is { Length: > 0 })
             sb.Append("<p class=\"post-excerpt\">").Append(LayoutProvider.HtmlEncode(post.Excerpt)).Append("</p>");
+        sb.Append("</div>");
+        if (showPreview)
+            sb.Append(Preview(post, basePath, href, "card-cover", "card-cover-mark", eager: false));
         sb.Append("</article>");
     }
 

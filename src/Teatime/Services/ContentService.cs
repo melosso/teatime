@@ -207,6 +207,7 @@ public sealed partial class ContentService : IHostedService, IDisposable
 
         var config = LoadConfig(docsPath);
         DateFormatter.Current = DateFormatter.From(config?.Locale);
+        TitleMonogram.Current = TitleMonogram.From(config?.Locale);
         _bookmarks?.Configure(config?.Bookmarks);
 
         // Sorted for deterministic hashing, regardless of FS enumeration order.

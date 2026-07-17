@@ -1,7 +1,6 @@
 ---
 title: Guide
 description: A quick start guide to writing and publishing with Teatime.
-cover: /assets/guide.webp
 page-next: /deploy/
 ---
 
