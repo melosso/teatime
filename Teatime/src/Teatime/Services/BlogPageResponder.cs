@@ -107,7 +107,8 @@ public sealed class BlogPageResponder
             rssDiscoveryHtml: rssDiscoveryHtml,
             isArticle: view.IsArticle,
             siteNavHtml: siteNavHtml,
-            footerHtml: footerHtml);
+            footerHtml: footerHtml,
+            pageId: seg.Length == 0 ? "home" : seg.Replace('/', '-'));
 
         context.Response.ContentType = "text/html; charset=utf-8";
         await context.Response.WriteAsync(fullHtml);

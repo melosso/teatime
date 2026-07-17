@@ -201,4 +201,23 @@ The interface text, like "Keep reading" and the 404 page, reads from `content/lo
 
 For your own, copy `en.json` to `{code}.json` and translate the values. Missing keys fall back to English, so a partial file is fine.
 
+## 7. Customize the Look
+
+Custom styles live in `wwwroot/theme/custom.css`, picked up at startup. The whole theme runs on CSS variables, so overriding a handful on `:root` restyles the entire site and stays correct in dark mode:
+
+```css [wwwroot/theme/custom.css]
+:root {
+  --accent: #b4513a;
+  --font-sans: "Iowan Old Style", Georgia, serif;
+}
+```
+
+The common variables are `--accent`, `--text-color`, `--text-muted`, `--bg-color`, `--border`, and the fonts (`--font-sans`, `--font-display`, `--font-mono`). Put dark-mode tweaks behind `:root[data-theme="dark"]`.
+
+When you want a rule to reach only one surface, every page carries a `data-page` hook that follows its URL: `home`, `archive`, `tags`, `authors`, a page slug like `about`, or `posts-{slug}` for a post.
+
+```css [wwwroot/theme/custom.css]
+[data-page="archive"] { --accent: #4a7c59; }
+```
+
 That's all. Happy publishing!

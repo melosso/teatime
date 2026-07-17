@@ -32,7 +32,8 @@ public static partial class LayoutProvider
         string? promoBarHtml = null,
         bool isArticle = false,
         string? siteNavHtml = null,
-        string? footerHtml = null)
+        string? footerHtml = null,
+        string? pageId = null)
     {
         var l = Localization.Current;
         var scrollIndicatorHtml = showScrollIndicator ? @"<div id=""scroll-indicator""></div>" : "";
@@ -45,6 +46,7 @@ public static partial class LayoutProvider
             : "";
 
         var contentClass = isArticle ? "content reading prose" : "content";
+        var dataPageAttr = string.IsNullOrEmpty(pageId) ? "" : $" data-page=\"{HtmlEncode(pageId)}\"";
 
         const string darkVars = @"
                 color-scheme: dark;
@@ -187,7 +189,7 @@ public static partial class LayoutProvider
     </div>
     {shareOverlayHtml}
     <main class=""main-container"" id=""main-content"" tabindex=""-1"">
-        <article class=""{contentClass}"">
+        <article class=""{contentClass}""{dataPageAttr}>
             {content}
         </article>
     </main>
