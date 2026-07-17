@@ -42,4 +42,7 @@ public class Config
 
     /// <summary>Locale settings, later implemnt. for i18n. See <see cref="LocaleOptions"/>.</summary>
     public LocaleOptions? Locale { get; set; }
+
+    /// <summary>Bookmark card rendering for standalone links. Off unless enabled. See <see cref="BookmarkOptions"/>.</summary>
+    public BookmarkOptions? Bookmarks { get; set; }
 }

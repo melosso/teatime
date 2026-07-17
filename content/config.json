@@ -6,6 +6,7 @@
   "author": "Melosso",
   "favicon": "🍵",
   "scrollIndicator": true,
+  "bookmarks": { "enabled": true },
   "footer": "© {year} {author}. Brewed with [Teatime](https://github.com/melosso/teatime){target=\"_blank\" rel=\"noopener\"}.",
   "menu": [
     { "title": "Home", "path": "/" },

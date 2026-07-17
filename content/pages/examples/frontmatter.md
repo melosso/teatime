@@ -1,7 +1,7 @@
 ---
 title: Front Matter
 description: Every front matter field Teatime understands, gathered in one place.
-cover: /assets/frontmatter.webp {.wide}
+cover: /assets/frontmatter.webp
 updated: 2026-07-16
 lastUpdated: true
 page-prev: /examples/

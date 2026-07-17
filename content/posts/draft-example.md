@@ -1,7 +1,7 @@
 ---
 title: A Work in Progress
 author: murdock
-date: 2026-07-12
+date: 2026-07-13
 tags: [meta]
 draft: true
 ---

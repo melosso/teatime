@@ -1,6 +1,7 @@
 ---
 title: Guide
 description: A quick start guide to writing and publishing with Teatime.
+cover: /assets/guide.webp
 page-next: /deploy/
 ---
 
@@ -108,7 +109,7 @@ git subtree push --prefix _site origin gh-pages
 ```
 
 ```bash [Netlify]
-# Build command:  dotnet run --project src/Teatime -- --export ./_site --base-url $URL
+# Build command:  dotnet run --project src/Teatim -- --export ./_site --base-url $URL
 # Publish dir:    _site
 ```
 
@@ -119,7 +120,7 @@ rsync -av --delete _site/ user@host:/var/www/blog/
 
 :::
 
-If you would rather run Teatime as a live service, a container is a comfortable fit. That path is written up separately so this page stays focused: see [running Teatime with Docker](/deploy/containers/).
+If you would rather run Teatime as a live service, a container is a comfortable fit. We suggest to take a look at our [running Teatime with Docker](/deploy/containers/) page.
 
 ## 5. Format Your Writing
 
