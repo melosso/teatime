@@ -93,9 +93,6 @@ public sealed class BlogPageResponder
         var fullHtml = LayoutProvider.GetLayout(
             title: PageTitleRenderer.ComputeTitle(view.Title, config),
             content: view.ContentHtml,
-            navigationHtml: string.Empty,
-            breadcrumbHtml: string.Empty,
-            paginationHtml: string.Empty,
             themeCss: themeCss + customCssLink + customJsScript,
             brandText: brandText,
             brandImage: config?.BrandImage,
@@ -107,7 +104,6 @@ public sealed class BlogPageResponder
             buildVersion: _content.BuildVersion,
             favicon: config?.Favicon,
             description: string.IsNullOrEmpty(view.Description) ? config?.Description : view.Description,
-            mobileTopNavHtml: string.Empty,
             isHomePage: false,
             showScrollIndicator: config?.ScrollIndicator ?? ThemeProvider.ShowScrollIndicator(_theme),
             basePath: basePath,

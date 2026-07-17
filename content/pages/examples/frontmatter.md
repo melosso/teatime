@@ -46,7 +46,7 @@ These shape how a post appears in your listings, feed, and archive.
 | `updated` | A later revision date, shown as a "Last updated" note when it is newer than `date` |
 | `tags`    | A list like `[meta, writing]` that drives the tag pages and the tag index |
 | `summary` | The excerpt on cards. It also stands in for the description on feeds and social previews, and falls back to the first paragraph when unset |
-| `cover`   | A feature image. It accepts the same width attributes as inline images, so `cover: /assets/hero.webp {.full}` gives you a full width hero |
+| `cover`   | A feature image. It accepts the same width attributes as inline images, so `cover: /assets/hero.webp {.full}` gives you a full width hero. A hex code like `cover: #3a5f4a` paints a flat colour block instead, no image needed |
 | `author`  | An id pointing at a file in `content/authors/`. When no match is found, the value is shown as written, and otherwise it falls back to the site author |
 | `slug`    | A friendlier URL, replacing the file name in the address              |
 | `draft`   | Set to `true` to hold a post out of listings, feeds, and the sitemap. Drafts stay visible while you run locally |

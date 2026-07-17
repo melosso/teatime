@@ -235,7 +235,7 @@ public static partial class LayoutProvider
             var searchLastFocused = null;
             var searchRequestId = 0;
 
-            // Static export: search runs in-browser against a prebuilt index, mirroring SearchIndex.
+            // Static export: search runs in-browser against a prebuilt index, mirroring SearchIndex.  We're re-using Bark's implementing here..!
             var teatimeStaticSearch = {(staticSearch ? "true" : "false")};
             var teatimeSearchIndexUrl = '{basePath}/search-index.json';
             var teatimeSearchIndexPromise = null;

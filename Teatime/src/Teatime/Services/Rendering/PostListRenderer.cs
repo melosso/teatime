@@ -84,7 +84,7 @@ public static partial class PostListRenderer
     {
         if (post.Cover is not { Length: > 0 } cover) return string.Empty;
         var css = post.CoverWidth is { Length: > 0 } w ? $"post-cover {w}" : "post-cover";
-        return $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, cover))}\" alt=\"\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\">";
+        return RenderCover(cover, css, basePath);
     }
 
     public static string BuildCover(string? rawCover, string basePath)
@@ -99,8 +99,13 @@ public static partial class PostListRenderer
             width = m.Groups[2].Value.ToLowerInvariant();
         }
         var css = width is not null ? $"post-cover {width}" : "post-cover";
-        return $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, url))}\" alt=\"\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\">";
+        return RenderCover(url, css, basePath);
     }
+
+    private static string RenderCover(string cover, string css, string basePath) =>
+        CoverColor.TryParse(cover, out var hex)
+            ? $"<div class=\"{css}\" style=\"background:{hex}\" aria-hidden=\"true\"></div>"
+            : $"<img class=\"{css}\" src=\"{LayoutProvider.HtmlEncode(Asset(basePath, cover))}\" alt=\"\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\">";
 
     private static readonly System.Collections.Generic.HashSet<string> AllowedCoverClasses =
         new(System.StringComparer.OrdinalIgnoreCase) { "natural", "plain", "wide", "full" };
@@ -130,6 +135,10 @@ public static partial class PostListRenderer
     {
         if (post.Cover is { Length: > 0 } c)
         {
+            if (CoverColor.TryParse(c, out var hex))
+                return $"<a class=\"{coverClass}\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\" style=\"background:{hex}\">"
+                     + $"<span class=\"{markClass}\" style=\"color:{CoverColor.InkFor(hex)}\">{Monogram(post.Title)}</span></a>";
+
             var loading = eager ? "loading=\"eager\" fetchpriority=\"high\"" : "loading=\"lazy\"";
             return $"<a class=\"{coverClass}\" href=\"{href}\" tabindex=\"-1\" aria-hidden=\"true\">"
                  + $"<img src=\"{LayoutProvider.HtmlEncode(Asset(basePath, c))}\" alt=\"\" {loading} decoding=\"async\"></a>";
