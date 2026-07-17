@@ -2,7 +2,7 @@
 title: A Style Test
 author: murdock
 date: 2026-07-11
-tags: [meta]
+tags: [markdown]
 summary: Just about everything a post can throw at the theme, on one page. If it renders cleanly here, it renders cleanly everywhere.
 ---
 

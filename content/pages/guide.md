@@ -184,7 +184,9 @@ Static export
 Live server
 :   The running app that reads your Markdown and renders it on request.
 
-And when a thought needs a source, a footnote tucks it out of the way.[^1] External links can open in a new tab with a small attribute: [the Markdig reference](https://github.com/xoofx/markdig){target="_blank" rel="noopener"}.
+And when a thought needs a source, a footnote tucks it out of the way.[^1] 
+
+External links can open in a new tab with a small attribute as standardized in [the Markdig reference](https://github.com/xoofx/markdig){target="_blank" rel="noopener"} with `{target="_blank" rel="noopener"}`.
 
 [^1]: Footnotes render at the bottom of the page with a link back to where you were reading.
 

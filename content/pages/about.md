@@ -10,7 +10,7 @@ What is it, you asked? It's a small blog engine. Every post here is just a Markd
 If you would like to follow along, the [RSS feed](/feed.xml) is the easiest way to do it. You are also welcome to browse everything in the [archive](/archive/), or to wander through the [tags](/tags/) and see what tends to come up.
 
 ::: Help
-We're happy to help if you're running any issues running your own instance. Please report them on our [Repository](https://github.com/melosso/teatime).
+We're happy to help if you're running any issues running your own instance. Please report them on our [Repository](https://github.com/melosso/teatime){target="_blank" rel="noopener"}.
 :::
 
 <br>

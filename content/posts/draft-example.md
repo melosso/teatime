@@ -1,5 +1,5 @@
 ---
-title: A Work in Progress
+title: Work in Progress
 author: murdock
 date: 2026-07-13
 tags: [meta]
