@@ -44,9 +44,8 @@ internal static class BlogEndpoints
         if (TryRedirect(ctx, custom, basePath))
             return;
 
-        var html = custom is not null
-            ? Inject(custom.HtmlContent, AuthorRenderer.BuildGrid(authors.GetListed(), basePath), route.Slug)
-            : AuthorRenderer.BuildIndex(authors.GetListed(), basePath);
+        var html = RenderCustomIndex(custom, AuthorRenderer.BuildGrid(authors.GetListed(), basePath), route.Slug, basePath,
+            () => AuthorRenderer.BuildIndex(authors.GetListed(), basePath));
 
         await responder.WriteAsync(ctx, new BlogPageView(
             Title: custom?.Title ?? route.Title,
@@ -171,9 +170,8 @@ internal static class BlogEndpoints
         if (TryRedirect(ctx, custom, basePath))
             return;
 
-        var html = custom is not null
-            ? Inject(custom.HtmlContent, TagListRenderer.BuildCloud(view.Tags, basePath), route.Slug)
-            : TagListRenderer.BuildIndex(view.Tags, basePath);
+        var html = RenderCustomIndex(custom, TagListRenderer.BuildCloud(view.Tags, basePath), route.Slug, basePath,
+            () => TagListRenderer.BuildIndex(view.Tags, basePath));
 
         await responder.WriteAsync(ctx, new BlogPageView(
             Title: custom?.Title ?? route.Title,
@@ -227,9 +225,8 @@ internal static class BlogEndpoints
         if (TryRedirect(ctx, custom, basePath))
             return;
 
-        var html = custom is not null
-            ? Inject(custom.HtmlContent, ArchiveRenderer.BuildYears(years, basePath), route.Slug)
-            : ArchiveRenderer.Build(years, basePath);
+        var html = RenderCustomIndex(custom, ArchiveRenderer.BuildYears(years, basePath), route.Slug, basePath,
+            () => ArchiveRenderer.Build(years, basePath));
 
         await responder.WriteAsync(ctx, new BlogPageView(
             Title: custom?.Title ?? route.Title,
@@ -251,6 +248,13 @@ internal static class BlogEndpoints
         ctx.Response.Redirect(PageRequestHandler.ResolveRedirect(target, basePath), permanent: false);
         return true;
     }
+
+    // Custom index page: optional cover banner from front matter, then its prose with the
+    // generated list injected at the {{name}} token. Falls back to the built-in renderer.
+    private static string RenderCustomIndex(Models.DocumentationPage? custom, string listHtml, string name, string basePath, Func<string> fallback) =>
+        custom is not null
+            ? PostListRenderer.BuildCover(custom.Cover, basePath) + Inject(custom.HtmlContent, listHtml, name)
+            : fallback();
 
     private static string Inject(string contentHtml, string listHtml, string name)
     {

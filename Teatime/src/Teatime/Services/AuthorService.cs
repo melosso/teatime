@@ -12,6 +12,7 @@ public sealed class AuthorService
         public string? Id { get; init; }
         public string? Name { get; init; }
         public string? Image { get; init; }
+        public string? Cover { get; init; }
         public bool Hidden { get; init; }
     }
 
@@ -93,7 +94,7 @@ public sealed class AuthorService
             if (id.Length == 0) continue;
             var name = fm.Name ?? id;
             var bio = _markdown.ToHtml(text);
-            authors.Add(new Author(id, PagePath.SlugifySegment(id), name, fm.Image, bio, fm.Hidden));
+            authors.Add(new Author(id, PagePath.SlugifySegment(id), name, fm.Image, fm.Cover, bio, fm.Hidden));
         }
 
         return authors

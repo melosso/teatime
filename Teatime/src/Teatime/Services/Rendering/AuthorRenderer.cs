@@ -37,6 +37,7 @@ public static class AuthorRenderer
     public static string BuildHeader(Author author, string basePath)
     {
         var sb = new StringBuilder();
+        sb.Append(PostListRenderer.BuildCover(author.Cover, basePath));
         sb.Append("<header class=\"author-header\">");
         sb.Append(Avatar(author, basePath, "author-header-avatar"));
         sb.Append("<h1 class=\"author-name\">").Append(LayoutProvider.HtmlEncode(author.Name)).Append("</h1>");
