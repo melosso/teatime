@@ -104,6 +104,7 @@ public sealed class BlogPageResponder
             nonce: nonce,
             hasMath: view.ContentHtml.Contains("class=\"katex\"", StringComparison.Ordinal),
             hasMermaid: view.ContentHtml.Contains("class=\"mermaid\"", StringComparison.Ordinal),
+            hasMap: view.ContentHtml.Contains("class=\"teatime-map\"", StringComparison.Ordinal),
             rssDiscoveryHtml: rssDiscoveryHtml,
             isArticle: view.IsArticle,
             siteNavHtml: siteNavHtml,

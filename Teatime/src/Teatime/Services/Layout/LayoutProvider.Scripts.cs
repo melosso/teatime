@@ -657,6 +657,56 @@ public static partial class LayoutProvider
                 window.mermaid.run();
             }}
 
+            // Self-hosted Leaflet maps. Tiles from OpenStreetMap; popups built via textContent (no HTML injection).
+            var mapEls = document.querySelectorAll('.teatime-map');
+            if (mapEls.length && window.L) {{
+                var iconBase = '{basePath}/css/images/';
+                var mapIcon = window.L.icon({{
+                    iconUrl: iconBase + 'marker-icon.png',
+                    iconRetinaUrl: iconBase + 'marker-icon-2x.png',
+                    shadowUrl: iconBase + 'marker-shadow.png',
+                    iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+                }});
+                mapEls.forEach(function(el) {{
+                    if (el.dataset.rendered) return;
+                    el.dataset.rendered = '1';
+                    var pins;
+                    try {{ pins = JSON.parse(el.dataset.pins || '[]'); }} catch (e) {{ pins = []; }}
+                    var map = window.L.map(el, {{ scrollWheelZoom: false }});
+                    window.L.tileLayer('https://tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
+                        maxZoom: 19,
+                        attribution: '&copy; <a href=""https://www.openstreetmap.org/copyright"">OpenStreetMap</a> contributors'
+                    }}).addTo(map);
+                    var markers = [];
+                    pins.forEach(function(p) {{
+                        if (typeof p.lat !== 'number' || typeof p.lng !== 'number') return;
+                        var m = window.L.marker([p.lat, p.lng], {{ icon: mapIcon }}).addTo(map);
+                        var box = document.createElement('div');
+                        box.className = 'map-popup';
+                        function row(node) {{ var d = document.createElement('div'); d.appendChild(node); box.appendChild(d); }}
+                        if (p.name) {{ var h = document.createElement('strong'); h.textContent = p.name; row(h); }}
+                        if (p.text) {{ var t = document.createElement('p'); t.textContent = p.text; box.appendChild(t); }}
+                        if (p.phone) {{ var a = document.createElement('a'); a.href = 'tel:' + p.phone.replace(/\s+/g, ''); a.textContent = p.phone; row(a); }}
+                        if (p.contact) {{
+                            if (p.contact.indexOf('@') > -1) {{ var e = document.createElement('a'); e.href = 'mailto:' + p.contact; e.textContent = p.contact; row(e); }}
+                            else {{ var c = document.createElement('span'); c.textContent = p.contact; row(c); }}
+                        }}
+                        if (p.url) {{ var u = document.createElement('a'); u.href = p.url; u.rel = 'noopener'; u.target = '_blank'; u.textContent = 'Website'; row(u); }}
+                        m.bindPopup(box);
+                        markers.push(m);
+                    }});
+                    var zoom = el.dataset.zoom ? parseInt(el.dataset.zoom, 10) : null;
+                    if (el.dataset.center) {{
+                        var c = el.dataset.center.split(',');
+                        map.setView([parseFloat(c[0]), parseFloat(c[1])], zoom || 13);
+                    }} else if (markers.length) {{
+                        map.fitBounds(window.L.featureGroup(markers).getBounds().pad(0.2), {{ maxZoom: zoom || 15 }});
+                    }} else {{
+                        map.setView([0, 0], zoom || 2);
+                    }}
+                }});
+            }}
+
             var pageControlsToggle = document.querySelector('.page-controls-toggle');
             var pageControlsMenu = document.querySelector('.page-controls-menu');
             if (pageControlsToggle && pageControlsMenu) {{

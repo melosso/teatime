@@ -46,6 +46,13 @@ public sealed class FencedCodeBlockRenderer(ISyntaxHighlighter syntaxHighlighter
             return;
         }
 
+        if (lang is "map")
+        {
+            renderer.WriteLine(MapBlock.Render(string.Join('\n', rawLines)));
+            renderer.EnsureLine();
+            return;
+        }
+
         var showTitleBar = !isCodeGroupChild && !string.IsNullOrEmpty(meta.Title);
 
         var outerClasses = new List<string>(4) { $"language-{lang}" };

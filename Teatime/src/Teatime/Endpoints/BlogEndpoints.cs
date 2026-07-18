@@ -249,12 +249,24 @@ internal static class BlogEndpoints
         return true;
     }
 
-    // Custom index page: optional cover banner from front matter, then its prose with the
-    // generated list injected at the {{name}} token. Falls back to the built-in renderer.
-    private static string RenderCustomIndex(Models.DocumentationPage? custom, string listHtml, string name, string basePath, Func<string> fallback) =>
-        custom is not null
-            ? PostListRenderer.BuildCover(custom.Cover, basePath) + Inject(custom.HtmlContent, listHtml, name)
-            : fallback();
+    // Custom index page: optional cover placed below the heading (reading width, like posts),
+    // then the prose with the generated list injected at the {{name}} token. Falls back to the
+    // built-in renderer when no page.md exists.
+    private static string RenderCustomIndex(Models.DocumentationPage? custom, string listHtml, string name, string basePath, Func<string> fallback)
+    {
+        if (custom is null) return fallback();
+        var body = InsertCoverAfterHeading(custom.HtmlContent, PostListRenderer.BuildCover(custom.Cover, basePath));
+        return Inject(body, listHtml, name);
+    }
+
+    // Splices the cover in just after the first heading so it reads title-then-cover, matching posts.
+    private static string InsertCoverAfterHeading(string html, string cover)
+    {
+        if (cover.Length == 0) return html;
+        var wrapped = $"<div class=\"index-cover\">{cover}</div>";
+        var idx = html.IndexOf("</h1>", StringComparison.Ordinal);
+        return idx < 0 ? wrapped + html : html.Insert(idx + 5, wrapped);
+    }
 
     private static string Inject(string contentHtml, string listHtml, string name)
     {

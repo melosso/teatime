@@ -1877,8 +1877,59 @@ public static partial class LayoutProvider
         .post-cover.short {{ 
             aspect-ratio: 3 / 1; 
         }}
-        .post-cover.tall {{ 
+        .post-cover.tall {{
             aspect-ratio: 5 / 4;
+        }}
+        .index-cover {{
+            max-width: var(--measure);
+        }}
+        .teatime-map {{
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 1.75rem 0;
+            position: relative;
+            z-index: 0;
+        }}
+        .teatime-map img {{
+            background: none !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            max-width: none !important;
+        }}
+        .teatime-map .leaflet-popup-content-wrapper,
+        .teatime-map .leaflet-popup-tip {{
+            background: var(--bg-color);
+            color: var(--text-color);
+        }}
+        .teatime-map .leaflet-popup-content-wrapper {{
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }}
+        .teatime-map .leaflet-popup-close-button {{
+            color: var(--text-muted);
+        }}
+        .map-popup strong {{
+            display: block;
+            margin-bottom: 0.35rem;
+            font-size: 1.05em;
+        }}
+        .map-popup p {{
+            margin: 0 0 0.4rem;
+        }}
+        .map-popup > div {{
+            margin-top: 0.15rem;
+        }}
+        .map-popup a {{
+            color: var(--accent);
+        }}
+        .teatime-map-error {{
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-muted);
+            margin: 1.75rem 0 0;
         }}
         .content.reading img {{
             max-width: 100%;

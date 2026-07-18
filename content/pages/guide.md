@@ -175,6 +175,24 @@ For a row of images side by side, wrap them in a [gallery](/examples/gallery/) (
 
 The post cover set in [front matter](/examples/frontmatter/) accepts the same width attributes, so a full-bleed hero is one line: `cover: /assets/hero.webp {.full}`. Two height attributes tune how tall it sits: `{.short}` crops it to a slim band, `{.tall}` gives it more room. They combine with a width, as in `cover: /assets/hero.webp {.wide .short}`.
 
+To place points on a map, use a `map` block. Each pin needs `coords` and can carry a name, a phone number, a contact address, a website, and a line of text. The pins show as markers, and a click opens their details:
+
+```map
+zoom: 8
+pins:
+  - name: The Reading Room
+    coords: 52.0907, 5.1214
+    phone: "030 123 4567"
+    contact: hello@example.nl
+    url: https://example.nl
+    text: Open on Tuesday afternoons.
+  - name: The Quiet Corner
+    coords: 52.3676, 4.9041
+    text: A weekly gathering on Thursdays.
+```
+
+Leave `zoom` and `center` out and the map frames every pin for you. Maps use [OpenStreetMap](https://www.openstreetmap.org/copyright) tiles, which load from OpenStreetMap when a reader opens the page.
+
 Definition lists keep paired ideas tidy:
 
 Static export

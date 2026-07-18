@@ -10,7 +10,7 @@ public static class SecurityHeaders
         "style-src 'self' 'unsafe-inline'; " +
         "style-src-attr 'unsafe-inline'; " +
         "style-src-elem 'self' 'unsafe-inline'; " +
-        "img-src 'self' data:; " +
+        "img-src 'self' data: https://tile.openstreetmap.org https://*.tile.openstreetmap.org; " +
         "font-src 'self' data:; " +
         "connect-src 'self'; " +
         "frame-ancestors 'none'";

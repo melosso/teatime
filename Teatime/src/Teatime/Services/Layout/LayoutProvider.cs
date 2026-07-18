@@ -28,6 +28,7 @@ public static partial class LayoutProvider
         string? nonce = null,
         bool hasMath = false,
         bool hasMermaid = false,
+        bool hasMap = false,
         string? rssDiscoveryHtml = null,
         string? promoBarHtml = null,
         bool isArticle = false,
@@ -138,6 +139,7 @@ public static partial class LayoutProvider
     {customAssetsHtml}
     {(hasMath ? $"<link rel=\"stylesheet\" href=\"{basePath}/css/katex.min.css\">" : "")}
     {(hasMermaid ? $"<script defer src=\"{basePath}/js/mermaid.min.js\"></script>" : "")}
+    {(hasMap ? $"<link rel=\"stylesheet\" href=\"{basePath}/css/leaflet.css\"><script defer src=\"{basePath}/js/leaflet.js\"></script>" : "")}
 </head>
 <body>
     <a href=""#main-content"" class=""skip-link"">{HtmlEncode(l.SkipToContent)}</a>
