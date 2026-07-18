@@ -1882,6 +1882,7 @@ public static partial class LayoutProvider
         }}
         .index-cover {{
             max-width: var(--measure);
+            margin: 2.75rem auto 0;
         }}
         .teatime-map {{
             width: 100%;
