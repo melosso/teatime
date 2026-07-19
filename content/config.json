@@ -1,7 +1,7 @@
 {
   "title": "Teatime",
   "description": "A personal blog published with Teatime.",
-  "lang": "nl",
+  "lang": "en",
   "locale": { "culture": "en-GB" },
   "author": "Melosso",
   "titleTemplate": ":title · Teatime",

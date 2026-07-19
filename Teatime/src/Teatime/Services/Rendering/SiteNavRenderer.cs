@@ -20,7 +20,7 @@ public static class SiteNavRenderer
     public static string Build(Config? config, string basePath, string currentPath)
     {
         var sb = new StringBuilder();
-        sb.Append("<nav class=\"site-nav\" aria-label=\"Primary\">");
+        sb.Append("<div class=\"site-nav-wrap\"><nav class=\"site-nav\" aria-label=\"Primary\">");
 
         if (config?.Menu is { Count: > 0 } menu)
         {
@@ -33,7 +33,7 @@ public static class SiteNavRenderer
                 AppendLink(sb, text, path, basePath, currentPath);
         }
 
-        sb.Append("</nav>");
+        sb.Append("</nav></div>");
         return sb.ToString();
     }
 

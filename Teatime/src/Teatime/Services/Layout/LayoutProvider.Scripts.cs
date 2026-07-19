@@ -84,11 +84,76 @@ public static partial class LayoutProvider
                 }});
             }}
 
+            var siteNav = document.querySelector('.site-nav');
+            var siteNavWrap = document.querySelector('.site-nav-wrap');
+            function navScrollMax() {{
+                return siteNav ? siteNav.scrollWidth - siteNav.clientWidth : 0;
+            }}
+            function navIsScrollable() {{
+                return navScrollMax() > 2;
+            }}
+            function updateNavScrollHints() {{
+                if (!siteNav || !siteNavWrap) return;
+                var max = navScrollMax();
+                var scrollable = max > 2;
+                siteNavWrap.classList.toggle('can-scroll-left', scrollable && siteNav.scrollLeft > 2);
+                siteNavWrap.classList.toggle('can-scroll-right', scrollable && siteNav.scrollLeft < max - 2);
+            }}
+            if (siteNav && siteNavWrap) {{
+                var navHintQueued = false;
+                siteNav.addEventListener('scroll', function() {{
+                    if (navHintQueued) return;
+                    navHintQueued = true;
+                    requestAnimationFrame(function() {{
+                        navHintQueued = false;
+                        updateNavScrollHints();
+                    }});
+                }}, {{ passive: true }});
+                window.addEventListener('resize', updateNavScrollHints);
+                if (window.ResizeObserver) new ResizeObserver(updateNavScrollHints).observe(siteNav);
+                updateNavScrollHints();
+
+                var currentNavItem = siteNav.querySelector('.here, .top-nav-link.active');
+                if (currentNavItem && navIsScrollable()) {{
+                    var target = currentNavItem.closest('.top-nav-item') || currentNavItem;
+                    siteNav.scrollLeft = Math.max(0, target.offsetLeft - (siteNav.clientWidth - target.offsetWidth) / 2);
+                    updateNavScrollHints();
+                }}
+            }}
+
             var navDropdowns = Array.prototype.slice.call(document.querySelectorAll('.site-nav .top-nav-item.has-dropdown'));
+            function resetNavDropdownPosition(menu) {{
+                if (!menu) return;
+                menu.style.position = '';
+                menu.style.top = '';
+                menu.style.left = '';
+                menu.style.right = '';
+                menu.style.transform = '';
+            }}
+            // In the scrolling mobile nav the menu would be clipped by the scroller, so pin it instead.
+            function positionNavDropdown(item) {{
+                var menu = item.querySelector('.top-nav-dropdown-menu');
+                if (!menu) return;
+                if (!navIsScrollable()) {{
+                    resetNavDropdownPosition(menu);
+                    return;
+                }}
+                menu.style.position = 'fixed';
+                menu.style.right = 'auto';
+                menu.style.transform = 'none';
+                var rect = item.getBoundingClientRect();
+                var parent = menu.offsetParent ? menu.offsetParent.getBoundingClientRect() : null;
+                var baseLeft = parent ? parent.left : 0;
+                var baseTop = parent ? parent.top : 0;
+                var left = Math.min(Math.max(8, rect.left), Math.max(8, window.innerWidth - menu.offsetWidth - 8));
+                menu.style.left = (left - baseLeft) + 'px';
+                menu.style.top = (rect.bottom + 6 - baseTop) + 'px';
+            }}
             function closeNavDropdown(item) {{
                 item.classList.remove('open');
                 var b = item.querySelector('.top-nav-link');
                 if (b) b.setAttribute('aria-expanded', 'false');
+                resetNavDropdownPosition(item.querySelector('.top-nav-dropdown-menu'));
             }}
             navDropdowns.forEach(function(item) {{
                 var btn = item.querySelector('.top-nav-link');
@@ -100,9 +165,62 @@ public static partial class LayoutProvider
                     if (willOpen) {{
                         item.classList.add('open');
                         btn.setAttribute('aria-expanded', 'true');
+                        positionNavDropdown(item);
                     }}
                 }});
             }});
+            if (siteNav && navDropdowns.length) {{
+                siteNav.addEventListener('scroll', function() {{
+                    navDropdowns.forEach(function(item) {{
+                        if (item.classList.contains('open')) closeNavDropdown(item);
+                    }});
+                }}, {{ passive: true }});
+            }}
+
+            var topbar = document.querySelector('.topbar');
+            if (topbar) {{
+                var mobileNav = window.matchMedia('(max-width: 620px)');
+                var lastScrollY = window.pageYOffset || 0;
+                var topbarTicking = false;
+                var revealAbove = 120;
+                var scrollNoise = 6;
+
+                function expandTopbar() {{
+                    topbar.classList.remove('topbar-condensed');
+                }}
+                function condenseTopbar() {{
+                    if (topbar.classList.contains('topbar-condensed')) return;
+                    topbar.classList.add('topbar-condensed');
+                    navDropdowns.forEach(closeNavDropdown);
+                }}
+                function updateTopbar() {{
+                    var y = window.pageYOffset || 0;
+                    if (!mobileNav.matches || y <= revealAbove) {{
+                        expandTopbar();
+                        lastScrollY = y;
+                        return;
+                    }}
+                    var delta = y - lastScrollY;
+                    if (Math.abs(delta) < scrollNoise) return;
+                    if (delta > 0) condenseTopbar();
+                    else expandTopbar();
+                    lastScrollY = y;
+                }}
+
+                window.addEventListener('scroll', function() {{
+                    if (topbarTicking) return;
+                    topbarTicking = true;
+                    requestAnimationFrame(function() {{
+                        topbarTicking = false;
+                        updateTopbar();
+                    }});
+                }}, {{ passive: true }});
+                topbar.addEventListener('focusin', expandTopbar);
+                mobileNav.addEventListener('change', function() {{
+                    expandTopbar();
+                    lastScrollY = window.pageYOffset || 0;
+                }});
+            }}
             if (navDropdowns.length) {{
                 document.addEventListener('click', function(e) {{
                     navDropdowns.forEach(function(item) {{

@@ -1119,17 +1119,20 @@ public static partial class LayoutProvider
         }}
 
         .topbar {{
+            --topbar-pad: clamp(1.25rem, 5vw, 2.75rem);
+            --topbar-pad-block: 1.5rem;
+            --topbar-fade: color-mix(in srgb, var(--bg-color) 92%, transparent);
             position: sticky; top: 0; z-index: 1002;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 0.8rem;
             height: auto; min-height: 0;
-            padding: 1.5rem clamp(1.25rem, 5vw, 2.75rem) 1.25rem;
+            padding: var(--topbar-pad-block) var(--topbar-pad) 1.25rem;
             background: color-mix(in srgb, var(--bg-color) 86%, transparent);
             -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
             border-bottom: 1px solid var(--border);
             -webkit-user-select: none; user-select: none;
         }}
         .masthead-actions {{
-            position: absolute; top: 1.35rem; right: clamp(1.25rem, 5vw, 2.75rem);
+            position: absolute; top: 1.35rem; right: var(--topbar-pad);
             display: inline-flex; align-items: center; gap: 0.5rem;
         }}
         .brand {{
@@ -1140,6 +1143,12 @@ public static partial class LayoutProvider
         .brand img {{
             height: 1.4rem;
             width: auto;
+        }}
+        .site-nav-wrap {{
+            position: relative;
+            display: flex;
+            justify-content: center;
+            width: 100%;
         }}
         .site-nav {{
             display: flex; flex-wrap: wrap; justify-content: center;
@@ -2144,11 +2153,79 @@ public static partial class LayoutProvider
         @media (max-width: 620px) {{
             .topbar {{
                 align-items: flex-start;
+                transition: gap 0.25s ease, padding-bottom 0.25s ease;
+            }}
+            .topbar.topbar-condensed {{
+                gap: 0;
+                padding-bottom: var(--topbar-pad-block);
+            }}
+            .topbar.topbar-condensed .site-nav-wrap {{
+                grid-template-rows: 0fr;
+                opacity: 0;
+                visibility: hidden;
             }}
             .site-nav {{
                 gap: 1.1rem;
                 font-size: 0.85rem;
                 justify-content: flex-start;
+                align-self: stretch;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                overscroll-behavior-x: contain;
+                scroll-snap-type: x proximity;
+                scroll-padding-inline: var(--topbar-pad);
+                padding-inline: var(--topbar-pad);
+                min-height: 0;
+            }}
+            .site-nav::-webkit-scrollbar {{
+                display: none;
+            }}
+            .site-nav > a, .site-nav > .top-nav-item {{
+                flex: 0 0 auto;
+                scroll-snap-align: start;
+            }}
+            .site-nav-wrap {{
+                display: grid;
+                grid-template-rows: 1fr;
+                grid-template-columns: minmax(0, 1fr);
+                justify-content: stretch;
+                width: calc(100% + var(--topbar-pad) * 2);
+                margin-inline: calc(var(--topbar-pad) * -1);
+                min-width: 0;
+                transition: grid-template-rows 0.25s ease, opacity 0.2s ease, visibility 0.25s;
+            }}
+            .site-nav-wrap::before, .site-nav-wrap::after {{
+                content: "";
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: var(--topbar-pad);
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                z-index: 2;
+            }}
+            .site-nav-wrap::before {{
+                left: 0;
+                background: linear-gradient(to right,
+                    var(--topbar-fade) 0%,
+                    color-mix(in srgb, var(--topbar-fade) 62%, transparent) 42%,
+                    color-mix(in srgb, var(--topbar-fade) 22%, transparent) 72%,
+                    transparent 100%);
+            }}
+            .site-nav-wrap::after {{
+                right: 0;
+                background: linear-gradient(to left,
+                    var(--topbar-fade) 0%,
+                    color-mix(in srgb, var(--topbar-fade) 62%, transparent) 42%,
+                    color-mix(in srgb, var(--topbar-fade) 22%, transparent) 72%,
+                    transparent 100%);
+            }}
+            .site-nav-wrap.can-scroll-left::before, .site-nav-wrap.can-scroll-right::after {{
+                opacity: 1;
             }}
             .brand {{
                 font-size: 1.3rem;
@@ -2157,6 +2234,9 @@ public static partial class LayoutProvider
                 display: none; opacity: 1; visibility: visible;
                 top: 100%; left: 0; right: auto; transform: none;
                 margin-top: 0.4rem; min-width: 160px;
+            }}
+            .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
+                z-index: 1003;
             }}
             .site-nav .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
             .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
