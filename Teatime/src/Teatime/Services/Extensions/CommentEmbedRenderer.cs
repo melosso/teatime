@@ -16,21 +16,20 @@ public static class CommentEmbedRenderer
             ? $" nonce=\"{HtmlEncoder.Default.Encode(nonce)}\""
             : string.Empty;
 
+        // string.Join inserts the commas; items must not carry their own, or the object gets ,, and won't parse.
         var config = string.Join(",",
             $"host:'{Localization.JsEncode(remark.BaseUrl)}'",
             $"site_id:'{Localization.JsEncode(remark.SiteId)}'",
             $"url:'{Localization.JsEncode(canonicalUrl)}'",
-            $"max_shown_comments:{remark.MaxShownComments} ?? 25 ",
+            $"max_shown_comments:{remark.MaxShownComments}",
             $"locale:'{Localization.JsEncode(remark.Locale ?? lang ?? "en")}'",
             $"theme:'{Localization.JsEncode(remark.Theme == "auto" ? "light" : remark.Theme)}'",
-            $"components: ['embed'],",
-            $"simple_view:true,",
-            $"show_email_subscription:false,",
+            "simple_view:true",
+            "show_email_subscription:false",
             "no_footer:true",
             "components:['embed']");
 
         // Teatime "light" leaves data-theme unset and follows the OS, so eff() needs the media-query fallback.
-        // To not make the same mistake twice, ...
         // remark42 caches its own theme and re-applies it after boot, so sync() re-asserts for a few seconds.
         var follow = remark.Theme == "auto"
             ? """
