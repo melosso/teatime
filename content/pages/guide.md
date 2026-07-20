@@ -238,4 +238,18 @@ When you want a rule to reach only one surface, every page carries a `data-page`
 [data-page="archive"] { --accent: #4a7c59; }
 ```
 
+## 8. Connect a Newsletter or Analytics
+
+Newsletter sign-up and analytics are handled by built-in extensions, configured in an optional `content/extensions.json` next to your `config.json`. Each one is disabled until its settings check out, and the Content Security Policy is widened for you:
+
+```json [content/extensions.json]
+{
+  "extensions": {
+    "plausible": { "enabled": true, "domain": "blog.example.com" }
+  }
+}
+```
+
+The [extensions](/extensions/) page walks through Beacon for newsletters, the three analytics providers, and where to keep your API key.
+
 That's all. Happy publishing!

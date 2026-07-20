@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.StaticFiles;
@@ -10,6 +11,7 @@ using Teatime.Endpoints;
 using Teatime.Models;
 using Teatime.Serialization;
 using Teatime.Services;
+using Teatime.Services.Extensions;
 using Teatime.Services.MarkdownExtensions;
 
 Directory.CreateDirectory("log");
@@ -37,6 +39,9 @@ try
     docsOptions = docsOptions with { BasePath = basePath };
 
     builder.Services.AddSingleton(docsOptions);
+
+    var proxyOptions = builder.Configuration.GetSection("Proxy").Get<ProxyOptions>() ?? new ProxyOptions();
+    builder.Services.Configure<ForwardedHeadersOptions>(options => ForwardedHeaderSetup.Configure(options, proxyOptions));
 
     var docsRootAbsolute = Path.GetFullPath(docsOptions.RootPath).Replace(Path.DirectorySeparatorChar, '/');
 
@@ -70,8 +75,11 @@ try
         sp.GetRequiredService<ILogger<MarkdownService>>()));
     builder.Services.AddSingleton<BookmarkService>();
     builder.Services.AddSingleton<ContentService>();
+    builder.Services.AddSingleton<IExtensionSource>(sp => sp.GetRequiredService<ContentService>());
     builder.Services.AddHostedService(sp => sp.GetRequiredService<ContentService>());
     builder.Services.AddSingleton<PostService>();
+    builder.Services.AddHttpClient<NewsletterService>(client => client.Timeout = TimeSpan.FromSeconds(10));
+    builder.Services.AddSingleton<AltchaService>();
     builder.Services.AddSingleton<AuthorService>();
 
     var customCspRaw = builder.Configuration["Docs:ContentSecurityPolicy"];
@@ -136,6 +144,16 @@ try
                     Window = TimeSpan.FromMinutes(1),
                     QueueLimit = 0
                 }));
+        // A sign-up can send a confirmation email, so this budget guards readers' inboxes, not just the server
+        options.AddPolicy(RateLimitPolicies.Subscribe, httpContext =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromMinutes(10),
+                    QueueLimit = 0
+                }));
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     });
 
@@ -145,6 +163,8 @@ try
 
     // Must finish before ContentService's async renders the pages
     await app.Services.GetRequiredService<ISyntaxHighlighter>().InitializeAsync(CancellationToken.None);
+
+    app.UseForwardedHeaders();
 
     if (basePath.Length > 0)
         app.UsePathBase(basePath);
@@ -211,6 +231,7 @@ try
     app.UseRouting();
     app.UseRateLimiter();
 
+    app.MapHealthEndpoints();
     app.MapApiEndpoints();
     app.MapSeoEndpoints();
     app.MapBlogEndpoints();

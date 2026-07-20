@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 
@@ -62,7 +63,7 @@ public sealed class IntegrationTests : IClassFixture<TeatimeWebApplicationFactor
     }
 
     [Fact]
-    public async Task Post_SecondRequestWithETag_Returns304()
+    public async Task Post_RepeatRequest_KeepsTheETagButSendsAFreshNonce()
     {
         var client = _factory.CreateClient();
         var first = await client.GetAsync("/posts/hello-world");
@@ -74,7 +75,28 @@ public sealed class IntegrationTests : IClassFixture<TeatimeWebApplicationFactor
         request.Headers.IfNoneMatch.Add(etag!);
         var second = await client.SendAsync(request);
 
-        Assert.Equal(HttpStatusCode.NotModified, second.StatusCode);
+        // The nonce is drawn per response, so a cached body may never be revalidated into a 304.
+        Assert.Equal(HttpStatusCode.OK, second.StatusCode);
+        Assert.Equal(etag, second.Headers.ETag);
+        Assert.NotEqual(
+            Nonce(first.Headers.GetValues("Content-Security-Policy").Single()),
+            Nonce(second.Headers.GetValues("Content-Security-Policy").Single()));
+    }
+
+    private static string Nonce(string csp)
+    {
+        var start = csp.IndexOf("'nonce-", StringComparison.Ordinal) + "'nonce-".Length;
+        return csp[start..csp.IndexOf('\'', start)];
+    }
+
+    [Fact]
+    public async Task Subscribe_WithoutANewsletterExtension_Answers404()
+    {
+        var client = _factory.CreateClient();
+        var response = await client.PostAsync("/api/subscribe",
+            new StringContent("""{"email":"reader@example.com"}""", Encoding.UTF8, "application/json"));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]

@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Teatime.Configuration;
 using Teatime.Models;
+using Teatime.Services.Extensions;
 using Teatime.Services.Layout;
 using Teatime.Services.Rendering;
 
@@ -12,7 +13,8 @@ public sealed record BlogPageView(
     string ContentHtml,
     string? Description = null,
     string CanonicalPath = "",
-    bool IsArticle = false);
+    bool IsArticle = false,
+    bool ShowComments = false);
 
 public sealed class BlogPageResponder
 {
@@ -44,8 +46,9 @@ public sealed class BlogPageResponder
     public string BasePath => _settings.BasePath;
     public string HomeUrl => _settings.BasePath.Length == 0 ? "/" : $"{_settings.BasePath}/";
 
-    private static string NonceFromETag(string etag) =>
-        Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(etag)), 0, 16);
+    /// <summary>Fresh per response, so it cannot be read off the public ETag. Rules out answering 304.</summary>
+    private static string NewNonce() =>
+        Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
 
     public async Task WriteAsync(HttpContext context, BlogPageView view)
     {
@@ -58,15 +61,11 @@ public sealed class BlogPageResponder
         context.Response.Headers.ETag = $"\"{etag}\"";
         context.Response.Headers.CacheControl = "no-cache";
 
-        var nonce = NonceFromETag(etag);
-        context.Response.Headers.ContentSecurityPolicy =
-            SecurityHeaders.BuildNonceCsp(_settings.CustomCsp ?? SecurityHeaders.DefaultCsp, nonce);
-
-        if (context.Request.Headers.IfNoneMatch.ToString() == $"\"{etag}\"")
-        {
-            context.Response.StatusCode = 304;
-            return;
-        }
+        var nonce = NewNonce();
+        var extensions = _content.Extensions;
+        var baseCsp = SecurityHeaders.WithExtraSources(
+            _settings.CustomCsp ?? SecurityHeaders.DefaultCsp, extensions.CspSources);
+        context.Response.Headers.ContentSecurityPolicy = SecurityHeaders.BuildNonceCsp(baseCsp, nonce);
 
         var themeCss = ThemeProvider.BuildThemeCss(_theme);
         var customCssLink = ThemeProvider.BuildCustomCssLink(_theme, _settings.AutoCustomCssUrl, basePath);
@@ -83,9 +82,13 @@ public sealed class BlogPageResponder
         var rawPath = $"{basePath}/{pageSegment}".TrimStart('/');
         var canonicalUrl = $"{context.Request.Scheme}://{context.Request.Host}/{rawPath}";
 
+        var contentHtml = view.ShowComments
+            ? view.ContentHtml + CommentEmbedRenderer.Build(extensions.Comments, nonce, canonicalUrl, config?.Lang)
+            : view.ContentHtml;
+
         var fullHtml = LayoutProvider.GetLayout(
             title: PageTitleRenderer.ComputeTitle(view.Title, config),
-            content: view.ContentHtml,
+            content: contentHtml,
             themeCss: themeCss,
             brandText: brandText,
             brandImage: config?.BrandImage,
@@ -99,12 +102,14 @@ public sealed class BlogPageResponder
             showScrollIndicator: config?.ScrollIndicator ?? ThemeProvider.ShowScrollIndicator(_theme),
             basePath: basePath,
             lang: config?.Lang ?? "en",
-            headTagsHtml: HeadTagHtmlRenderer.BuildHeadTagsHtml(config?.Head),
+            headTagsHtml: HeadTagHtmlRenderer.BuildHeadTagsHtml(config?.Head)
+                + ExtensionHeadRenderer.Build(extensions, nonce),
             canonicalUrl: canonicalUrl,
             nonce: nonce,
             hasMath: view.ContentHtml.Contains("class=\"katex\"", StringComparison.Ordinal),
             hasMermaid: view.ContentHtml.Contains("class=\"mermaid\"", StringComparison.Ordinal),
             hasMap: view.ContentHtml.Contains("class=\"teatime-map\"", StringComparison.Ordinal),
+            hasNewsletter: view.ContentHtml.Contains("class=\"teatime-newsletter\"", StringComparison.Ordinal),
             rssDiscoveryHtml: rssDiscoveryHtml,
             isArticle: view.IsArticle,
             siteNavHtml: siteNavHtml,

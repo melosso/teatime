@@ -19,6 +19,7 @@
       "items": [
         { "title": "Guide", "path": "/guide/" },
         { "title": "Deploy", "path": "/deploy/" },
+        { "title": "Plugins", "path": "/extensions/" },
         { "title": "Examples", "path": "/examples/" },
         { "title": "GitHub", "path": "https://github.com/melosso/teatime", "external": true }
       ]

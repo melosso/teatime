@@ -29,6 +29,7 @@ public static partial class LayoutProvider
         bool hasMath = false,
         bool hasMermaid = false,
         bool hasMap = false,
+        bool hasNewsletter = false,
         string? rssDiscoveryHtml = null,
         string? promoBarHtml = null,
         bool isArticle = false,
@@ -199,6 +200,7 @@ public static partial class LayoutProvider
     </main>
     {footerHtml}
     {GetScripts(enableLiveReload, enableDarkMode, buildVersion, basePath, nonce, staticSearch)}
+    {(hasNewsletter ? GetNewsletterAssets(basePath, nonce) : "")}
 </body>
 </html>";
     }

@@ -6,11 +6,12 @@ using System.Text.RegularExpressions;
 using System.Threading.Channels;
 using Teatime.Configuration;
 using Teatime.Models;
+using Teatime.Services.Extensions;
 using Teatime.Services.Rendering;
 
 namespace Teatime.Services;
 
-public sealed partial class ContentService : IHostedService, IDisposable
+public sealed partial class ContentService : IHostedService, IExtensionSource, IDisposable
 {
     private readonly DocsOptions _options;
     private readonly MarkdownService _markdown;
@@ -27,12 +28,14 @@ public sealed partial class ContentService : IHostedService, IDisposable
     private sealed record ContentSnapshot(
         IReadOnlyDictionary<string, DocumentationPage> Pages,
         Config? Config,
-        SearchIndex SearchIndex);
+        SearchIndex SearchIndex,
+        ExtensionSet Extensions);
 
     private static readonly ContentSnapshot EmptySnapshot = new(
         ImmutableDictionary<string, DocumentationPage>.Empty,
         null,
-        new SearchIndex());
+        new SearchIndex(),
+        ExtensionSet.Empty);
 
     private volatile ContentSnapshot _snapshot = EmptySnapshot;
     private string? _lastContentHash;
@@ -65,6 +68,9 @@ public sealed partial class ContentService : IHostedService, IDisposable
     public Task ForceRebuildAsync(CancellationToken cancellationToken) => RebuildAsync(cancellationToken);
 
     public Config? SiteConfig => _snapshot.Config;
+
+    /// <summary>Extensions that were enabled in <c>extensions.json</c> and passed verification.</summary>
+    public ExtensionSet Extensions => _snapshot.Extensions;
     public long BuildVersion { get; private set; }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -88,9 +94,10 @@ public sealed partial class ContentService : IHostedService, IDisposable
             _watcher.Deleted += OnFileChanged;
             _watcher.Renamed += OnFileRenamed;
 
+            // Root-level JSON only: config.json and extensions.json. Subdirectories stay out of scope.
             _configWatcher = new FileSystemWatcher(docsPath)
             {
-                Filter = "config.json",
+                Filter = "*.json",
                 EnableRaisingEvents = true
             };
             _configWatcher.Changed += OnFileChanged;
@@ -224,6 +231,17 @@ public sealed partial class ContentService : IHostedService, IDisposable
         }
 
         var config = LoadConfig(docsPath);
+        var extensions = ExtensionLoader.Load(docsPath, _logger);
+        if (extensions.Signature != _snapshot.Extensions.Signature || extensions.Rejected.Count > 0)
+            _logger.LogInformation("Active extensions: {Extensions}. Invalid: {Invalid}",
+                extensions.IsEmpty ? "none" : extensions.Signature,
+                extensions.Rejected.Count == 0 ? "none" : string.Join(", ", extensions.Rejected));
+
+        // Published before any page is parsed: a newsletter block renders against the live back end.
+        NewsletterAvailability.Current = extensions.Newsletter is { } newsletter
+            ? new NewsletterAvailability(true, newsletter.CollectName)
+            : NewsletterAvailability.None;
+
         DateFormatter.Current = DateFormatter.From(config?.Locale);
         TitleMonogram.Current = TitleMonogram.From(config?.Locale);
         Localization.Current = Localization.From(docsPath, config, _logger);
@@ -303,6 +321,11 @@ public sealed partial class ContentService : IHostedService, IDisposable
         if (File.Exists(configPath))
             hashInput.Append(await File.ReadAllTextAsync(configPath, cancellationToken));
 
+        // Extension settings reach the rendered head, so an edit has to bump BuildVersion.
+        var extensionsPath = Path.Combine(docsPath, ExtensionLoader.FileName);
+        if (File.Exists(extensionsPath))
+            hashInput.Append(await File.ReadAllTextAsync(extensionsPath, cancellationToken));
+
         // Locale JSON drives the UI string table only, never enumerated as pages; hash it so an edit bumps BuildVersion.
         var localeDir = Path.Combine(docsPath, "locale");
         if (Directory.Exists(localeDir))
@@ -329,7 +352,8 @@ public sealed partial class ContentService : IHostedService, IDisposable
         var snapshot = new ContentSnapshot(
             pageMap,
             config,
-            searchIndex);
+            searchIndex,
+            extensions);
 
         _snapshot = snapshot;
 

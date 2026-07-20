@@ -42,4 +42,6 @@ Each release ships a ready to run build for Windows:
 
 The zip already includes a `web.config` wired for in process hosting, so no manual edits are needed. A `*-Linux_x64.zip` build is attached to each release as well, though we have yet to document this installation process.
 
+To change the port, hide drafts, or keep an API key out of your content folder, see [environment variables](/deploy/environment/).
+
 Have fun writing!

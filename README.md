@@ -13,6 +13,7 @@ content/
   posts/        your blog posts, one .md file each
   pages/        standalone pages like About, served at /about
   config.json   optional site settings
+  extensions.json  optional built-in extensions
 ```
 
 A post is a Markdown file with a little front matter at the top:
@@ -97,6 +98,8 @@ A `content/config.json` file is entirely optional. It lets you set details like 
   ]
 }
 ```
+
+Analytics live in their own optional file, `content/extensions.json`, where Matomo, Plausible, and Medama can be switched on. Each one stays inactive until its settings verify, and the Content Security Policy is widened for you, so no vendor snippet has to be pasted into your theme. The guide walks through the details.
 
 Both your posts and this config are hot reloaded, so you can adjust them while the server is running. Theme details, such as CSS variables and dark mode, are handled through `appsettings.json` or environment variables, which keeps your content folder focused purely on writing.
 

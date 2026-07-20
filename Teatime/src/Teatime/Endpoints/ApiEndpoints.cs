@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Teatime.Configuration;
 using Teatime.Models;
 using Teatime.Services;
+using Teatime.Services.Extensions;
+using Teatime.Services.Rendering;
 
 namespace Teatime.Endpoints;
 
@@ -12,9 +14,46 @@ internal static class ApiEndpoints
         var api = app.MapGroup("/api");
         api.MapGet("/search", Search).RequireRateLimiting(RateLimitPolicies.Search);
         api.MapGet("/pages", GetPages).RequireRateLimiting(RateLimitPolicies.Search);
+        api.MapGet("/altcha", GetChallenge).RequireRateLimiting(RateLimitPolicies.Search);
+        api.MapPost("/subscribe", Subscribe).RequireRateLimiting(RateLimitPolicies.Subscribe);
         // NOT rate-limited; the hot-reload script polls this every few seconds
         api.MapGet("/build-version", GetBuildVersion);
         return app;
+    }
+
+    /// <summary>
+    /// Newsletter sign-up. The reader's browser only ever reaches this route: the Beacon endpoint and
+    /// its API key stay on the server, and the reply carries a display message and nothing else.
+    /// </summary>
+    internal static Ok<AltchaChallenge> GetChallenge(AltchaService altcha) =>
+        TypedResults.Ok(altcha.Create());
+
+    internal static async Task<IResult> Subscribe(
+        SubscribeRequest request, NewsletterService newsletter, AltchaService altcha, CancellationToken cancellationToken)
+    {
+        var l = Localization.Current;
+
+        if (!newsletter.IsEnabled)
+            return TypedResults.Json(new SubscribeResponse(false, l.NewsletterDisabled), statusCode: 404);
+
+        // A filled honeypot means a bot, which is thanked and quietly ignored.
+        if (!string.IsNullOrWhiteSpace(request.Website))
+            return TypedResults.Ok(new SubscribeResponse(true, l.NewsletterSubscribed));
+
+        if (!altcha.Verify(request.Altcha))
+            return TypedResults.Json(new SubscribeResponse(false, l.NewsletterVerification), statusCode: 400);
+
+        var result = await newsletter.SubscribeAsync(request.Email, request.Name, cancellationToken);
+
+        return result.Outcome switch
+        {
+            SubscribeOutcome.Subscribed => TypedResults.Ok(new SubscribeResponse(true, l.NewsletterSubscribed)),
+            SubscribeOutcome.AlreadySubscribed => TypedResults.Ok(new SubscribeResponse(true, l.NewsletterAlready)),
+            SubscribeOutcome.ConfirmationSent => TypedResults.Ok(new SubscribeResponse(true, l.NewsletterConfirm)),
+            SubscribeOutcome.InvalidEmail => TypedResults.Json(new SubscribeResponse(false, l.NewsletterInvalidEmail), statusCode: 400),
+            SubscribeOutcome.Disabled => TypedResults.Json(new SubscribeResponse(false, l.NewsletterDisabled), statusCode: 404),
+            _ => TypedResults.Json(new SubscribeResponse(false, l.NewsletterError), statusCode: 502),
+        };
     }
 
     internal static async Task<Ok<GroupedSearchResponse>> Search(
