@@ -13,6 +13,10 @@ public static class SecurityHeaders
         "img-src 'self' data: https://tile.openstreetmap.org https://*.tile.openstreetmap.org; " +
         "font-src 'self' data:; " +
         "connect-src 'self'; " +
+        // No default-src fallback for these as far as I know  
+        "base-uri 'self'; " +
+        "form-action 'self'; " +
+        "object-src 'none'; " +
         "frame-ancestors 'none'";
 
     public static Task Apply(HttpContext context, Func<Task> next) =>
