@@ -20,13 +20,17 @@ public static class CommentEmbedRenderer
             $"host:'{Localization.JsEncode(remark.BaseUrl)}'",
             $"site_id:'{Localization.JsEncode(remark.SiteId)}'",
             $"url:'{Localization.JsEncode(canonicalUrl)}'",
-            $"max_shown_comments:{remark.MaxShownComments}",
+            $"max_shown_comments:{remark.MaxShownComments} ?? 25 ",
             $"locale:'{Localization.JsEncode(remark.Locale ?? lang ?? "en")}'",
             $"theme:'{Localization.JsEncode(remark.Theme == "auto" ? "light" : remark.Theme)}'",
+            $"components: ['embed'],",
+            $"simple_view:true,",
+            $"show_email_subscription:false,",
             "no_footer:true",
             "components:['embed']");
 
         // Teatime "light" leaves data-theme unset and follows the OS, so eff() needs the media-query fallback.
+        // To not make the same mistake twice, ...
         // remark42 caches its own theme and re-applies it after boot, so sync() re-asserts for a few seconds.
         var follow = remark.Theme == "auto"
             ? """
@@ -115,8 +119,15 @@ public static class CommentEmbedRenderer
             display: block;
             min-height: 3rem;
         }
+        /* Undo the .content.reading video-embed iframe rule; the comment thread is not a 16/9 video. */
         .teatime-comments #remark42 iframe {
+            width: 100%;
             max-width: 100%;
+            aspect-ratio: auto;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            margin: 0;
         }
         .teatime-comments:has(#remark42 > *) .teatime-comments__status { display: none; }
         /* Element + class beats the prose rules the thread sits inside. */
