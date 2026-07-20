@@ -56,5 +56,21 @@
   "themeToggle": "थीम बदलें",
   "notFoundTitle": "पेज नहीं मिला",
   "notFoundMessage": "आप जिस पेज की तलाश कर रहे हैं वह मौजूद नहीं है।",
-  "notFoundHome": "होम पेज पर वापस जाएं"
+  "notFoundHome": "होम पेज पर वापस जाएं",
+  "newsletterHeading": "सदस्यता लें",
+  "newsletterIntro": "नई पोस्ट सीधे आपके इनबॉक्स में। आप जब चाहें सदस्यता छोड़ सकते हैं।",
+  "newsletterEmailLabel": "ईमेल पता",
+  "newsletterEmailPlaceholder": "aap@udaharan.in",
+  "newsletterNameLabel": "नाम (वैकल्पिक)",
+  "newsletterConsent": "हाँ, मुझे नई पोस्ट ईमेल से भेजें।",
+  "newsletterSubmit": "सदस्यता लें",
+  "newsletterSending": "भेजा जा रहा है...",
+  "newsletterSubscribed": "आप सूची में हैं। पढ़ने के लिए धन्यवाद।",
+  "newsletterAlready": "आप पहले से सूची में हैं। पढ़ने के लिए धन्यवाद।",
+  "newsletterConfirm": "लगभग हो गया। सदस्यता की पुष्टि के लिए अपना इनबॉक्स देखें।",
+  "newsletterInvalidEmail": "यह ईमेल पता सही नहीं लगता। इसे जाँचें और फिर कोशिश करें।",
+  "newsletterConsentRequired": "कृपया बॉक्स पर निशान लगाएँ ताकि हमें पता चले कि आप ये ईमेल चाहते हैं।",
+  "newsletterError": "हमारी ओर से कुछ गड़बड़ हुई। कृपया थोड़ी देर बाद फिर कोशिश करें।",
+  "newsletterThrottled": "बहुत सारे प्रयास हो गए। एक मिनट रुककर फिर कोशिश करें।",
+  "newsletterDisabled": "अभी सदस्यता बंद है।"
 }

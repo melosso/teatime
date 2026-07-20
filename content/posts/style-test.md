@@ -109,4 +109,14 @@ https://fosstodon.org/@example
 
 A link written [inline](https://fosstodon.org/@example), or one with its own label, stays an ordinary link. Only a bare URL alone on a line becomes a card.
 
+## Newsletters
+
+Enable the [integration][/extensions/] and add the subscription form:
+
+```newsletter
+heading: Subscribe
+intro: New posts, straight to your inbox. Unsubscribe whenever you like.
+consent: true
+```
+
 [^note]: A footnote lands down here, linked both ways so a reader never loses their place.

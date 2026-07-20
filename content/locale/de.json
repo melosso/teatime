@@ -56,5 +56,21 @@
   "themeToggle": "Design ändern",
   "notFoundTitle": "Seite nicht gefunden",
   "notFoundMessage": "Die gesuchte Seite existiert leider nicht.",
-  "notFoundHome": "Zurück zur Startseite"
+  "notFoundHome": "Zurück zur Startseite",
+  "newsletterHeading": "Abonnieren",
+  "newsletterIntro": "Neue Beiträge direkt in dein Postfach. Du kannst dich jederzeit abmelden.",
+  "newsletterEmailLabel": "E-Mail-Adresse",
+  "newsletterEmailPlaceholder": "du@beispiel.de",
+  "newsletterNameLabel": "Name (optional)",
+  "newsletterConsent": "Ja, schickt mir neue Beiträge per E-Mail.",
+  "newsletterSubmit": "Abonnieren",
+  "newsletterSending": "Wird gesendet...",
+  "newsletterSubscribed": "Du stehst auf der Liste. Danke fürs Lesen.",
+  "newsletterAlready": "Du stehst bereits auf der Liste. Danke fürs Lesen.",
+  "newsletterConfirm": "Fast geschafft. Bitte bestätige dein Abo über die E-Mail in deinem Postfach.",
+  "newsletterInvalidEmail": "Diese E-Mail-Adresse sieht nicht richtig aus. Bitte prüfe sie und versuche es erneut.",
+  "newsletterConsentRequired": "Bitte setze das Häkchen, damit wir wissen, dass du diese E-Mails möchtest.",
+  "newsletterError": "Auf unserer Seite ist etwas schiefgelaufen. Bitte versuche es gleich noch einmal.",
+  "newsletterThrottled": "Das sind viele Versuche. Bitte warte einen Moment und versuche es erneut.",
+  "newsletterDisabled": "Anmeldungen sind derzeit geschlossen."
 }

@@ -76,13 +76,36 @@ public sealed class Localization
         ["notFoundTitle"] = "Page Not Found",
         ["notFoundMessage"] = "The page you're looking for doesn't exist.",
         ["notFoundHome"] = "Return home",
+        ["newsletterHeading"] = "Subscribe",
+        ["newsletterIntro"] = "New posts, straight to your inbox. Unsubscribe whenever you like.",
+        ["newsletterEmailLabel"] = "Email address",
+        ["newsletterEmailPlaceholder"] = "you@example.com",
+        ["newsletterNameLabel"] = "Name (optional)",
+        ["newsletterConsent"] = "Yes, send me new posts by email.",
+        ["newsletterSubmit"] = "Subscribe",
+        ["newsletterSending"] = "Sending...",
+        ["newsletterSubscribed"] = "You're on the list. Thank you for reading.",
+        ["newsletterAlready"] = "You are already on the list. Thank you for reading.",
+        ["newsletterConfirm"] = "Almost there. Check your inbox to confirm your subscription.",
+        ["newsletterInvalidEmail"] = "That email address does not look right. Please check it and try again.",
+        ["newsletterConsentRequired"] = "Please tick the box so we know you would like these emails.",
+        ["newsletterError"] = "Something went wrong on our side. Please try again in a moment.",
+        ["newsletterThrottled"] = "That is a lot of attempts. Please wait a minute and try again.",
+        ["newsletterDisabled"] = "Sign-ups are closed at the moment.",
     };
 
     private readonly IReadOnlyDictionary<string, string> _map;
 
-    private Localization(IReadOnlyDictionary<string, string> map) => _map = map;
+    private Localization(IReadOnlyDictionary<string, string> map, string code)
+    {
+        _map = map;
+        Code = code;
+    }
 
-    public static Localization Default { get; } = new(Defaults);
+    /// <summary>Active locale code, so content blocks can pick their own per-locale text.</summary>
+    public string Code { get; }
+
+    public static Localization Default { get; } = new(Defaults, "en");
 
     private static volatile Localization _current = Default;
 
@@ -158,6 +181,22 @@ public sealed class Localization
     public string NotFoundTitle => this["notFoundTitle"];
     public string NotFoundMessage => this["notFoundMessage"];
     public string NotFoundHome => this["notFoundHome"];
+    public string NewsletterHeading => this["newsletterHeading"];
+    public string NewsletterIntro => this["newsletterIntro"];
+    public string NewsletterEmailLabel => this["newsletterEmailLabel"];
+    public string NewsletterEmailPlaceholder => this["newsletterEmailPlaceholder"];
+    public string NewsletterNameLabel => this["newsletterNameLabel"];
+    public string NewsletterConsent => this["newsletterConsent"];
+    public string NewsletterSubmit => this["newsletterSubmit"];
+    public string NewsletterSending => this["newsletterSending"];
+    public string NewsletterSubscribed => this["newsletterSubscribed"];
+    public string NewsletterAlready => this["newsletterAlready"];
+    public string NewsletterConfirm => this["newsletterConfirm"];
+    public string NewsletterInvalidEmail => this["newsletterInvalidEmail"];
+    public string NewsletterConsentRequired => this["newsletterConsentRequired"];
+    public string NewsletterError => this["newsletterError"];
+    public string NewsletterThrottled => this["newsletterThrottled"];
+    public string NewsletterDisabled => this["newsletterDisabled"];
 
     // Overlays content/locale/{code}.json on the defaults. Missing file: silent. Corrupt/unknown keys: warn.
     public static Localization From(string docsPath, Config? config, ILogger logger)
@@ -165,7 +204,7 @@ public sealed class Localization
         var code = ResolveCode(config);
         var path = Path.Combine(docsPath, "locale", $"{code}.json");
         if (!File.Exists(path))
-            return Default;
+            return code == "en" ? Default : new Localization(Defaults, code);
 
         var filename = Path.GetFileName(path);
 
@@ -178,11 +217,11 @@ public sealed class Localization
         catch (JsonException ex)
         {
             logger.LogWarning("Locale file {Filename} is invalid. Falling back to default strings. Reason: {Message}", filename, ex.Message);
-            return Default;
+            return new Localization(Defaults, code);
         }
 
         if (raw is null || raw.Count == 0)
-            return Default;
+            return new Localization(Defaults, code);
 
         var map = new Dictionary<string, string>(Defaults, StringComparer.Ordinal);
         var deadKeys = new List<string>();
@@ -201,7 +240,7 @@ public sealed class Localization
             logger.LogWarning("Locale file {Filename} has unknown keys (no such string, ignored): {Keys}",
                 filename, string.Join(", ", deadKeys.Order()));
 
-        return new Localization(map);
+        return new Localization(map, code);
     }
 
     private static string ResolveCode(Config? config)

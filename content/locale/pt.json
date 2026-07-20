@@ -56,5 +56,21 @@
   "themeToggle": "Alterar tema",
   "notFoundTitle": "Página não encontrada",
   "notFoundMessage": "A página que procura não existe.",
-  "notFoundHome": "Voltar à página inicial"
+  "notFoundHome": "Voltar à página inicial",
+  "newsletterHeading": "Subscrever",
+  "newsletterIntro": "Novos artigos, directamente na sua caixa de entrada. Pode cancelar quando quiser.",
+  "newsletterEmailLabel": "Endereço de email",
+  "newsletterEmailPlaceholder": "voce@exemplo.pt",
+  "newsletterNameLabel": "Nome (opcional)",
+  "newsletterConsent": "Sim, enviem-me os novos artigos por email.",
+  "newsletterSubmit": "Subscrever",
+  "newsletterSending": "A enviar...",
+  "newsletterSubscribed": "Está na lista. Obrigado por ler.",
+  "newsletterAlready": "Já estava na lista. Obrigado por ler.",
+  "newsletterConfirm": "Quase lá. Verifique a sua caixa de entrada para confirmar a subscrição.",
+  "newsletterInvalidEmail": "Esse endereço de email não parece correcto. Verifique-o e tente novamente.",
+  "newsletterConsentRequired": "Assinale a caixa para sabermos que deseja receber estes emails.",
+  "newsletterError": "Algo correu mal do nosso lado. Tente novamente dentro de momentos.",
+  "newsletterThrottled": "São muitas tentativas. Aguarde um minuto e tente novamente.",
+  "newsletterDisabled": "As subscrições estão encerradas de momento."
 }

@@ -56,5 +56,21 @@
   "themeToggle": "Змінити тему",
   "notFoundTitle": "Сторінку не знайдено",
   "notFoundMessage": "Сторінка, яку ви шукаєте, не існує.",
-  "notFoundHome": "Повернутися на головну"
+  "notFoundHome": "Повернутися на головну",
+  "newsletterHeading": "Підписатися",
+  "newsletterIntro": "Нові дописи просто на вашу пошту. Відписатися можна будь-коли.",
+  "newsletterEmailLabel": "Адреса електронної пошти",
+  "newsletterEmailPlaceholder": "vy@pryklad.ua",
+  "newsletterNameLabel": "Ім'я (необов'язково)",
+  "newsletterConsent": "Так, надсилайте мені нові дописи поштою.",
+  "newsletterSubmit": "Підписатися",
+  "newsletterSending": "Надсилання...",
+  "newsletterSubscribed": "Вас додано до списку. Дякуємо, що читаєте.",
+  "newsletterAlready": "Ви вже у списку. Дякуємо, що читаєте.",
+  "newsletterConfirm": "Майже готово. Перевірте пошту, щоб підтвердити підписку.",
+  "newsletterInvalidEmail": "Ця адреса виглядає неправильною. Перевірте її та спробуйте ще раз.",
+  "newsletterConsentRequired": "Позначте поле, щоб ми знали, що ви хочете отримувати ці листи.",
+  "newsletterError": "На нашому боці щось пішло не так. Спробуйте ще раз за хвилину.",
+  "newsletterThrottled": "Забагато спроб. Зачекайте хвилину та спробуйте знову.",
+  "newsletterDisabled": "Підписка наразі закрита."
 }

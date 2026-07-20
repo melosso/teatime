@@ -56,5 +56,21 @@
   "themeToggle": "Переключить тему",
   "notFoundTitle": "Страница не найдена",
   "notFoundMessage": "Запрашиваемая страница не существует.",
-  "notFoundHome": "На главную"
+  "notFoundHome": "На главную",
+  "newsletterHeading": "Подписаться",
+  "newsletterIntro": "Новые записи прямо на вашу почту. Отписаться можно в любой момент.",
+  "newsletterEmailLabel": "Адрес электронной почты",
+  "newsletterEmailPlaceholder": "vy@primer.ru",
+  "newsletterNameLabel": "Имя (необязательно)",
+  "newsletterConsent": "Да, присылайте мне новые записи по почте.",
+  "newsletterSubmit": "Подписаться",
+  "newsletterSending": "Отправка...",
+  "newsletterSubscribed": "Вы в списке. Спасибо, что читаете.",
+  "newsletterAlready": "Вы уже в списке. Спасибо, что читаете.",
+  "newsletterConfirm": "Почти готово. Проверьте почту, чтобы подтвердить подписку.",
+  "newsletterInvalidEmail": "Этот адрес выглядит неверным. Проверьте его и попробуйте снова.",
+  "newsletterConsentRequired": "Отметьте галочку, чтобы мы знали, что вы хотите получать эти письма.",
+  "newsletterError": "На нашей стороне что-то пошло не так. Попробуйте ещё раз через минуту.",
+  "newsletterThrottled": "Слишком много попыток. Подождите минуту и попробуйте снова.",
+  "newsletterDisabled": "Подписка сейчас закрыта."
 }

@@ -72,6 +72,7 @@ try
     builder.Services.AddSingleton<ContentService>();
     builder.Services.AddHostedService(sp => sp.GetRequiredService<ContentService>());
     builder.Services.AddSingleton<PostService>();
+    builder.Services.AddHttpClient<NewsletterService>(client => client.Timeout = TimeSpan.FromSeconds(10));
     builder.Services.AddSingleton<AuthorService>();
 
     var customCspRaw = builder.Configuration["Docs:ContentSecurityPolicy"];
@@ -134,6 +135,16 @@ try
                 {
                     PermitLimit = 30,
                     Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0
+                }));
+        // A sign-up can send a confirmation email, so this budget guards readers' inboxes, not just the server
+        options.AddPolicy(RateLimitPolicies.Subscribe, httpContext =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromMinutes(10),
                     QueueLimit = 0
                 }));
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;

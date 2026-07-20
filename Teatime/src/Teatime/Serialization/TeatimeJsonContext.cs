@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Teatime.Models;
+using Teatime.Services;
 
 namespace Teatime.Serialization;
 
@@ -12,4 +13,14 @@ namespace Teatime.Serialization;
 [JsonSerializable(typeof(GroupedSearchResponse))]
 [JsonSerializable(typeof(SearchIndexExport))]
 [JsonSerializable(typeof(BookmarkCache))]
+[JsonSerializable(typeof(BeaconTokenRequest[]))]
+[JsonSerializable(typeof(BeaconTokenResponse[]))]
+[JsonSerializable(typeof(BeaconErrorResponse))]
+[JsonSerializable(typeof(ListmonkSubscriptionRequest))]
+[JsonSerializable(typeof(ListmonkSubscriptionResponse))]
+[JsonSerializable(typeof(ListmonkError))]
+[JsonSerializable(typeof(MailchimpMemberRequest))]
+[JsonSerializable(typeof(MailchimpError))]
+[JsonSerializable(typeof(SubscribeRequest))]
+[JsonSerializable(typeof(SubscribeResponse))]
 internal sealed partial class TeatimeJsonContext : JsonSerializerContext;

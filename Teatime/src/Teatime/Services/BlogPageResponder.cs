@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Teatime.Configuration;
 using Teatime.Models;
+using Teatime.Services.Extensions;
 using Teatime.Services.Layout;
 using Teatime.Services.Rendering;
 
@@ -59,8 +60,10 @@ public sealed class BlogPageResponder
         context.Response.Headers.CacheControl = "no-cache";
 
         var nonce = NonceFromETag(etag);
-        context.Response.Headers.ContentSecurityPolicy =
-            SecurityHeaders.BuildNonceCsp(_settings.CustomCsp ?? SecurityHeaders.DefaultCsp, nonce);
+        var extensions = _content.Extensions;
+        var baseCsp = SecurityHeaders.WithExtraSources(
+            _settings.CustomCsp ?? SecurityHeaders.DefaultCsp, extensions.CspSources);
+        context.Response.Headers.ContentSecurityPolicy = SecurityHeaders.BuildNonceCsp(baseCsp, nonce);
 
         if (context.Request.Headers.IfNoneMatch.ToString() == $"\"{etag}\"")
         {
@@ -99,12 +102,14 @@ public sealed class BlogPageResponder
             showScrollIndicator: config?.ScrollIndicator ?? ThemeProvider.ShowScrollIndicator(_theme),
             basePath: basePath,
             lang: config?.Lang ?? "en",
-            headTagsHtml: HeadTagHtmlRenderer.BuildHeadTagsHtml(config?.Head),
+            headTagsHtml: HeadTagHtmlRenderer.BuildHeadTagsHtml(config?.Head)
+                + ExtensionHeadRenderer.Build(extensions, nonce),
             canonicalUrl: canonicalUrl,
             nonce: nonce,
             hasMath: view.ContentHtml.Contains("class=\"katex\"", StringComparison.Ordinal),
             hasMermaid: view.ContentHtml.Contains("class=\"mermaid\"", StringComparison.Ordinal),
             hasMap: view.ContentHtml.Contains("class=\"teatime-map\"", StringComparison.Ordinal),
+            hasNewsletter: view.ContentHtml.Contains("class=\"teatime-newsletter\"", StringComparison.Ordinal),
             rssDiscoveryHtml: rssDiscoveryHtml,
             isArticle: view.IsArticle,
             siteNavHtml: siteNavHtml,

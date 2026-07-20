@@ -4,4 +4,7 @@ namespace Teatime.Configuration;
 internal static class RateLimitPolicies
 {
     public const string Search = "search-limit";
+
+    // Newsletter sign-up can trigger a confirmation email, so it is held to a much tighter budget
+    public const string Subscribe = "subscribe-limit";
 }
