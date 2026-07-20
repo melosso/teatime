@@ -72,5 +72,8 @@
   "newsletterConsentRequired": "Spunta la casella per farci sapere che vuoi ricevere queste email.",
   "newsletterError": "Qualcosa è andato storto da parte nostra. Riprova tra un momento.",
   "newsletterThrottled": "Sono molti tentativi. Aspetta un minuto e riprova.",
-  "newsletterDisabled": "Le iscrizioni sono chiuse al momento."
+  "newsletterDisabled": "Le iscrizioni sono chiuse al momento.",
+  "newsletterVerification": "Non ha superato il nostro controllo antispam. Riprova.",
+  "commentsLoading": "Caricamento della conversazione",
+  "commentsNoScript": "I commenti richiedono JavaScript. Attivalo per leggere e rispondere."
 }

@@ -72,5 +72,8 @@
   "newsletterConsentRequired": "Please tick the box so we know you would like these emails.",
   "newsletterError": "Something went wrong on our side. Please try again in a moment.",
   "newsletterThrottled": "That is a lot of attempts. Please wait a minute and try again.",
-  "newsletterDisabled": "Sign-ups are closed at the moment."
+  "newsletterDisabled": "Sign-ups are closed at the moment.",
+  "newsletterVerification": "That did not pass our spam check. Please try again.",
+  "commentsLoading": "Loading the conversation",
+  "commentsNoScript": "Comments need JavaScript. Turn it on to read and reply."
 }

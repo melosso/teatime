@@ -72,5 +72,8 @@
   "newsletterConsentRequired": "Marca la casilla para que sepamos que quieres recibir estos correos.",
   "newsletterError": "Algo ha fallado por nuestra parte. Inténtalo de nuevo en un momento.",
   "newsletterThrottled": "Son muchos intentos. Espera un minuto e inténtalo de nuevo.",
-  "newsletterDisabled": "Las suscripciones están cerradas por ahora."
+  "newsletterDisabled": "Las suscripciones están cerradas por ahora.",
+  "newsletterVerification": "No ha pasado nuestra comprobación antispam. Inténtalo de nuevo.",
+  "commentsLoading": "Cargando la conversación",
+  "commentsNoScript": "Los comentarios necesitan JavaScript. Actívalo para leer y responder."
 }

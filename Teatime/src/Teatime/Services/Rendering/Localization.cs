@@ -18,6 +18,7 @@ public sealed class Localization
 
     private static readonly Dictionary<string, string> Defaults = new(StringComparer.Ordinal)
     {
+        // When adding here, make sure to add to the locale/en.json file too, so it can be overridden.
         ["readMore"] = "Keep reading",
         ["loadMore"] = "Load more posts",
         ["pagerNewer"] = "Newer",
@@ -92,6 +93,8 @@ public sealed class Localization
         ["newsletterError"] = "Something went wrong on our side. Please try again in a moment.",
         ["newsletterThrottled"] = "That is a lot of attempts. Please wait a minute and try again.",
         ["newsletterDisabled"] = "Sign-ups are closed at the moment.",
+        ["commentsLoading"] = "Loading the conversation",
+        ["commentsNoScript"] = "Comments need JavaScript. Turn it on to read and reply.",
         ["newsletterVerification"] = "That did not pass our spam check. Please try again.",
     };
 
@@ -107,6 +110,9 @@ public sealed class Localization
     public string Code { get; }
 
     public static Localization Default { get; } = new(Defaults, "en");
+
+    /// <summary>Every built-in string key, so a shipped locale file can be checked for coverage.</summary>
+    public static IReadOnlyCollection<string> Keys => Defaults.Keys;
 
     private static volatile Localization _current = Default;
 
@@ -199,6 +205,8 @@ public sealed class Localization
     public string NewsletterThrottled => this["newsletterThrottled"];
     public string NewsletterDisabled => this["newsletterDisabled"];
     public string NewsletterVerification => this["newsletterVerification"];
+    public string CommentsLoading => this["commentsLoading"];
+    public string CommentsNoScript => this["commentsNoScript"];
 
     // Overlays content/locale/{code}.json on the defaults. Missing file: silent. Corrupt/unknown keys: warn.
     public static Localization From(string docsPath, Config? config, ILogger logger)

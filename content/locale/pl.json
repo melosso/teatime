@@ -72,5 +72,8 @@
   "newsletterConsentRequired": "Zaznacz pole, abyśmy wiedzieli, że chcesz otrzymywać te wiadomości.",
   "newsletterError": "Coś poszło nie tak po naszej stronie. Spróbuj ponownie za chwilę.",
   "newsletterThrottled": "To sporo prób. Odczekaj minutę i spróbuj ponownie.",
-  "newsletterDisabled": "Zapisy są obecnie zamknięte."
+  "newsletterDisabled": "Zapisy są obecnie zamknięte.",
+  "newsletterVerification": "To nie przeszło naszej kontroli antyspamowej. Spróbuj ponownie.",
+  "commentsLoading": "Wczytywanie rozmowy",
+  "commentsNoScript": "Komentarze wymagają JavaScriptu. Włącz go, aby czytać i odpowiadać."
 }

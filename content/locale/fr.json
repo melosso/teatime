@@ -72,5 +72,8 @@
   "newsletterConsentRequired": "Cochez la case pour nous confirmer que vous souhaitez recevoir ces e-mails.",
   "newsletterError": "Un problème est survenu de notre côté. Réessayez dans un instant.",
   "newsletterThrottled": "Cela fait beaucoup de tentatives. Patientez une minute et réessayez.",
-  "newsletterDisabled": "Les inscriptions sont fermées pour le moment."
+  "newsletterDisabled": "Les inscriptions sont fermées pour le moment.",
+  "newsletterVerification": "Cela n'a pas passé notre contrôle antispam. Veuillez réessayer.",
+  "commentsLoading": "Chargement de la conversation",
+  "commentsNoScript": "Les commentaires nécessitent JavaScript. Activez-le pour lire et répondre."
 }

@@ -72,5 +72,8 @@
   "newsletterConsentRequired": "Bitte setze das Häkchen, damit wir wissen, dass du diese E-Mails möchtest.",
   "newsletterError": "Auf unserer Seite ist etwas schiefgelaufen. Bitte versuche es gleich noch einmal.",
   "newsletterThrottled": "Das sind viele Versuche. Bitte warte einen Moment und versuche es erneut.",
-  "newsletterDisabled": "Anmeldungen sind derzeit geschlossen."
+  "newsletterDisabled": "Anmeldungen sind derzeit geschlossen.",
+  "newsletterVerification": "Das hat unsere Spam-Prüfung nicht bestanden. Bitte versuche es erneut.",
+  "commentsLoading": "Kommentare werden geladen",
+  "commentsNoScript": "Kommentare brauchen JavaScript. Schalte es ein, um zu lesen und zu antworten."
 }

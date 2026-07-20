@@ -72,5 +72,8 @@
   "newsletterConsentRequired": "Vink het vakje aan zodat we weten dat je deze e-mails wilt ontvangen.",
   "newsletterError": "Er ging iets mis aan onze kant. Probeer het zo meteen nog eens.",
   "newsletterThrottled": "Dat zijn veel pogingen. Wacht even en probeer het opnieuw.",
-  "newsletterDisabled": "Aanmeldingen zijn momenteel gesloten."
+  "newsletterDisabled": "Aanmeldingen zijn momenteel gesloten.",
+  "newsletterVerification": "Dit kwam niet door onze spamcontrole. Probeer het opnieuw.",
+  "commentsLoading": "Gesprek wordt geladen",
+  "commentsNoScript": "Reacties vereisen JavaScript. Schakel het in om te lezen en te reageren."
 }

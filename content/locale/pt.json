@@ -72,5 +72,8 @@
   "newsletterConsentRequired": "Assinale a caixa para sabermos que deseja receber estes emails.",
   "newsletterError": "Algo correu mal do nosso lado. Tente novamente dentro de momentos.",
   "newsletterThrottled": "São muitas tentativas. Aguarde um minuto e tente novamente.",
-  "newsletterDisabled": "As subscrições estão encerradas de momento."
+  "newsletterDisabled": "As subscrições estão encerradas de momento.",
+  "newsletterVerification": "Isto não passou na nossa verificação de spam. Tente novamente.",
+  "commentsLoading": "A carregar a conversa",
+  "commentsNoScript": "Os comentários precisam de JavaScript. Ative-o para ler e responder."
 }

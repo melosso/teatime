@@ -588,4 +588,33 @@ public sealed class CommentEmbedRendererTests
         Assert.Contains("locale:'nl'", CommentEmbedRenderer.Build(Remark, null, "https://example.com/p/", "nl"));
         Assert.Contains("locale:'de'", CommentEmbedRenderer.Build(Remark with { Locale = "de" }, null, "https://example.com/p/", "nl"));
     }
+
+    [Fact]
+    public void EmbedShipsAStyleBlockCarryingTheNonce()
+    {
+        var html = CommentEmbedRenderer.Build(Remark, "n0nce", "https://example.com/p/", "en");
+
+        Assert.Contains("<style nonce=\"n0nce\">", html);
+        Assert.Contains(".teatime-comments", html);
+    }
+
+    [Fact]
+    public void LoadingLineSitsInsideTheMountSoRemarkReplacesIt()
+    {
+        var html = CommentEmbedRenderer.Build(Remark, null, "https://example.com/p/", "en");
+
+        var mount = html.IndexOf("id=\"remark42\"", StringComparison.Ordinal);
+        var status = html.IndexOf("role=\"status\"", StringComparison.Ordinal);
+        var mountClose = html.IndexOf("</div>", mount, StringComparison.Ordinal);
+        Assert.InRange(status, mount, mountClose);
+    }
+
+    [Fact]
+    public void NoScriptFallbackIsPresent()
+    {
+        var html = CommentEmbedRenderer.Build(Remark, null, "https://example.com/p/", "en");
+
+        Assert.Contains("<noscript>", html);
+        Assert.Contains("teatime-comments__status--static", html);
+    }
 }
