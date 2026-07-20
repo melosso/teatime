@@ -53,10 +53,12 @@ public static class ExtensionLoader
         AddIfVerified(active, BuildMatomo(section.Matomo, rejects));
         AddIfVerified(active, BuildPlausible(section.Plausible, rejects));
         AddIfVerified(active, BuildMedama(section.Medama, rejects));
+        AddIfVerified(active, BuildGoatCounter(section.GoatCounter, rejects));
 
         var newsletter = ResolveNewsletter(section, rejects);
+        var comments = BuildRemark42(section.Remark42, rejects);
 
-        return new ExtensionSet(active, newsletter, rejects.Names);
+        return new ExtensionSet(active, newsletter, rejects.Names, comments);
     }
 
     /// <summary>
@@ -153,6 +155,65 @@ public static class ExtensionLoader
         return new ActiveExtension("medama",
             [new ExtensionScript(Src: $"{baseUrl}/script.js", Defer: true)],
             [origin]);
+    }
+
+    private static ActiveExtension? BuildGoatCounter(GoatCounterOptions? options, Rejections rejects)
+    {
+        if (options is not { Enabled: true })
+            return null;
+
+        if (!TryBaseUrl(options.Url, out var baseUrl, out var origin))
+            return Reject("goatcounter", "\"url\" must be an absolute http(s) URL", rejects);
+
+        return new ActiveExtension("goatcounter",
+            [
+                new ExtensionScript(
+                    Src: $"{baseUrl}/count.js",
+                    Async: true,
+                    Attributes: [new KeyValuePair<string, string>("data-goatcounter", $"{baseUrl}/count")])
+            ],
+            [origin]);
+    }
+
+    private static Remark42Provider? BuildRemark42(Remark42Options? options, Rejections rejects)
+    {
+        if (options is not { Enabled: true })
+            return null;
+
+        if (!TryBaseUrl(options.Url, out var baseUrl, out var origin))
+        {
+            rejects.Add("remark42", "\"url\" must be an absolute http(s) URL");
+            return null;
+        }
+
+        var siteId = Coalesce(options.SiteId) ?? "remark";
+        if (!siteId.All(IsBucketChar))
+        {
+            rejects.Add("remark42", "\"siteId\" must match the SITE value your Remark42 runs with");
+            return null;
+        }
+
+        var theme = (Coalesce(options.Theme) ?? "auto").ToLowerInvariant();
+        if (theme is not ("light" or "dark" or "auto"))
+        {
+            rejects.Add("remark42", "\"theme\" must be light, dark or auto");
+            return null;
+        }
+
+        var locale = Coalesce(options.Locale)?.ToLowerInvariant();
+        if (locale is not null && !locale.All(c => char.IsAsciiLetter(c) || c == '-'))
+        {
+            rejects.Add("remark42", "\"locale\" must be a language code such as nl");
+            return null;
+        }
+
+        return new Remark42Provider(
+            Origin: origin,
+            BaseUrl: baseUrl,
+            SiteId: siteId,
+            Theme: theme,
+            Locale: locale,
+            MaxShownComments: Math.Clamp(options.MaxShownComments, 1, 500));
     }
 
     private static BeaconProvider? BuildBeacon(BeaconOptions? options, Rejections rejects)

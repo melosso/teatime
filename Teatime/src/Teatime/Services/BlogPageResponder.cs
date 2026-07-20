@@ -13,7 +13,8 @@ public sealed record BlogPageView(
     string ContentHtml,
     string? Description = null,
     string CanonicalPath = "",
-    bool IsArticle = false);
+    bool IsArticle = false,
+    bool ShowComments = false);
 
 public sealed class BlogPageResponder
 {
@@ -81,9 +82,13 @@ public sealed class BlogPageResponder
         var rawPath = $"{basePath}/{pageSegment}".TrimStart('/');
         var canonicalUrl = $"{context.Request.Scheme}://{context.Request.Host}/{rawPath}";
 
+        var contentHtml = view.ShowComments
+            ? view.ContentHtml + CommentEmbedRenderer.Build(extensions.Comments, nonce, canonicalUrl, config?.Lang)
+            : view.ContentHtml;
+
         var fullHtml = LayoutProvider.GetLayout(
             title: PageTitleRenderer.ComputeTitle(view.Title, config),
-            content: view.ContentHtml,
+            content: contentHtml,
             themeCss: themeCss,
             brandText: brandText,
             brandImage: config?.BrandImage,

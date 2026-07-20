@@ -13,3 +13,5 @@
 
 # Generated bookmark card cache + downloaded images
 Teatime/src/Teatime/wwwroot/bookmarks/
+# Serilog rolling file sink output
+logs/

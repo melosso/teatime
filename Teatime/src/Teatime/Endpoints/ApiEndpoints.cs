@@ -14,6 +14,7 @@ internal static class ApiEndpoints
         var api = app.MapGroup("/api");
         api.MapGet("/search", Search).RequireRateLimiting(RateLimitPolicies.Search);
         api.MapGet("/pages", GetPages).RequireRateLimiting(RateLimitPolicies.Search);
+        api.MapGet("/altcha", GetChallenge).RequireRateLimiting(RateLimitPolicies.Search);
         api.MapPost("/subscribe", Subscribe).RequireRateLimiting(RateLimitPolicies.Subscribe);
         // NOT rate-limited; the hot-reload script polls this every few seconds
         api.MapGet("/build-version", GetBuildVersion);
@@ -24,8 +25,11 @@ internal static class ApiEndpoints
     /// Newsletter sign-up. The reader's browser only ever reaches this route: the Beacon endpoint and
     /// its API key stay on the server, and the reply carries a display message and nothing else.
     /// </summary>
+    internal static Ok<AltchaChallenge> GetChallenge(AltchaService altcha) =>
+        TypedResults.Ok(altcha.Create());
+
     internal static async Task<IResult> Subscribe(
-        SubscribeRequest request, NewsletterService newsletter, CancellationToken cancellationToken)
+        SubscribeRequest request, NewsletterService newsletter, AltchaService altcha, CancellationToken cancellationToken)
     {
         var l = Localization.Current;
 
@@ -35,6 +39,9 @@ internal static class ApiEndpoints
         // A filled honeypot means a bot, which is thanked and quietly ignored.
         if (!string.IsNullOrWhiteSpace(request.Website))
             return TypedResults.Ok(new SubscribeResponse(true, l.NewsletterSubscribed));
+
+        if (!altcha.Verify(request.Altcha))
+            return TypedResults.Json(new SubscribeResponse(false, l.NewsletterVerification), statusCode: 400);
 
         var result = await newsletter.SubscribeAsync(request.Email, request.Name, cancellationToken);
 

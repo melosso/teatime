@@ -36,8 +36,8 @@ public static class SecurityHeaders
         return next();
     }
 
-    // Extensions load a third-party tracker: the script itself, the beacons it sends, and (Matomo) a pixel.
-    private static readonly string[] ExtensionDirectives = ["script-src", "connect-src", "img-src"];
+    // An extension loads its script, sends beacons, may fetch a pixel, and (comments) mounts an iframe.
+    private static readonly string[] ExtensionDirectives = ["script-src", "connect-src", "img-src", "frame-src"];
 
     /// <summary>Widens the fetch directives an extension needs with the origins it was verified against.</summary>
     public static string WithExtraSources(string baseCsp, IReadOnlyList<string> sources)

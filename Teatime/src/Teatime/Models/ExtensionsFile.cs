@@ -14,6 +14,8 @@ public sealed class ExtensionsSection
     public MatomoOptions? Matomo { get; set; }
     public PlausibleOptions? Plausible { get; set; }
     public MedamaOptions? Medama { get; set; }
+    public GoatCounterOptions? GoatCounter { get; set; }
+    public Remark42Options? Remark42 { get; set; }
     public BeaconOptions? Beacon { get; set; }
     public ListmonkOptions? Listmonk { get; set; }
     public MailchimpOptions? Mailchimp { get; set; }
@@ -135,6 +137,36 @@ public sealed class MailchimpOptions
 
     /// <summary>Adds an optional name field, sent as the FNAME merge field.</summary>
     public bool CollectName { get; set; }
+}
+
+/// <summary>Self-hosted Remark42 comments, mounted under each post.</summary>
+public sealed class Remark42Options
+{
+    public bool Enabled { get; set; }
+
+    /// <summary>Base URL of your Remark42 install, e.g. <c>https://comments.example.com</c>.</summary>
+    public string? Url { get; set; }
+
+    /// <summary>Site id configured in Remark42's own SITE setting. Defaults to <c>remark</c>.</summary>
+    public string? SiteId { get; set; }
+
+    /// <summary><c>light</c>, <c>dark</c>, or <c>auto</c> to follow the reader's theme. Defaults to <c>auto</c>.</summary>
+    public string? Theme { get; set; }
+
+    /// <summary>Locale for Remark42's own interface, e.g. <c>nl</c>. Defaults to the site language.</summary>
+    public string? Locale { get; set; }
+
+    /// <summary>How many comments load before the reader asks for more.</summary>
+    public int MaxShownComments { get; set; } = 15;
+}
+
+/// <summary>GoatCounter analytics, self-hosted or on goatcounter.com.</summary>
+public sealed class GoatCounterOptions
+{
+    public bool Enabled { get; set; }
+
+    /// <summary>Base URL of your GoatCounter site, e.g. <c>https://you.goatcounter.com</c>.</summary>
+    public string? Url { get; set; }
 }
 
 /// <summary>Self-hosted Medama analytics.</summary>

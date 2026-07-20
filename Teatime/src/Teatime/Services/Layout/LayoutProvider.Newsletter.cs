@@ -87,6 +87,26 @@ public static partial class LayoutProvider
         var js = $@"<script{nonceAttr}>
         (function () {{
             var endpoint = '{basePath}/api/subscribe';
+            var challengeUrl = '{basePath}/api/altcha';
+            // ALTCHA proof of work: fetch a signed target, then walk the numbers until the hash matches.
+            async function solve() {{
+                var response = await fetch(challengeUrl, {{ headers: {{ 'Accept': 'application/json' }} }});
+                var c = await response.json();
+                var encoder = new TextEncoder();
+                for (var n = 0; n <= c.maxnumber; n++) {{
+                    var digest = await crypto.subtle.digest('SHA-256', encoder.encode(c.salt + n));
+                    var hex = Array.from(new Uint8Array(digest)).map(function (b) {{
+                        return b.toString(16).padStart(2, '0');
+                    }}).join('');
+                    if (hex === c.challenge) {{
+                        return btoa(JSON.stringify({{
+                            algorithm: c.algorithm, challenge: c.challenge,
+                            number: n, salt: c.salt, signature: c.signature
+                        }}));
+                    }}
+                }}
+                throw new Error('no solution');
+            }}
             document.querySelectorAll('form[data-newsletter]').forEach(function (form) {{
                 var status = form.querySelector('.newsletter-status');
                 var button = form.querySelector('.newsletter-submit');
@@ -110,16 +130,18 @@ public static partial class LayoutProvider
                     button.disabled = true;
                     button.textContent = button.dataset.sending;
                     show('', null);
-                    fetch(endpoint, {{
+                    solve().then(function (altcha) {{
+                    return fetch(endpoint, {{
                         method: 'POST',
                         headers: {{ 'Content-Type': 'application/json', 'Accept': 'application/json' }},
                         body: JSON.stringify({{
                             email: email.value.trim(),
                             name: name ? name.value.trim() : null,
                             website: website ? website.value : '',
-                            consent: consent ? consent.checked : true
+                            consent: consent ? consent.checked : true,
+                            altcha: altcha
                         }})
-                    }}).then(function (response) {{
+                    }}); }}).then(function (response) {{
                         if (response.status === 429) return {{ ok: false, message: form.dataset.throttled }};
                         return response.json().catch(function () {{ return {{ ok: false, message: form.dataset.error }}; }});
                     }}).then(function (result) {{

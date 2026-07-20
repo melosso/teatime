@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.StaticFiles;
@@ -39,6 +40,9 @@ try
 
     builder.Services.AddSingleton(docsOptions);
 
+    var proxyOptions = builder.Configuration.GetSection("Proxy").Get<ProxyOptions>() ?? new ProxyOptions();
+    builder.Services.Configure<ForwardedHeadersOptions>(options => ForwardedHeaderSetup.Configure(options, proxyOptions));
+
     var docsRootAbsolute = Path.GetFullPath(docsOptions.RootPath).Replace(Path.DirectorySeparatorChar, '/');
 
     // appsettings.json's Docs:Themes wins if present; theme.json is the file-only alternative.
@@ -75,6 +79,7 @@ try
     builder.Services.AddHostedService(sp => sp.GetRequiredService<ContentService>());
     builder.Services.AddSingleton<PostService>();
     builder.Services.AddHttpClient<NewsletterService>(client => client.Timeout = TimeSpan.FromSeconds(10));
+    builder.Services.AddSingleton<AltchaService>();
     builder.Services.AddSingleton<AuthorService>();
 
     var customCspRaw = builder.Configuration["Docs:ContentSecurityPolicy"];
@@ -159,6 +164,8 @@ try
     // Must finish before ContentService's async renders the pages
     await app.Services.GetRequiredService<ISyntaxHighlighter>().InitializeAsync(CancellationToken.None);
 
+    app.UseForwardedHeaders();
+
     if (basePath.Length > 0)
         app.UsePathBase(basePath);
 
@@ -224,6 +231,7 @@ try
     app.UseRouting();
     app.UseRateLimiter();
 
+    app.MapHealthEndpoints();
     app.MapApiEndpoints();
     app.MapSeoEndpoints();
     app.MapBlogEndpoints();

@@ -131,6 +131,88 @@ public sealed class ExtensionLoaderTests : IDisposable
     }
 
     [Fact]
+    public void GoatCounter_WithUrl_Activates()
+    {
+        var set = Load("""
+            {"extensions":{"goatcounter":{"enabled":true,"url":"https://you.goatcounter.com"}}}
+            """);
+
+        var extension = Assert.Single(set.Active);
+        Assert.Equal("goatcounter", extension.Name);
+        var script = Assert.Single(extension.Scripts);
+        Assert.Equal("https://you.goatcounter.com/count.js", script.Src);
+        Assert.True(script.Async);
+        Assert.Equal("https://you.goatcounter.com/count",
+            Assert.Single(script.Attributes!, a => a.Key == "data-goatcounter").Value);
+    }
+
+    [Fact]
+    public void GoatCounter_WithoutUrl_StaysInactive()
+    {
+        var set = Load("""{"extensions":{"goatcounter":{"enabled":true}}}""");
+
+        Assert.Empty(set.Active);
+        Assert.Equal(["goatcounter"], set.Rejected);
+    }
+
+    [Fact]
+    public void Remark42_WithUrl_ActivatesWithDefaults()
+    {
+        var set = Load("""
+            {"extensions":{"remark42":{"enabled":true,"url":"https://comments.example.com/"}}}
+            """);
+
+        var remark = Assert.IsType<Remark42Provider>(set.Comments);
+        Assert.Equal("remark", remark.SiteId);
+        Assert.Equal("auto", remark.Theme);
+        Assert.Equal("https://comments.example.com", remark.BaseUrl);
+        Assert.Contains("https://comments.example.com", set.CspSources);
+        Assert.Contains("remark42", set.Signature);
+    }
+
+    [Fact]
+    public void Remark42_HonoursSiteIdThemeAndLocale()
+    {
+        var set = Load("""
+            {"extensions":{"remark42":{"enabled":true,"url":"https://c.example.com","siteId":"my_blog","theme":"dark","locale":"nl","maxShownComments":40}}}
+            """);
+
+        var remark = Assert.IsType<Remark42Provider>(set.Comments);
+        Assert.Equal("my_blog", remark.SiteId);
+        Assert.Equal("dark", remark.Theme);
+        Assert.Equal("nl", remark.Locale);
+        Assert.Equal(40, remark.MaxShownComments);
+    }
+
+    [Theory]
+    [InlineData("""{"enabled":true}""")]
+    [InlineData("""{"enabled":true,"url":"not-a-url"}""")]
+    [InlineData("""{"enabled":true,"url":"https://c.example.com","theme":"neon"}""")]
+    [InlineData("""{"enabled":true,"url":"https://c.example.com","siteId":"has spaces"}""")]
+    public void Remark42_WithBadSettings_StaysInactive(string settings)
+    {
+        var set = Load("{\"extensions\":{\"remark42\":" + settings + "}}");
+
+        Assert.Null(set.Comments);
+        Assert.Equal(["remark42"], set.Rejected);
+    }
+
+    [Fact]
+    public void CommentsCoexistWithAnalyticsAndNewsletter()
+    {
+        var set = Load("""
+            {"extensions":{
+              "goatcounter":{"enabled":true,"url":"https://g.example.com"},
+              "listmonk":{"enabled":true,"url":"https://l.example.com","listUuid":"3f2504e0-4f89-11d3-9a0c-0305e82c3301"},
+              "remark42":{"enabled":true,"url":"https://c.example.com"}}}
+            """);
+
+        Assert.Equal("goatcounter,listmonk,remark42", set.Signature);
+        Assert.Equal(["https://g.example.com", "https://c.example.com"], set.CspSources);
+        Assert.Empty(set.Rejected);
+    }
+
+    [Fact]
     public void MultipleExtensions_ShareOneDistinctSourceList()
     {
         var set = Load("""
@@ -457,5 +539,53 @@ public sealed class SecurityHeadersExtraSourceTests
 
         Assert.Equal(1, csp.Split(';').Single(d => d.TrimStart().StartsWith("connect-src "))
             .Split("https://a.example.com").Length - 1);
+    }
+}
+
+public sealed class CommentEmbedRendererTests
+{
+    private static readonly Remark42Provider Remark = new(
+        Origin: "https://c.example.com",
+        BaseUrl: "https://c.example.com",
+        SiteId: "blog",
+        Theme: "auto",
+        Locale: null,
+        MaxShownComments: 15);
+
+    [Fact]
+    public void NoProvider_RendersNothing()
+    {
+        Assert.Equal(string.Empty, CommentEmbedRenderer.Build(null, "n0nce", "https://example.com/posts/x/", "en"));
+    }
+
+    [Fact]
+    public void EmbedCarriesTheNonceMountAndCanonicalUrl()
+    {
+        var html = CommentEmbedRenderer.Build(Remark, "n0nce", "https://example.com/posts/x/", "en");
+
+        Assert.Contains("id=\"remark42\"", html);
+        Assert.Contains("nonce=\"n0nce\"", html);
+        Assert.Contains("site_id:'blog'", html);
+        Assert.Contains("url:'https://example.com/posts/x/'", html);
+        Assert.Contains("https://c.example.com/web/embed.js", html);
+    }
+
+    [Fact]
+    public void AutoThemeWatchesTheThemeToggle()
+    {
+        var auto = CommentEmbedRenderer.Build(Remark, null, "https://example.com/p/", "en");
+        var fixedTheme = CommentEmbedRenderer.Build(Remark with { Theme = "dark" }, null, "https://example.com/p/", "en");
+
+        Assert.Contains("MutationObserver", auto);
+        Assert.Contains("theme:'light'", auto);
+        Assert.DoesNotContain("MutationObserver", fixedTheme);
+        Assert.Contains("theme:'dark'", fixedTheme);
+    }
+
+    [Fact]
+    public void LocaleFallsBackToTheSiteLanguage()
+    {
+        Assert.Contains("locale:'nl'", CommentEmbedRenderer.Build(Remark, null, "https://example.com/p/", "nl"));
+        Assert.Contains("locale:'de'", CommentEmbedRenderer.Build(Remark with { Locale = "de" }, null, "https://example.com/p/", "nl"));
     }
 }

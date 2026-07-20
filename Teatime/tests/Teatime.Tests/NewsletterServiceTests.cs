@@ -271,6 +271,26 @@ public sealed class NewsletterServiceTests
 
 public sealed class SubscribeEndpointTests
 {
+    private readonly AltchaService _altcha = new();
+
+    /// <summary>Solves a challenge the way the browser does, by walking the numbers until the hash matches.</summary>
+    private string Solve()
+    {
+        var challenge = _altcha.Create();
+        for (var number = 0; number <= challenge.MaxNumber; number++)
+        {
+            var hash = Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(challenge.Salt + number)))
+                .ToLowerInvariant();
+
+            if (hash == challenge.Challenge)
+                return Convert.ToBase64String(System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(
+                    new AltchaSolution("SHA-256", challenge.Challenge, number, challenge.Salt, challenge.Signature)));
+        }
+
+        throw new InvalidOperationException("challenge had no solution below maxnumber");
+    }
+
     private static NewsletterService Service(INewsletterProvider? provider, HttpStatusCode status, string body, out StubHandler handler)
     {
         handler = new StubHandler(status, body);
@@ -295,7 +315,7 @@ public sealed class SubscribeEndpointTests
         var service = Service(null, HttpStatusCode.OK, "{}", out _);
 
         var result = await ApiEndpoints.Subscribe(
-            new SubscribeRequest("reader@example.com", null, null, true), service, CancellationToken.None);
+            new SubscribeRequest("reader@example.com", null, null, true, Solve()), service, _altcha, CancellationToken.None);
 
         Assert.Equal(404, StatusOf(result));
         Assert.False(ValueOf(result).Ok);
@@ -307,7 +327,7 @@ public sealed class SubscribeEndpointTests
         var service = Service(Listmonk, HttpStatusCode.OK, "{}", out var handler);
 
         var result = await ApiEndpoints.Subscribe(
-            new SubscribeRequest("bot@example.com", null, "https://spam.example", true), service, CancellationToken.None);
+            new SubscribeRequest("bot@example.com", null, "https://spam.example", true), service, _altcha, CancellationToken.None);
 
         Assert.Equal(200, StatusOf(result));
         Assert.True(ValueOf(result).Ok);
@@ -320,7 +340,7 @@ public sealed class SubscribeEndpointTests
         var service = Service(Listmonk, HttpStatusCode.OK, """{"data":{"has_optin":true}}""", out var handler);
 
         var result = await ApiEndpoints.Subscribe(
-            new SubscribeRequest("reader@example.com", null, null, true), service, CancellationToken.None);
+            new SubscribeRequest("reader@example.com", null, null, true, Solve()), service, _altcha, CancellationToken.None);
 
         Assert.Equal(200, StatusOf(result));
         Assert.True(ValueOf(result).Ok);
@@ -333,7 +353,7 @@ public sealed class SubscribeEndpointTests
         var service = Service(Listmonk, HttpStatusCode.OK, "{}", out _);
 
         var result = await ApiEndpoints.Subscribe(
-            new SubscribeRequest("nope", null, null, true), service, CancellationToken.None);
+            new SubscribeRequest("nope", null, null, true, Solve()), service, _altcha, CancellationToken.None);
 
         Assert.Equal(400, StatusOf(result));
         Assert.False(ValueOf(result).Ok);
@@ -345,9 +365,36 @@ public sealed class SubscribeEndpointTests
         var service = Service(Listmonk, HttpStatusCode.InternalServerError, """{"message":"listmonk exploded at /var/lib"}""", out _);
 
         var result = await ApiEndpoints.Subscribe(
-            new SubscribeRequest("reader@example.com", null, null, true), service, CancellationToken.None);
+            new SubscribeRequest("reader@example.com", null, null, true, Solve()), service, _altcha, CancellationToken.None);
 
         Assert.Equal(502, StatusOf(result));
         Assert.DoesNotContain("listmonk", ValueOf(result).Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task MissingProofOfWork_Answers400WithoutCallingTheProvider()
+    {
+        var service = Service(Listmonk, HttpStatusCode.OK, "{}", out var handler);
+
+        var result = await ApiEndpoints.Subscribe(
+            new SubscribeRequest("reader@example.com", null, null, true), service, _altcha, CancellationToken.None);
+
+        Assert.Equal(400, StatusOf(result));
+        Assert.Equal(0, handler.Calls);
+    }
+
+    [Fact]
+    public async Task ReplayedProofOfWork_IsRefused()
+    {
+        var service = Service(Listmonk, HttpStatusCode.OK, "{}", out _);
+        var payload = Solve();
+
+        var first = await ApiEndpoints.Subscribe(
+            new SubscribeRequest("reader@example.com", null, null, true, payload), service, _altcha, CancellationToken.None);
+        var second = await ApiEndpoints.Subscribe(
+            new SubscribeRequest("reader@example.com", null, null, true, payload), service, _altcha, CancellationToken.None);
+
+        Assert.Equal(200, StatusOf(first));
+        Assert.Equal(400, StatusOf(second));
     }
 }

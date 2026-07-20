@@ -27,20 +27,23 @@ public interface IExtensionSource
 public sealed record ExtensionSet(
     IReadOnlyList<ActiveExtension> Active,
     INewsletterProvider? Newsletter = null,
-    IReadOnlyList<string>? Invalid = null)
+    IReadOnlyList<string>? Invalid = null,
+    ICommentProvider? Comments = null)
 {
     public static readonly ExtensionSet Empty = new([]);
 
-    public bool IsEmpty => Active.Count == 0 && Newsletter is null;
+    public bool IsEmpty => Active.Count == 0 && Newsletter is null && Comments is null;
 
     /// <summary>Names of extensions that were enabled but rejected, in declaration order.</summary>
     public IReadOnlyList<string> Rejected { get; } = Invalid ?? [];
 
     /// <summary>Distinct origins across every active extension, in declaration order.</summary>
-    public IReadOnlyList<string> CspSources { get; } =
-        Active.SelectMany(e => e.CspSources).Distinct(StringComparer.Ordinal).ToArray();
+    public IReadOnlyList<string> CspSources { get; } = Active.SelectMany(e => e.CspSources)
+        .Concat(Comments is null ? [] : new[] { Comments.Origin })
+        .Distinct(StringComparer.Ordinal).ToArray();
 
     /// <summary>Names of the active extensions, for change detection and logging.</summary>
-    public string Signature { get; } = string.Join(",",
-        Active.Select(e => e.Name).Concat(Newsletter is null ? [] : new[] { Newsletter.Name }));
+    public string Signature { get; } = string.Join(",", Active.Select(e => e.Name)
+        .Concat(Newsletter is null ? [] : new[] { Newsletter.Name })
+        .Concat(Comments is null ? [] : new[] { Comments.Name }));
 }

@@ -152,7 +152,8 @@ internal static class BlogEndpoints
             ContentHtml: body,
             Description: post.Description ?? post.Excerpt,
             CanonicalPath: post.Url,
-            IsArticle: true));
+            IsArticle: true,
+            ShowComments: true));
     }
 
     private static async Task RenderTagIndex(HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content)

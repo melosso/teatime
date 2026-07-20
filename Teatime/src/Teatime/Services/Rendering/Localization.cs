@@ -92,6 +92,7 @@ public sealed class Localization
         ["newsletterError"] = "Something went wrong on our side. Please try again in a moment.",
         ["newsletterThrottled"] = "That is a lot of attempts. Please wait a minute and try again.",
         ["newsletterDisabled"] = "Sign-ups are closed at the moment.",
+        ["newsletterVerification"] = "That did not pass our spam check. Please try again.",
     };
 
     private readonly IReadOnlyDictionary<string, string> _map;
@@ -197,6 +198,7 @@ public sealed class Localization
     public string NewsletterError => this["newsletterError"];
     public string NewsletterThrottled => this["newsletterThrottled"];
     public string NewsletterDisabled => this["newsletterDisabled"];
+    public string NewsletterVerification => this["newsletterVerification"];
 
     // Overlays content/locale/{code}.json on the defaults. Missing file: silent. Corrupt/unknown keys: warn.
     public static Localization From(string docsPath, Config? config, ILogger logger)

@@ -806,6 +806,11 @@ public static partial class LayoutProvider
         .prose .custom-block p:not(.custom-block-title) {{
             margin: 0;
         }}
+        .prose .custom-block ul {{
+            color: var(--text-color);
+            margin-top: 1rem;
+            margin-bottom: 1.25rem;
+        }}
         .prose .custom-block.tip {{
             color: var(--alert-tip);
             background-color: color-mix(in srgb, var(--alert-tip) 10%, var(--bg-color));
