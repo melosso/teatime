@@ -42,9 +42,11 @@ public static class CommentEmbedRenderer
             "c=\".js\",d=n.head||n.body;\"noModule\"in r?(r.type=\"module\",c=\".mjs\"):r.async=!0,r.defer=!0," +
             "r.src=remark_config.host+\"/web/\"+e[o]+c,d.appendChild(r)}}(remark_config.components||[\"embed\"],document);";
 
+        // #remark42 must ship empty, else remark42 takes the placeholder as its frame and never mounts.
         return Styles(nonceAttr)
              + $"<section class=\"teatime-comments\" aria-label=\"Comments\">"
-             + $"<div id=\"remark42\"><p class=\"teatime-comments__status\" role=\"status\">{loading}<span class=\"teatime-comments__dots\" aria-hidden=\"true\"></span></p></div>"
+             + $"<p class=\"teatime-comments__status\" role=\"status\">{loading}<span class=\"teatime-comments__dots\" aria-hidden=\"true\"></span></p>"
+             + "<div id=\"remark42\"></div>"
              + $"<noscript><p class=\"teatime-comments__status teatime-comments__status--static\">{noScript}</p></noscript>"
              + "</section>"
              + $"<script{nonceAttr}>var remark_config={{{config}}};{follow}{loader}</script>";
@@ -65,6 +67,7 @@ public static class CommentEmbedRenderer
         .teatime-comments #remark42 iframe {
             max-width: 100%;
         }
+        .teatime-comments:has(#remark42 > *) .teatime-comments__status { display: none; }
         /* Element + class beats the prose rules the thread sits inside. */
         .teatime-comments p.teatime-comments__status {
             display: flex;

@@ -62,8 +62,7 @@ public static class ExtensionLoader
     }
 
     /// <summary>
-    /// Picks the one newsletter back end. Enabling several is treated as a config error rather than
-    /// silently favouring one, so every candidate is dropped and named in the log.
+    /// Picks the one newsletter back end. Enabling several is treated as a config error rather than silently favouring one, so every candidate is dropped and named in the log.
     /// </summary>
     private static INewsletterProvider? ResolveNewsletter(ExtensionsSection section, Rejections rejects)
     {

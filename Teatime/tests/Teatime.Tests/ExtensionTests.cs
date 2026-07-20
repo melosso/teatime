@@ -609,14 +609,16 @@ public sealed class CommentEmbedRendererTests
     }
 
     [Fact]
-    public void LoadingLineSitsInsideTheMountSoRemarkReplacesIt()
+    public void MountDivShipsEmptySoRemarkBuildsItsIframe()
     {
         var html = CommentEmbedRenderer.Build(Remark, null, "https://example.com/p/", "en");
 
-        var mount = html.IndexOf("id=\"remark42\"", StringComparison.Ordinal);
-        var status = html.IndexOf("role=\"status\"", StringComparison.Ordinal);
-        var mountClose = html.IndexOf("</div>", mount, StringComparison.Ordinal);
-        Assert.InRange(status, mount, mountClose);
+        // remark42 only mounts when #remark42 has no firstElementChild; a placeholder inside it is taken as the frame.
+        Assert.Contains("<div id=\"remark42\"></div>", html);
+        Assert.DoesNotContain("id=\"remark42\"><p", html);
+        // Loading line still present, now a sibling before the div.
+        Assert.True(html.IndexOf("role=\"status\"", StringComparison.Ordinal)
+            < html.IndexOf("id=\"remark42\"", StringComparison.Ordinal));
     }
 
     [Fact]
