@@ -24,6 +24,7 @@ public static class CommentEmbedRenderer
             $"max_shown_comments:{remark.MaxShownComments}",
             $"locale:'{Localization.JsEncode(remark.Locale ?? lang ?? "en")}'",
             $"theme:'{Localization.JsEncode(remark.Theme == "auto" ? "light" : remark.Theme)}'",
+            "simple_view:true",
             "show_email_subscription:false",
             "show_rss_subscription:false",
             "no_footer:true",
