@@ -35,6 +35,14 @@ If validation fails:
 
 Validation runs automatically every time content rebuilds, so you can safely edit settings while the dev server is running.
 
+Any key can be written as `${ENV_VAR}` and is read from the environment. An unclosed reference like `${MY_KEY` reads as a typo, so the extension stays disabled rather than sending that text upstream as a key. Values are picked up during a rebuild, so after rotating a secret it helps to touch `extensions.json` or restart.
+
+Only Mailchimp insists on `${ENV_VAR}`, since its key opens the whole account. Its in general bad practice to keey your keys in `extensions.json`. 
+
+::: tip 
+Keeping your secrets in an `.env` file is generally safer!.
+:::
+
 On start, the log reports what came through:
 
 ```
@@ -176,6 +184,8 @@ consent: true
 
 Every field is optional. An empty block uses the interface text from `content/locale/`, so it translates with the rest of your site.
 
+The form only appears when a newsletter extension is active, since a form with no back end would fail on submit. The `name` field follows the same rule and is left out unless your provider has `collectName` on, which would otherwise discard it.
+
 | Field | Effect |
 | --- | --- |
 | `heading` | Replaces the default heading |
@@ -183,7 +193,7 @@ Every field is optional. An empty block uses the interface text from `content/lo
 | `button` | Replaces the button label |
 | `placeholder` | Replaces the email placeholder |
 | `consent` | Shows a checkbox that has to be ticked |
-| `name` | Shows an optional name field |
+| `name` | Shows an optional name field, if the provider has `collectName` on |
 
 ### Translating the form
 

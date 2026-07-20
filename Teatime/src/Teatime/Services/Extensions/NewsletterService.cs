@@ -7,9 +7,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Teatime.Serialization;
-using Teatime.Services.Extensions;
 
-namespace Teatime.Services;
+namespace Teatime.Services.Extensions;
 
 /// <summary>How a sign-up attempt ended, kept coarse so nothing about the upstream call leaks to the browser.</summary>
 public enum SubscribeOutcome
@@ -35,15 +34,15 @@ public readonly record struct SubscribeResult(SubscribeOutcome Outcome)
 /// and nothing the provider returns is passed back to the reader: Beacon's token manages a subscriber's
 /// preferences, and a provider's own error text can disclose whether an address is already on a list.
 /// </summary>
-public sealed class NewsletterService(HttpClient http, ContentService content, ILogger<NewsletterService> logger)
+public sealed class NewsletterService(HttpClient http, IExtensionSource extensions, ILogger<NewsletterService> logger)
 {
-    public bool IsEnabled => content.Extensions.Newsletter is not null;
+    public bool IsEnabled => extensions.Extensions.Newsletter is not null;
 
-    public bool CollectsName => content.Extensions.Newsletter?.CollectName ?? false;
+    public bool CollectsName => extensions.Extensions.Newsletter?.CollectName ?? false;
 
     public async Task<SubscribeResult> SubscribeAsync(string? email, string? name, CancellationToken cancellationToken)
     {
-        if (content.Extensions.Newsletter is not { } provider)
+        if (extensions.Extensions.Newsletter is not { } provider)
             return new SubscribeResult(SubscribeOutcome.Disabled);
 
         var address = Normalize(email);
@@ -231,43 +230,3 @@ public sealed class NewsletterService(HttpClient http, ContentService content, I
         return trimmed.Length > max ? trimmed[..max] : trimmed;
     }
 }
-
-// Beacon binds expiryDays and name to non-nullable members, so an omitted field is fine but an
-// explicit null fails deserialization with a 400 before its handler ever runs.
-public sealed record BeaconTokenRequest(
-    [property: JsonPropertyName("bucket")] string Bucket,
-    [property: JsonPropertyName("email")] string Email,
-    [property: JsonPropertyName("name"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Name,
-    [property: JsonPropertyName("permissions")] IReadOnlyDictionary<string, bool> Permissions,
-    [property: JsonPropertyName("language")] string Language,
-    [property: JsonPropertyName("expiryDays"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? ExpiryDays,
-    [property: JsonPropertyName("skipPermissionUpdate")] bool SkipPermissionUpdate,
-    [property: JsonPropertyName("customFields"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyDictionary<string, string>? CustomFields = null);
-
-public sealed record BeaconTokenResponse(
-    [property: JsonPropertyName("token")] string? Token,
-    [property: JsonPropertyName("doubleOptIn")] bool DoubleOptIn);
-
-public sealed record BeaconErrorResponse([property: JsonPropertyName("error")] string? Error);
-
-public sealed record ListmonkSubscriptionRequest(
-    [property: JsonPropertyName("email")] string Email,
-    [property: JsonPropertyName("name"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Name,
-    [property: JsonPropertyName("list_uuids")] IReadOnlyList<string> ListUuids);
-
-public sealed record ListmonkSubscriptionResponse([property: JsonPropertyName("data")] ListmonkSubscriptionData? Data);
-
-public sealed record ListmonkSubscriptionData([property: JsonPropertyName("has_optin")] bool HasOptin);
-
-public sealed record ListmonkError([property: JsonPropertyName("message")] string? Message);
-
-public sealed record MailchimpMemberRequest(
-    [property: JsonPropertyName("email_address")] string EmailAddress,
-    [property: JsonPropertyName("status")] string Status,
-    [property: JsonPropertyName("merge_fields"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] MailchimpMergeFields? MergeFields);
-
-public sealed record MailchimpMergeFields([property: JsonPropertyName("FNAME")] string FirstName);
-
-public sealed record MailchimpError(
-    [property: JsonPropertyName("title")] string? Title,
-    [property: JsonPropertyName("detail")] string? Detail);

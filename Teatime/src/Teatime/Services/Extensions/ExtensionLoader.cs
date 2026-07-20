@@ -299,8 +299,12 @@ public static class ExtensionLoader
         if (raw is null)
             return null;
 
-        if (!raw.StartsWith("${", StringComparison.Ordinal) || !raw.EndsWith('}'))
+        if (!raw.StartsWith("${", StringComparison.Ordinal))
             return raw;
+
+        // A half-written placeholder is a typo, never a key.
+        if (!raw.EndsWith('}'))
+            return null;
 
         var name = raw[2..^1].Trim();
         var value = name.Length == 0 ? null : Environment.GetEnvironmentVariable(name);

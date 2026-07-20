@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Teatime.Configuration;
 using Teatime.Models;
 using Teatime.Services;
+using Teatime.Services.Extensions;
 using Teatime.Services.Rendering;
 
 namespace Teatime.Endpoints;

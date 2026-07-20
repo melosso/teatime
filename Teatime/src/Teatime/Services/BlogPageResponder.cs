@@ -45,8 +45,9 @@ public sealed class BlogPageResponder
     public string BasePath => _settings.BasePath;
     public string HomeUrl => _settings.BasePath.Length == 0 ? "/" : $"{_settings.BasePath}/";
 
-    private static string NonceFromETag(string etag) =>
-        Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(etag)), 0, 16);
+    /// <summary>Fresh per response, so it cannot be read off the public ETag. Rules out answering 304.</summary>
+    private static string NewNonce() =>
+        Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
 
     public async Task WriteAsync(HttpContext context, BlogPageView view)
     {
@@ -59,17 +60,11 @@ public sealed class BlogPageResponder
         context.Response.Headers.ETag = $"\"{etag}\"";
         context.Response.Headers.CacheControl = "no-cache";
 
-        var nonce = NonceFromETag(etag);
+        var nonce = NewNonce();
         var extensions = _content.Extensions;
         var baseCsp = SecurityHeaders.WithExtraSources(
             _settings.CustomCsp ?? SecurityHeaders.DefaultCsp, extensions.CspSources);
         context.Response.Headers.ContentSecurityPolicy = SecurityHeaders.BuildNonceCsp(baseCsp, nonce);
-
-        if (context.Request.Headers.IfNoneMatch.ToString() == $"\"{etag}\"")
-        {
-            context.Response.StatusCode = 304;
-            return;
-        }
 
         var themeCss = ThemeProvider.BuildThemeCss(_theme);
         var customCssLink = ThemeProvider.BuildCustomCssLink(_theme, _settings.AutoCustomCssUrl, basePath);

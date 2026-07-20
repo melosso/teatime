@@ -15,6 +15,12 @@ public sealed record ActiveExtension(
     IReadOnlyList<ExtensionScript> Scripts,
     IReadOnlyList<string> CspSources);
 
+/// <summary>Whoever owns the current extension set. Implemented by ContentService.</summary>
+public interface IExtensionSource
+{
+    ExtensionSet Extensions { get; }
+}
+
 /// <summary>The verified extensions for the current content snapshot.</summary>
 /// <param name="Newsletter">The single active newsletter back end, held apart from the browser-facing ones.</param>
 /// <param name="Invalid">Extensions that were enabled but did not pass their check, for the startup log.</param>

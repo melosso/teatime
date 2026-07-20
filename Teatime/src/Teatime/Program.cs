@@ -10,6 +10,7 @@ using Teatime.Endpoints;
 using Teatime.Models;
 using Teatime.Serialization;
 using Teatime.Services;
+using Teatime.Services.Extensions;
 using Teatime.Services.MarkdownExtensions;
 
 Directory.CreateDirectory("log");
@@ -70,6 +71,7 @@ try
         sp.GetRequiredService<ILogger<MarkdownService>>()));
     builder.Services.AddSingleton<BookmarkService>();
     builder.Services.AddSingleton<ContentService>();
+    builder.Services.AddSingleton<IExtensionSource>(sp => sp.GetRequiredService<ContentService>());
     builder.Services.AddHostedService(sp => sp.GetRequiredService<ContentService>());
     builder.Services.AddSingleton<PostService>();
     builder.Services.AddHttpClient<NewsletterService>(client => client.Timeout = TimeSpan.FromSeconds(10));

@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Teatime.Services;
+using Teatime.Services.Extensions;
 
 namespace Teatime.Tests;
 

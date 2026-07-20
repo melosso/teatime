@@ -1,4 +1,5 @@
 using System.Net;
+using Teatime.Services.Extensions;
 using Teatime.Services.Rendering;
 using YamlDotNet.Serialization;
 
@@ -23,6 +24,11 @@ public static class NewsletterBlock
         try { spec = Yaml.Deserialize<Dictionary<object, object?>>(body); }
         catch (YamlDotNet.Core.YamlException) { return Error("Invalid newsletter block."); }
 
+        // With no back end configured every sign-up would fail on submit, so the form is left out.
+        var newsletter = NewsletterAvailability.Current;
+        if (!newsletter.Enabled)
+            return string.Empty;
+
         spec ??= [];
         var l = Localization.Current;
 
@@ -32,8 +38,11 @@ public static class NewsletterBlock
         var placeholder = Encode(Text(spec, "placeholder", l.Code) ?? l.NewsletterEmailPlaceholder);
 
         // A field is either a flag or its own replacement text, both of which switch it on.
-        var (showName, nameText) = Toggle(spec, "name", l.Code);
+        var (askName, nameText) = Toggle(spec, "name", l.Code);
         var (showConsent, consentText) = Toggle(spec, "consent", l.Code);
+
+        // A provider with collectName off discards the name, so asking for one would be a dead field.
+        var showName = askName && newsletter.CollectsName;
 
         var nameField = showName
             ? $"""

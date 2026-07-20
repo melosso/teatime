@@ -57,8 +57,9 @@ public static class SecurityHeaders
         var index = directives.FindIndex(d => d.TrimStart().StartsWith(name + " ", StringComparison.Ordinal));
         if (index < 0)
         {
-            // Absent directive falls back to default-src, so a fresh one has to restate 'self'.
-            directives.Add($" {name} 'self' {string.Join(' ', sources)}");
+            // A fresh directive restates 'self', and script-src 'unsafe-inline' for BuildNonceCsp to swap.
+            var inline = name == "script-src" ? " 'unsafe-inline'" : string.Empty;
+            directives.Add($" {name} 'self'{inline} {string.Join(' ', sources)}");
             return;
         }
 

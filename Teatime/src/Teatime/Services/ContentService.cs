@@ -11,7 +11,7 @@ using Teatime.Services.Rendering;
 
 namespace Teatime.Services;
 
-public sealed partial class ContentService : IHostedService, IDisposable
+public sealed partial class ContentService : IHostedService, IExtensionSource, IDisposable
 {
     private readonly DocsOptions _options;
     private readonly MarkdownService _markdown;
@@ -236,6 +236,11 @@ public sealed partial class ContentService : IHostedService, IDisposable
             _logger.LogInformation("Active extensions: {Extensions}. Invalid: {Invalid}",
                 extensions.IsEmpty ? "none" : extensions.Signature,
                 extensions.Rejected.Count == 0 ? "none" : string.Join(", ", extensions.Rejected));
+
+        // Published before any page is parsed: a newsletter block renders against the live back end.
+        NewsletterAvailability.Current = extensions.Newsletter is { } newsletter
+            ? new NewsletterAvailability(true, newsletter.CollectName)
+            : NewsletterAvailability.None;
 
         DateFormatter.Current = DateFormatter.From(config?.Locale);
         TitleMonogram.Current = TitleMonogram.From(config?.Locale);

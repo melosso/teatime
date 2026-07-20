@@ -336,6 +336,17 @@ public sealed class ExtensionLoaderTests : IDisposable
     }
 
     [Fact]
+    public void UnclosedEnvironmentReference_IsRefusedRatherThanSentAsAKey()
+    {
+        var set = Load("""
+            {"extensions":{"beacon":{"enabled":true,"url":"https://b.example.com","bucket":"news","apiKey":"${TEATIME_MISSING_BRACE"}}}
+            """);
+
+        Assert.Null(set.Newsletter);
+        Assert.Equal(["beacon"], set.Rejected);
+    }
+
+    [Fact]
     public void RejectedAnalyticsIsReported()
     {
         var set = Load("""
@@ -427,6 +438,16 @@ public sealed class SecurityHeadersExtraSourceTests
         var csp = SecurityHeaders.WithExtraSources("default-src 'self'", ["https://a.example.com"]);
 
         Assert.Contains("connect-src 'self' https://a.example.com", csp);
+    }
+
+    [Fact]
+    public void CustomPolicyWithoutScriptSrc_StillTakesTheNonce()
+    {
+        var csp = SecurityHeaders.BuildNonceCsp(
+            SecurityHeaders.WithExtraSources("default-src 'self'", ["https://a.example.com"]), "n0nce");
+
+        Assert.Contains("script-src 'self' 'nonce-n0nce' https://a.example.com", csp);
+        Assert.DoesNotContain("'unsafe-inline'", csp);
     }
 
     [Fact]

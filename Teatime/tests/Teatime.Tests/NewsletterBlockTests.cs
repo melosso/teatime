@@ -1,11 +1,16 @@
 using Teatime.Services;
+using Teatime.Services.Extensions;
 using Teatime.Services.MarkdownExtensions;
 
 namespace Teatime.Tests;
 
-public sealed class NewsletterBlockTests
+public sealed class NewsletterBlockTests : IDisposable
 {
     private readonly MarkdownService _service = new();
+
+    public NewsletterBlockTests() => NewsletterAvailability.Current = new NewsletterAvailability(true, CollectsName: true);
+
+    public void Dispose() => NewsletterAvailability.Current = NewsletterAvailability.None;
 
     private string Render(string block) => _service.Parse(block).Html;
 
@@ -57,6 +62,28 @@ public sealed class NewsletterBlockTests
 
         Assert.Contains("Subscribe", html);
         Assert.DoesNotContain("Aanmelden", html);
+    }
+
+    [Fact]
+    public void NoNewsletterExtension_RendersNothing()
+    {
+        NewsletterAvailability.Current = NewsletterAvailability.None;
+
+        var html = Render("```newsletter\nheading: Subscribe\n```\n");
+
+        Assert.DoesNotContain("teatime-newsletter", html);
+        Assert.DoesNotContain("Subscribe", html);
+    }
+
+    [Fact]
+    public void ProviderWithoutCollectName_DropsTheNameField()
+    {
+        NewsletterAvailability.Current = new NewsletterAvailability(true, CollectsName: false);
+
+        var html = Render("```newsletter\nname: true\n```\n");
+
+        Assert.Contains("class=\"teatime-newsletter\"", html);
+        Assert.DoesNotContain("name=\"name\"", html);
     }
 
     [Fact]
