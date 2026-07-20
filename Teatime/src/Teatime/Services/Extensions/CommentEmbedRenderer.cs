@@ -25,7 +25,6 @@ public static class CommentEmbedRenderer
             $"theme:'{Localization.JsEncode(remark.Theme == "auto" ? "light" : remark.Theme)}'",
             "components:['embed']");
 
-        // theme:auto follows Teatime's own toggle, which writes data-theme on the root element.
         var follow = remark.Theme == "auto"
             ? """
               function apply(){var t=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
@@ -35,18 +34,20 @@ public static class CommentEmbedRenderer
               """
             : string.Empty;
 
-        var src = HtmlEncoder.Default.Encode(remark.BaseUrl);
         var loading = HtmlEncoder.Default.Encode(l.CommentsLoading);
         var noScript = HtmlEncoder.Default.Encode(l.CommentsNoScript);
 
-        // The loading paragraph lives inside #remark42, so Remark42's embed replaces it the moment it renders.
+        // Remark42's module-aware loader: a fixed /web/embed.js never boots the modern .mjs build.
+        const string loader = "!function(e,n){for(var o=0;o<e.length;o++){var r=n.createElement(\"script\")," +
+            "c=\".js\",d=n.head||n.body;\"noModule\"in r?(r.type=\"module\",c=\".mjs\"):r.async=!0,r.defer=!0," +
+            "r.src=remark_config.host+\"/web/\"+e[o]+c,d.appendChild(r)}}(remark_config.components||[\"embed\"],document);";
+
         return Styles(nonceAttr)
              + $"<section class=\"teatime-comments\" aria-label=\"Comments\">"
              + $"<div id=\"remark42\"><p class=\"teatime-comments__status\" role=\"status\">{loading}<span class=\"teatime-comments__dots\" aria-hidden=\"true\"></span></p></div>"
              + $"<noscript><p class=\"teatime-comments__status teatime-comments__status--static\">{noScript}</p></noscript>"
              + "</section>"
-             + $"<script{nonceAttr}>var remark_config={{{config}}};{follow}</script>"
-             + $"<script{nonceAttr} defer src=\"{src}/web/embed.js\"></script>";
+             + $"<script{nonceAttr}>var remark_config={{{config}}};{follow}{loader}</script>";
     }
 
     private static string Styles(string nonceAttr) => $$"""
@@ -64,7 +65,7 @@ public static class CommentEmbedRenderer
         .teatime-comments #remark42 iframe {
             max-width: 100%;
         }
-        /* Element + class keeps these ahead of the prose rules the thread sits inside. */
+        /* Element + class beats the prose rules the thread sits inside. */
         .teatime-comments p.teatime-comments__status {
             display: flex;
             align-items: baseline;
@@ -75,7 +76,6 @@ public static class CommentEmbedRenderer
             letter-spacing: 0.01em;
         }
         .teatime-comments p.teatime-comments__status--static { color: var(--text-muted); }
-        /* Three dots that fill in one at a time while the thread loads. */
         .teatime-comments__dots::after {
             content: "";
             animation: teatime-comments-dots 1.4s steps(1, end) infinite;

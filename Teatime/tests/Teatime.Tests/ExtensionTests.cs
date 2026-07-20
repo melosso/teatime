@@ -567,7 +567,17 @@ public sealed class CommentEmbedRendererTests
         Assert.Contains("nonce=\"n0nce\"", html);
         Assert.Contains("site_id:'blog'", html);
         Assert.Contains("url:'https://example.com/posts/x/'", html);
-        Assert.Contains("https://c.example.com/web/embed.js", html);
+        Assert.Contains("host:'https://c.example.com'", html);
+    }
+
+    [Fact]
+    public void EmbedUsesRemarksModuleAwareLoaderNotAFixedScriptSrc()
+    {
+        var html = CommentEmbedRenderer.Build(Remark, "n0nce", "https://example.com/posts/x/", "en");
+
+        Assert.Contains("remark_config.host+\"/web/\"", html);
+        Assert.Contains("noModule", html);
+        Assert.DoesNotContain("src=\"https://c.example.com/web/embed.js\"", html);
     }
 
     [Fact]
