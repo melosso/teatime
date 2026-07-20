@@ -25,14 +25,20 @@ public static class CommentEmbedRenderer
             $"theme:'{Localization.JsEncode(remark.Theme == "auto" ? "light" : remark.Theme)}'",
             "components:['embed']");
 
+        // Teatime "light" leaves data-theme unset and follows the OS, so eff() needs the media-query fallback.
         var follow = remark.Theme == "auto"
             ? """
-              function apply(){var t=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';
-              if(window.REMARK42&&window.REMARK42.changeTheme){window.REMARK42.changeTheme(t);}}
+              function eff(){var a=document.documentElement.getAttribute('data-theme');
+              if(a==='dark'||a==='light')return a;
+              return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+              function apply(){if(window.REMARK42&&window.REMARK42.changeTheme){window.REMARK42.changeTheme(eff());}}
+              function sync(){var n=0;(function r(){if(window.REMARK42&&window.REMARK42.changeTheme){apply();}else if(n++<50){setTimeout(r,100);}})();}
+              remark_config.theme=eff();
               new MutationObserver(apply).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-              window.addEventListener('load',apply);
+              if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',apply);}
               """
             : string.Empty;
+        var afterBoot = remark.Theme == "auto" ? "sync();" : string.Empty;
 
         var loading = HtmlEncoder.Default.Encode(l.CommentsLoading);
         var noScript = HtmlEncoder.Default.Encode(l.CommentsNoScript);
@@ -42,6 +48,12 @@ public static class CommentEmbedRenderer
             "c=\".js\",d=n.head||n.body;\"noModule\"in r?(r.type=\"module\",c=\".mjs\"):r.async=!0,r.defer=!0," +
             "r.src=remark_config.host+\"/web/\"+e[o]+c,d.appendChild(r)}}(remark_config.components||[\"embed\"],document);";
 
+        // Boot near the viewport (else at load): remark42's iframe measurement forces layout, flashing unstyled content if it runs before load.
+        var boot = $"function boot(){{{loader}{afterBoot}}}"
+            + "var m=document.getElementById('remark42');"
+            + "if('IntersectionObserver' in window&&m){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){io.disconnect();boot();}},{rootMargin:'600px'});io.observe(m);}"
+            + "else if(document.readyState==='complete'){boot();}else{window.addEventListener('load',boot);}";
+
         // #remark42 must ship empty, else remark42 takes the placeholder as its frame and never mounts.
         return Styles(nonceAttr)
              + $"<section class=\"teatime-comments\" aria-label=\"Comments\">"
@@ -49,7 +61,7 @@ public static class CommentEmbedRenderer
              + "<div id=\"remark42\"></div>"
              + $"<noscript><p class=\"teatime-comments__status teatime-comments__status--static\">{noScript}</p></noscript>"
              + "</section>"
-             + $"<script{nonceAttr}>var remark_config={{{config}}};{follow}{loader}</script>";
+             + $"<script{nonceAttr}>var remark_config={{{config}}};(function(){{{follow}{boot}}})();</script>";
     }
 
     private static string Styles(string nonceAttr) => $$"""
