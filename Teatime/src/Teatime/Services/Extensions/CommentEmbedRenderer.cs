@@ -23,19 +23,35 @@ public static class CommentEmbedRenderer
             $"max_shown_comments:{remark.MaxShownComments}",
             $"locale:'{Localization.JsEncode(remark.Locale ?? lang ?? "en")}'",
             $"theme:'{Localization.JsEncode(remark.Theme == "auto" ? "light" : remark.Theme)}'",
+            "no_footer:true",
             "components:['embed']");
 
         // Teatime "light" leaves data-theme unset and follows the OS, so eff() needs the media-query fallback.
+        // remark42 caches its own theme and re-applies it after boot, so sync() re-asserts for a few seconds.
         var follow = remark.Theme == "auto"
             ? """
-              function eff(){var a=document.documentElement.getAttribute('data-theme');
-              if(a==='dark'||a==='light')return a;
-              return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
-              function apply(){if(window.REMARK42&&window.REMARK42.changeTheme){window.REMARK42.changeTheme(eff());}}
-              function sync(){var n=0;(function r(){if(window.REMARK42&&window.REMARK42.changeTheme){apply();}else if(n++<50){setTimeout(r,100);}})();}
-              remark_config.theme=eff();
-              new MutationObserver(apply).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-              if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',apply);}
+              function eff() {
+                  var attr = document.documentElement.getAttribute('data-theme');
+                  if (attr === 'dark' || attr === 'light') { return attr; }
+                  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+              }
+              function apply() {
+                  if (window.REMARK42 && window.REMARK42.changeTheme) { window.REMARK42.changeTheme(eff()); }
+              }
+              function sync() {
+                  var n = 0;
+                  (function retry() {
+                      if (window.REMARK42 && window.REMARK42.changeTheme) {
+                          apply();
+                          if (n++ < 12) { setTimeout(retry, 300); }
+                      } else if (n++ < 50) {
+                          setTimeout(retry, 100);
+                      }
+                  })();
+              }
+              remark_config.theme = eff();
+              new MutationObserver(apply).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+              if (window.matchMedia) { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', apply); }
               """
             : string.Empty;
         var afterBoot = remark.Theme == "auto" ? "sync();" : string.Empty;
@@ -49,10 +65,33 @@ public static class CommentEmbedRenderer
             "r.src=remark_config.host+\"/web/\"+e[o]+c,d.appendChild(r)}}(remark_config.components||[\"embed\"],document);";
 
         // Boot near the viewport (else at load): remark42's iframe measurement forces layout, flashing unstyled content if it runs before load.
-        var boot = $"function boot(){{{loader}{afterBoot}}}"
-            + "var m=document.getElementById('remark42');"
-            + "if('IntersectionObserver' in window&&m){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){io.disconnect();boot();}},{rootMargin:'600px'});io.observe(m);}"
-            + "else if(document.readyState==='complete'){boot();}else{window.addEventListener('load',boot);}";
+        var boot = $$"""
+            function boot() {
+                {{loader}}
+                {{afterBoot}}
+            }
+            var mount = document.getElementById('remark42');
+            if ('IntersectionObserver' in window && mount) {
+                var io = new IntersectionObserver(function (entries) {
+                    if (entries[0].isIntersecting) { io.disconnect(); boot(); }
+                }, { rootMargin: '600px' });
+                io.observe(mount);
+            } else if (document.readyState === 'complete') {
+                boot();
+            } else {
+                window.addEventListener('load', boot);
+            }
+            """;
+
+        var script = $$"""
+            <script{{nonceAttr}}>
+            var remark_config = {{{config}}};
+            (function () {
+            {{follow}}
+            {{boot}}
+            })();
+            </script>
+            """;
 
         // #remark42 must ship empty, else remark42 takes the placeholder as its frame and never mounts.
         return Styles(nonceAttr)
@@ -61,7 +100,7 @@ public static class CommentEmbedRenderer
              + "<div id=\"remark42\"></div>"
              + $"<noscript><p class=\"teatime-comments__status teatime-comments__status--static\">{noScript}</p></noscript>"
              + "</section>"
-             + $"<script{nonceAttr}>var remark_config={{{config}}};(function(){{{follow}{boot}}})();</script>";
+             + script;
     }
 
     private static string Styles(string nonceAttr) => $$"""
