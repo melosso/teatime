@@ -154,18 +154,26 @@ public static partial class LayoutProvider
             height: 14px;
             transition: transform 0.15s ease;
         }}
-        .top-nav-item.has-dropdown:hover .top-nav-chevron,
         .top-nav-item.has-dropdown.open .top-nav-chevron {{
             transform: rotate(180deg);
+        }}
+        @media (hover: hover) and (pointer: fine) {{
+            .site-nav:not(:has(.top-nav-item.has-dropdown.open)) .top-nav-item.has-dropdown:hover .top-nav-chevron {{
+                transform: rotate(180deg);
+            }}
         }}
         .top-nav-dropdown-menu {{
             display: none; position: absolute; top: 100%; left: 0; min-width: 180px;
             background-color: var(--bg-color); border: 1px solid var(--border); border-radius: 8px;
             padding: 0.4rem; box-shadow: var(--shadow-md); z-index: 1003;
         }}
-        .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
         .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
             display: block;
+        }}
+        @media (hover: hover) and (pointer: fine) {{
+            .site-nav:not(:has(.top-nav-item.has-dropdown.open)) .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu {{
+                display: block;
+            }}
         }}
         .top-nav-dropdown-link {{
             display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
@@ -1201,10 +1209,15 @@ public static partial class LayoutProvider
         .site-nav .top-nav-dropdown-menu::before {{
             content: ""; position: absolute; top: -0.9rem; left: 0; right: 0; height: 0.9rem;
         }}
-        .site-nav .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
         .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
             display: flex; opacity: 1; visibility: visible;
             transform: translateX(-50%) translateY(0);
+        }}
+        @media (hover: hover) and (pointer: fine) {{
+            .site-nav:not(:has(.top-nav-item.has-dropdown.open)) .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu {{
+                display: flex; opacity: 1; visibility: visible;
+                transform: translateX(-50%) translateY(0);
+            }}
         }}
         .site-nav .top-nav-dropdown-link {{
             justify-content: flex-start; padding: 0.5rem 0.7rem; border-radius: 7px;
@@ -2183,6 +2196,9 @@ public static partial class LayoutProvider
             .site-nav::-webkit-scrollbar {{
                 display: none;
             }}
+            .site-nav:has(.top-nav-item.has-dropdown.open) {{
+                scroll-snap-type: none;
+            }}
             .site-nav > a, .site-nav > .top-nav-item {{
                 flex: 0 0 auto;
                 scroll-snap-align: start;
@@ -2236,11 +2252,8 @@ public static partial class LayoutProvider
                 margin-top: 0.4rem; min-width: 160px;
             }}
             .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
-                z-index: 1003;
-            }}
-            .site-nav .top-nav-item.has-dropdown:hover .top-nav-dropdown-menu,
-            .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
                 display: flex;
+                z-index: 1003;
             }}
             .post-nav {{
                 grid-template-columns: 1fr;

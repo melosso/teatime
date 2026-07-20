@@ -84,6 +84,7 @@ public static partial class LayoutProvider
                 }});
             }}
 
+            var mobileNav = window.matchMedia('(max-width: 620px)');
             var siteNav = document.querySelector('.site-nav');
             var siteNavWrap = document.querySelector('.site-nav-wrap');
             function navScrollMax() {{
@@ -134,7 +135,7 @@ public static partial class LayoutProvider
             function positionNavDropdown(item) {{
                 var menu = item.querySelector('.top-nav-dropdown-menu');
                 if (!menu) return;
-                if (!navIsScrollable()) {{
+                if (!mobileNav.matches) {{
                     resetNavDropdownPosition(menu);
                     return;
                 }}
@@ -153,7 +154,6 @@ public static partial class LayoutProvider
                 item.classList.remove('open');
                 var b = item.querySelector('.top-nav-link');
                 if (b) b.setAttribute('aria-expanded', 'false');
-                resetNavDropdownPosition(item.querySelector('.top-nav-dropdown-menu'));
             }}
             navDropdowns.forEach(function(item) {{
                 var btn = item.querySelector('.top-nav-link');
@@ -170,20 +170,26 @@ public static partial class LayoutProvider
                 }});
             }});
             if (siteNav && navDropdowns.length) {{
+                var navDropdownTicking = false;
                 siteNav.addEventListener('scroll', function() {{
-                    navDropdowns.forEach(function(item) {{
-                        if (item.classList.contains('open')) closeNavDropdown(item);
+                    if (navDropdownTicking) return;
+                    navDropdownTicking = true;
+                    requestAnimationFrame(function() {{
+                        navDropdownTicking = false;
+                        navDropdowns.forEach(function(item) {{
+                            if (item.classList.contains('open')) positionNavDropdown(item);
+                        }});
                     }});
                 }}, {{ passive: true }});
             }}
 
             var topbar = document.querySelector('.topbar');
             if (topbar) {{
-                var mobileNav = window.matchMedia('(max-width: 620px)');
                 var lastScrollY = window.pageYOffset || 0;
                 var topbarTicking = false;
                 var revealAbove = 120;
                 var scrollNoise = 6;
+                var bottomDeadzone = 24;
 
                 function expandTopbar() {{
                     topbar.classList.remove('topbar-condensed');
@@ -194,12 +200,19 @@ public static partial class LayoutProvider
                     navDropdowns.forEach(closeNavDropdown);
                 }}
                 function updateTopbar() {{
-                    var y = window.pageYOffset || 0;
+                    var raw = window.pageYOffset || 0;
+                    var maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+                    var y = Math.min(Math.max(raw, 0), maxY);
+                    if (raw < 0 || raw > maxY) {{
+                        lastScrollY = y;
+                        return;
+                    }}
                     if (!mobileNav.matches || y <= revealAbove) {{
                         expandTopbar();
                         lastScrollY = y;
                         return;
                     }}
+                    if (maxY - y < bottomDeadzone) return;
                     var delta = y - lastScrollY;
                     if (Math.abs(delta) < scrollNoise) return;
                     if (delta > 0) condenseTopbar();
@@ -218,6 +231,10 @@ public static partial class LayoutProvider
                 topbar.addEventListener('focusin', expandTopbar);
                 mobileNav.addEventListener('change', function() {{
                     expandTopbar();
+                    navDropdowns.forEach(function(item) {{
+                        closeNavDropdown(item);
+                        resetNavDropdownPosition(item.querySelector('.top-nav-dropdown-menu'));
+                    }});
                     lastScrollY = window.pageYOffset || 0;
                 }});
             }}
