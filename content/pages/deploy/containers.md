@@ -30,4 +30,4 @@ Your blog is then available at `http://localhost:8080`.
 Because `content/` is a volume, dropping in a new Markdown post is enough for it to appear. There is no process to restart since the server will pick these changes up automagically.
 :::
 
-Behind a reverse proxy, set `Docs:BasePath` (or `--base-path` for a static export) so every internal link resolves under your chosen path. For the one time setup, the [installation guide](/deploy/install/) covers the rest.
+Behind a reverse proxy, set `Docs:BasePath` (or `--base-path` for a static export) so every internal link resolves under your chosen path. For the one time setup, the [installation guide](/deploy/install/) covers the rest, and [environment variables](/deploy/environment/) lists what you can set from your compose file.
