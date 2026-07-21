@@ -28,6 +28,7 @@ The following extensions are supported:
 | [Plausible](#analytics) | Analytics, hosted or self-hosted | `domain` |
 | [Medama](#analytics) | Analytics, self-hosted | `url` |
 | [GoatCounter](#analytics) | Analytics, hosted or self-hosted | `url` |
+| [Liwan](#analytics) | Analytics, self-hosted | `url`, `entity` |
 
 Extensions are disabled by default. To enable an extension, set `enabled` to true and make sure its settings pass validation.
 
@@ -276,7 +277,7 @@ Remark42's embed runs in an iframe, so its origin is added to `frame-src` alongs
 
 ## Analytics
 
-Four providers are available, and enabling more than one at a time works fine:
+Five providers are available, and enabling more than one at a time works fine:
 
 ```json [content/extensions.json]
 {
@@ -297,6 +298,11 @@ Four providers are available, and enabling more than one at a time works fine:
     "goatcounter": {
       "enabled": true,
       "url": "https://you.goatcounter.com"
+    },
+    "liwan": {
+      "enabled": true,
+      "url": "https://liwan.example.com",
+      "entity": "my-website"
     }
   }
 }
@@ -316,6 +322,10 @@ Four providers are available, and enabling more than one at a time works fine:
 
 ::: details GoatCounter
 `url` points at your own site, whether that is `https://you.goatcounter.com` or an install of your own. Both the counting script and the endpoint it reports to are read from it, so there is nothing further to configure.
+:::
+
+::: details Liwan
+`url` points at your own Liwan instance, and `entity` names the site inside it. The tracker is served from your docs origin, so its reporting endpoint is set to `url` + `/api/event` for you.
 :::
 
 Cookies are worth a thought before you publish. Plausible, Medama and GoatCounter are cookieless by design, and Matomo is loaded with `disableCookies` on for the same reason. That usually keeps you clear of a consent banner. Set `"disableCookies": false` if your setup needs them, and adding a consent flow then becomes your call.

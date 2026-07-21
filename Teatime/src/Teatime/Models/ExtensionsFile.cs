@@ -15,6 +15,7 @@ public sealed class ExtensionsSection
     public PlausibleOptions? Plausible { get; set; }
     public MedamaOptions? Medama { get; set; }
     public GoatCounterOptions? GoatCounter { get; set; }
+    public LiwanOptions? Liwan { get; set; }
     public Remark42Options? Remark42 { get; set; }
     public BeaconOptions? Beacon { get; set; }
     public ListmonkOptions? Listmonk { get; set; }
@@ -176,4 +177,16 @@ public sealed class MedamaOptions
 
     /// <summary>Base URL of the Medama install, e.g. <c>https://medama.example.com</c>.</summary>
     public string? Url { get; set; }
+}
+
+/// <summary>Self-hosted Liwan analytics.</summary>
+public sealed class LiwanOptions
+{
+    public bool Enabled { get; set; }
+
+    /// <summary>Base URL of the Liwan instance, e.g. <c>https://liwan.example.com</c>.</summary>
+    public string? Url { get; set; }
+
+    /// <summary>Entity id configured in Liwan for this site.</summary>
+    public string? Entity { get; set; }
 }
