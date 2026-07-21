@@ -21,7 +21,8 @@ public sealed record MarkdownParseResult(
     string? Author = null,
     bool? Enabled = null,
     string? PageNext = null,
-    string? PagePrev = null)
+    string? PagePrev = null,
+    bool InSitemap = true)
 {
     public void Deconstruct(out string html, out string? title, out string? description, out List<HeadingInfo> headings)
     {

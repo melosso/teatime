@@ -63,4 +63,7 @@ public sealed record FrontMatter
 
     /// <summary>Set <c>false</c> on a custom <c>tags</c>/<c>archive</c> page to disable that surface (404).</summary>
     public bool? Enabled { get; init; }
+
+    /// <summary>Set <c>false</c> to drop this page from <c>sitemap.xml</c>. Page stays live and searchable.</summary>
+    public bool? Sitemap { get; init; }
 }

@@ -310,7 +310,8 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
                 Enabled: parsed.Enabled,
                 PageNext: parsed.PageNext,
                 PagePrev: parsed.PagePrev,
-                Updated: parsed.FrontmatterDate
+                Updated: parsed.FrontmatterDate,
+                InSitemap: parsed.InSitemap
             );
 
             pageMap[pagePath] = page;

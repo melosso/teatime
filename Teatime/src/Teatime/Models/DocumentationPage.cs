@@ -23,7 +23,8 @@ public sealed record DocumentationPage(
     bool? Enabled = null,
     string? PageNext = null,
     string? PagePrev = null,
-    DateTime? Updated = null
+    DateTime? Updated = null,
+    bool InSitemap = true
 )
 {
     public DocumentationPage(

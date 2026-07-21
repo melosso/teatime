@@ -50,6 +50,7 @@ These shape how a post appears in your listings, feed, and archive.
 | `author`  | An id pointing at a file in `content/authors/`. When no match is found, the value is shown as written, and otherwise it falls back to the site author |
 | `slug`    | A friendlier URL, replacing the file name in the address              |
 | `draft`   | Set to `true` to hold a post out of listings, feeds, and the sitemap. Drafts stay visible while you run locally |
+| `sitemap` | Set to `false` to drop the post from `sitemap.xml` only. Unlike `draft`, it stays in listings, feeds, and search |
 
 ## Pages
 
@@ -62,6 +63,7 @@ Standalone pages under `content/pages/` understand a few extras of their own.
 | `page-prev`, `page-previous` | The matching "Previous" link. Either spelling works                 |
 | `pagination`                 | Set to `false` to hide those previous and next links entirely       |
 | `enabled`                    | Set to `false` on a custom `tags`, `archive`, or `authors` page to turn that surface off |
+| `sitemap`                    | Set to `false` to drop the page from `sitemap.xml`. The page stays live and searchable |
 
 ## Authors
 

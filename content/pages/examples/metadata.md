@@ -1,7 +1,8 @@
 ---
 title: Search and Social Previews
 description: How Teatime builds the meta tags, social cards, and structured data for every page.
-page-prev: /examples/frontmatter/ 
+page-prev: /examples/frontmatter/
+sitemap: false
 ---
 
 You do not have to hand-write any meta tags. Teatime builds the canonical link, the full Open Graph and Twitter Card set, and a JSON-LD block into every page's `<head>`, all from the live request and your front matter.

@@ -16,7 +16,8 @@ public sealed partial record Post(
     int ReadingMinutes,
     string? Cover,
     string? AuthorId,
-    string? CoverClasses = null)
+    string? CoverClasses = null,
+    bool InSitemap = true)
 {
     public static Post FromPage(DocumentationPage page)
     {
@@ -40,7 +41,8 @@ public sealed partial record Post(
             ReadingMinutes: Math.Max(1, (int)Math.Ceiling(words / 200.0)),
             Cover: cover is { Length: > 0 } ? cover : null,
             AuthorId: page.Author,
-            CoverClasses: coverClasses);
+            CoverClasses: coverClasses,
+            InSitemap: page.InSitemap);
     }
 
     public string Url => $"posts/{Slug}";

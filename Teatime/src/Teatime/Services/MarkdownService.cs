@@ -113,7 +113,8 @@ public sealed partial class MarkdownService
             frontMatter?.Author,
             frontMatter?.Enabled,
             frontMatter?.PageNext,
-            frontMatter?.PagePrev ?? frontMatter?.PagePrevious);
+            frontMatter?.PagePrev ?? frontMatter?.PagePrevious,
+            frontMatter?.Sitemap ?? true);
     }
 
     private static string AddHeadingAnchors(string html) =>

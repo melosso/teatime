@@ -60,13 +60,13 @@ internal static class SeoEndpoints
         sb.AppendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
         sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "")}</loc><priority>1.0</priority></url>");
 
-        foreach (var post in view.Posts)
+        foreach (var post in view.Posts.Where(p => p.InSitemap))
         {
             var lastMod = (post.Updated ?? post.Date).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, post.Url)}</loc><lastmod>{lastMod}</lastmod><priority>0.8</priority></url>");
         }
 
-        foreach (var page in pages.Where(p => p.Path.StartsWith("pages/", StringComparison.Ordinal)))
+        foreach (var page in pages.Where(p => p.InSitemap && p.Path.StartsWith("pages/", StringComparison.Ordinal)))
         {
             var slug = page.Path["pages/".Length..];
             if (slug.Length == 0) continue;
