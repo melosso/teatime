@@ -14,7 +14,9 @@ public sealed record BlogPageView(
     string? Description = null,
     string CanonicalPath = "",
     bool IsArticle = false,
-    bool ShowComments = false);
+    bool ShowComments = false,
+    string? Image = null,
+    DateTime? Modified = null);
 
 public sealed class BlogPageResponder
 {
@@ -45,6 +47,17 @@ public sealed class BlogPageResponder
 
     public string BasePath => _settings.BasePath;
     public string HomeUrl => _settings.BasePath.Length == 0 ? "/" : $"{_settings.BasePath}/";
+
+    private static string? ResolveSocialImage(string? image, string origin, string basePath)
+    {
+        if (string.IsNullOrWhiteSpace(image))
+            return null;
+        if (image.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || image.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            return image;
+        var path = image.StartsWith('/') ? image : "/" + image;
+        return $"{origin}{basePath}{path}";
+    }
 
     /// <summary>Fresh per response, so it cannot be read off the public ETag. Rules out answering 304.</summary>
     private static string NewNonce() =>
@@ -86,6 +99,18 @@ public sealed class BlogPageResponder
             ? view.ContentHtml + CommentEmbedRenderer.Build(extensions.Comments, nonce, canonicalUrl, config?.Lang)
             : view.ContentHtml;
 
+        var metaDescription = string.IsNullOrEmpty(view.Description) ? config?.Description : view.Description;
+        var origin = $"{context.Request.Scheme}://{context.Request.Host}";
+        var socialImageUrl = ResolveSocialImage(view.Image ?? config?.Image ?? config?.BrandImage, origin, basePath);
+        var siteName = config?.Brand ?? config?.Title;
+        var locale = config?.Lang ?? "en";
+        var modified = view.IsArticle ? view.Modified : null;
+
+        var socialMetaHtml = SocialMetaRenderer.BuildSocialMeta(
+            canonicalUrl, view.Title, metaDescription, !view.IsArticle, socialImageUrl, siteName, locale, modified);
+        var structuredDataHtml = StructuredDataRenderer.BuildJsonLd(
+            canonicalUrl, view.Title, metaDescription, !view.IsArticle, socialImageUrl, siteName, modified, nonce);
+
         var fullHtml = LayoutProvider.GetLayout(
             title: PageTitleRenderer.ComputeTitle(view.Title, config),
             content: contentHtml,
@@ -116,7 +141,9 @@ public sealed class BlogPageResponder
             footerHtml: footerHtml,
             pageId: seg.Length == 0 ? "home" : seg.Replace('/', '-'),
             // User theme assets load last so custom.css overrides engine styles at equal specificity.
-            customAssetsHtml: customCssLink + customJsScript);
+            customAssetsHtml: customCssLink + customJsScript,
+            socialMetaHtml: socialMetaHtml,
+            structuredDataHtml: structuredDataHtml);
 
         context.Response.ContentType = "text/html; charset=utf-8";
         await context.Response.WriteAsync(fullHtml);

@@ -10,6 +10,7 @@ public class Config
 
     public string? Brand { get; set; }
     public string? BrandImage { get; set; }
+    public string? Image { get; set; }
     public string? Footer { get; set; }
     public string? Favicon { get; set; }
 

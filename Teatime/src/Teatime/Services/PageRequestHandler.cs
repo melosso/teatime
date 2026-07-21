@@ -55,7 +55,9 @@ public sealed class PageRequestHandler
             ContentHtml: header + cover + page.HtmlContent + updated + pageNav,
             Description: page.Description,
             CanonicalPath: normalized,
-            IsArticle: true));
+            IsArticle: true,
+            Image: page.Cover,
+            Modified: page.Updated ?? page.LastModified));
     }
 
     // Opt-in: only pages with an explicit updated:/date: front matter show the stamp (never file mtime).

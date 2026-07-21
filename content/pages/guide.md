@@ -40,6 +40,7 @@ Only `title` and `date` are needed. Everything else is optional, and sensible de
 | `draft`   | Set to `true` to keep a post out of listings and feeds  |
 | `slug`    | A URL override, otherwise the filename is used          |
 | `summary` | An excerpt override for cards, feeds, and social previews |
+| `cover`   | A feature image, shown on the post and used as its social preview (`og:image`) |
 
 Those are the fields you reach for every day. The full set, including the ones that tune metadata and standalone pages, lives in the [front matter reference](/examples/frontmatter/).
 
@@ -49,6 +50,8 @@ Before you publish, a quick checklist can help:
 - [x] Any images live under `content/assets/`
 - [ ] A final read for typos and tone
 - [ ] `draft: true` removed when you are happy
+
+Teatime also builds every page's meta tags, social cards, and search structured data for you, straight from this front matter. The [search and social previews](/examples/metadata/) page covers what it generates and how to steer it.
 
 ## 2. Preview Locally
 
