@@ -226,7 +226,7 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
         var docsPath = Path.GetFullPath(_options.RootPath);
         if (!Directory.Exists(docsPath))
         {
-            _logger.LogWarning("Docs directory does not exist: {Path}", docsPath);
+            _logger.LogWarning("Content directory does not exist: {Path}", docsPath);
             return;
         }
 
