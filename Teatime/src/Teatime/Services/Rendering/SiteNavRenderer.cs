@@ -14,7 +14,6 @@ public static class SiteNavRenderer
         ("Posts", ""),
         (ReservedRoutes.Tags.Title, ReservedRoutes.Tags.Slug),
         (ReservedRoutes.Archive.Title, ReservedRoutes.Archive.Slug),
-        ("About", "about"),
     ];
 
     public static string Build(Config? config, string basePath, string currentPath)

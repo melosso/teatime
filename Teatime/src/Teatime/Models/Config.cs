@@ -20,7 +20,7 @@ public class Config
     /// <summary>Optional avatar image URL for the byline; falls back to the author's initial.</summary>
     public string? AuthorImage { get; set; }
 
-    /// <summary>Header nav items. When present, replaces the default Posts/Tags/Archive/About menu.</summary>
+    /// <summary>Header nav items. When present, replaces the default Posts/Tags/Archive menu.</summary>
     public List<MenuLink>? Menu { get; set; }
 
     /// <summary>Footer links. When present, replaces the default RSS/Archive links in the footer.</summary>

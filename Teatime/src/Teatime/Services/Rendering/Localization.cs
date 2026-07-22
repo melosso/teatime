@@ -35,7 +35,7 @@ public sealed class Localization
         ["shareCopy"] = "Copy link",
         ["shareCopied"] = "Copied",
         ["emptyNoPosts"] = "No posts yet.",
-        ["homeEmpty"] = "No posts yet. Drop a Markdown file in content/posts/.",
+        ["homeEmpty"] = "Nothing here yet. Check back soon.",
         ["authorEmpty"] = "No posts here yet.",
         ["homeHeadingLatest"] = "Latest posts",
         ["homeHeadingPaged"] = "Posts, page {0}",
