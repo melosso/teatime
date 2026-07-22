@@ -1,8 +1,8 @@
 # 🍵 Teatime
 
-Meet Teatime: a personal blog engine that is really just a folder of Markdown files. If you can write a `.md` file, you already have a fast, self hosted blog with tags, an archive, and an RSS feed ready to go.
+Meet Teatime: a personal blog engine that's really just a folder of Markdown files. If you can write a `.md` file, you already have a fast, self-hosted blog with tags, an archive, and an RSS feed, ready to go.
 
-Teatime is built on the modern .NET stack. It grew out of [Bark](https://github.com/melosso/bark), a fast Markdown documentation server, so it keeps that same instant, in memory rendering approach allowing you to publish your posts directly without a build step or other dependencies.
+Teatime is built on the modern .NET stack, growing out of [Bark](https://github.com/melosso/bark), a fast Markdown documentation server. It inherits what Bark is good at: building pages in-memory. That means you can publish posts directly, with no build step and no extra dependencies.
 
 ![Screenshot of Teatime](.github/images/preview.webp)
 
