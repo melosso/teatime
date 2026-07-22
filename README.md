@@ -4,6 +4,10 @@ Meet Teatime: a personal blog engine that's really just a folder of Markdown fil
 
 Teatime is built on the modern .NET stack, growing out of [Bark](https://github.com/melosso/bark), a fast Markdown documentation server. It inherits what Bark is good at: building pages in-memory. That means you can publish posts directly, with no build step and no extra dependencies.
 
+<div>
+      <p align="center"><strong>🔍 <a href="https://melosso.github.io/teatime/">See it in action!</a></strong></p>
+</div>
+
 ![Screenshot of Teatime](.github/images/preview.webp)
 
 ## How it works
