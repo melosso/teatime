@@ -1,5 +1,9 @@
 # 🍵 Teatime
 
+[![License](https://img.shields.io/badge/license-EUPL%201.2-blue)]( LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/melosso/teatime)](https://github.com/melosso/teatime/commits/main)
+[![Docker](https://img.shields.io/badge/ghcr.io-melosso%2Fteatime-blue?logo=docker)](https://github.com/melosso/teatime/pkgs/container/teatime)
+
 Meet Teatime: a personal blog engine that's really just a folder of Markdown files. If you can write a `.md` file, you already have a fast, self-hosted blog with tags, an archive, and an RSS feed, ready to go.
 
 Teatime is built on the modern .NET stack, growing out of [Bark](https://github.com/melosso/bark), a fast Markdown documentation server. It inherits what Bark is good at: building pages in-memory. That means you can publish posts directly, with no build step and no extra dependencies.
