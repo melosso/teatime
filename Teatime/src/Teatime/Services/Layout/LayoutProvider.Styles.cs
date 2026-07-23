@@ -144,7 +144,7 @@ public static partial class LayoutProvider
             display: inline-flex; align-items: center; gap: 0.3rem;
             font-size: 0.9rem; font-weight: 500; color: var(--text-muted);
             text-decoration: none; background: none; border: none; cursor: pointer;
-            padding: 0; font-family: inherit;
+            padding: 0; font-family: inherit; touch-action: manipulation;
         }}
         .top-nav-link:hover, .top-nav-link.active {{
             color: var(--accent);
@@ -2161,6 +2161,7 @@ public static partial class LayoutProvider
                 min-height: 44px;
                 display: inline-flex;
                 align-items: center;
+                touch-action: manipulation;
             }}
             .site-footer .icon-btn {{
                 width: 40px;
@@ -2181,6 +2182,7 @@ public static partial class LayoutProvider
                 grid-template-rows: 0fr;
                 opacity: 0;
                 visibility: hidden;
+                pointer-events: none;
             }}
             .site-nav {{
                 gap: 1.1rem;
@@ -2193,7 +2195,6 @@ public static partial class LayoutProvider
                 -webkit-overflow-scrolling: touch;
                 scrollbar-width: none;
                 overscroll-behavior-x: contain;
-                scroll-snap-type: x proximity;
                 scroll-padding-inline: var(--topbar-pad);
                 padding-inline: var(--topbar-pad);
                 min-height: 0;
@@ -2201,12 +2202,9 @@ public static partial class LayoutProvider
             .site-nav::-webkit-scrollbar {{
                 display: none;
             }}
-            .site-nav:has(.top-nav-item.has-dropdown.open) {{
-                scroll-snap-type: none;
-            }}
+            /* No scroll snap here: settling after a tap can drag the trigger out from under the finger. */
             .site-nav > a, .site-nav > .top-nav-item {{
                 flex: 0 0 auto;
-                scroll-snap-align: start;
             }}
             .site-nav-wrap {{
                 display: grid;
@@ -2255,6 +2253,10 @@ public static partial class LayoutProvider
                 display: none; opacity: 1; visibility: visible;
                 top: 100%; left: 0; right: auto; transform: none;
                 margin-top: 0.4rem; min-width: 160px;
+                max-width: calc(100vw - 16px);
+                max-height: 60vh;
+                overflow-y: auto;
+                overscroll-behavior: contain;
             }}
             .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
                 display: flex;

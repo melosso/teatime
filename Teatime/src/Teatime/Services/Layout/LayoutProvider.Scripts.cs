@@ -85,8 +85,16 @@ public static partial class LayoutProvider
             }}
 
             var mobileNav = window.matchMedia('(max-width: 620px)');
+            function onMediaChange(mq, fn) {{
+                if (mq.addEventListener) mq.addEventListener('change', fn);
+                else if (mq.addListener) mq.addListener(fn);
+            }}
             var siteNav = document.querySelector('.site-nav');
             var siteNavWrap = document.querySelector('.site-nav-wrap');
+            var topbar = document.querySelector('.topbar');
+            function expandTopbar() {{
+                if (topbar) topbar.classList.remove('topbar-condensed');
+            }}
             function navScrollMax() {{
                 return siteNav ? siteNav.scrollWidth - siteNav.clientWidth : 0;
             }}
@@ -123,6 +131,12 @@ public static partial class LayoutProvider
             }}
 
             var navDropdowns = Array.prototype.slice.call(document.querySelectorAll('.site-nav .top-nav-item.has-dropdown'));
+            function anyNavDropdownOpen() {{
+                for (var i = 0; i < navDropdowns.length; i++) {{
+                    if (navDropdowns[i].classList.contains('open')) return true;
+                }}
+                return false;
+            }}
             function resetNavDropdownPosition(menu) {{
                 if (!menu) return;
                 menu.style.position = '';
@@ -146,63 +160,125 @@ public static partial class LayoutProvider
                 var parent = menu.offsetParent ? menu.offsetParent.getBoundingClientRect() : null;
                 var baseLeft = parent ? parent.left : 0;
                 var baseTop = parent ? parent.top : 0;
-                var left = Math.min(Math.max(8, rect.left), Math.max(8, window.innerWidth - menu.offsetWidth - 8));
+                var vw = document.documentElement.clientWidth || window.innerWidth;
+                var vh = document.documentElement.clientHeight || window.innerHeight;
+                var left = Math.min(Math.max(8, rect.left), Math.max(8, vw - menu.offsetWidth - 8));
+                var top = Math.min(rect.bottom + 6, Math.max(8, vh - menu.offsetHeight - 8));
                 menu.style.left = (left - baseLeft) + 'px';
-                menu.style.top = (rect.bottom + 6 - baseTop) + 'px';
+                menu.style.top = (Math.max(top, rect.bottom + 6) - baseTop) + 'px';
+            }}
+            function repositionOpenNavDropdowns() {{
+                for (var i = 0; i < navDropdowns.length; i++) {{
+                    if (navDropdowns[i].classList.contains('open')) positionNavDropdown(navDropdowns[i]);
+                }}
             }}
             function closeNavDropdown(item) {{
                 item.classList.remove('open');
                 var b = item.querySelector('.top-nav-link');
                 if (b) b.setAttribute('aria-expanded', 'false');
             }}
+            function closeAllNavDropdowns() {{
+                navDropdowns.forEach(closeNavDropdown);
+            }}
+            function openNavDropdown(item, btn) {{
+                closeAllNavDropdowns();
+                // The trigger only exists while the bar is expanded, so never open into a collapsing bar.
+                expandTopbar();
+                item.classList.add('open');
+                btn.setAttribute('aria-expanded', 'true');
+                if (mobileNav.matches && siteNav) {{
+                    // Nudge a half-scrolled trigger fully into view so the pinned menu lines up under it.
+                    var navRect = siteNav.getBoundingClientRect();
+                    var itemRect = item.getBoundingClientRect();
+                    if (itemRect.left < navRect.left + 8) siteNav.scrollLeft -= (navRect.left + 8 - itemRect.left);
+                    else if (itemRect.right > navRect.right - 8) siteNav.scrollLeft += (itemRect.right - (navRect.right - 8));
+                }}
+                positionNavDropdown(item);
+            }}
             navDropdowns.forEach(function(item) {{
                 var btn = item.querySelector('.top-nav-link');
                 if (!btn) return;
+                btn.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
                 btn.addEventListener('click', function(e) {{
                     e.preventDefault();
-                    var willOpen = !item.classList.contains('open');
-                    navDropdowns.forEach(closeNavDropdown);
-                    if (willOpen) {{
-                        item.classList.add('open');
-                        btn.setAttribute('aria-expanded', 'true');
-                        positionNavDropdown(item);
-                    }}
+                    e.stopPropagation();
+                    if (item.classList.contains('open')) closeAllNavDropdowns();
+                    else openNavDropdown(item, btn);
                 }});
             }});
-            if (siteNav && navDropdowns.length) {{
+            if (navDropdowns.length && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {{
+                // CSS opens these on hover; mirror it in aria without letting it desync from .open.
+                navDropdowns.forEach(function(item) {{
+                    var btn = item.querySelector('.top-nav-link');
+                    if (!btn) return;
+                    function sync(expanded) {{
+                        if (!expanded && item.classList.contains('open')) return;
+                        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+                    }}
+                    item.addEventListener('mouseenter', function() {{ sync(true); }});
+                    item.addEventListener('mouseleave', function() {{ sync(false); }});
+                    item.addEventListener('focusin', function() {{ sync(true); }});
+                    item.addEventListener('focusout', function() {{
+                        setTimeout(function() {{
+                            if (!item.matches(':focus-within')) sync(false);
+                        }}, 0);
+                    }});
+                }});
+            }}
+            if (navDropdowns.length) {{
                 var navDropdownTicking = false;
-                siteNav.addEventListener('scroll', function() {{
-                    if (navDropdownTicking) return;
+                function queueNavDropdownReposition() {{
+                    if (navDropdownTicking || !anyNavDropdownOpen()) return;
                     navDropdownTicking = true;
                     requestAnimationFrame(function() {{
                         navDropdownTicking = false;
-                        navDropdowns.forEach(function(item) {{
-                            if (item.classList.contains('open')) positionNavDropdown(item);
-                        }});
+                        repositionOpenNavDropdowns();
                     }});
-                }}, {{ passive: true }});
+                }}
+                if (siteNav) siteNav.addEventListener('scroll', queueNavDropdownReposition, {{ passive: true }});
+                // The pinned menu is viewport-anchored, so anything that moves the topbar restages it:
+                // page scroll under a sticky bar, a rotation, or a mobile URL bar sliding away.
+                window.addEventListener('scroll', queueNavDropdownReposition, {{ passive: true }});
+                window.addEventListener('resize', queueNavDropdownReposition);
+                window.addEventListener('orientationchange', closeAllNavDropdowns);
+                if (window.visualViewport) {{
+                    window.visualViewport.addEventListener('resize', queueNavDropdownReposition);
+                    window.visualViewport.addEventListener('scroll', queueNavDropdownReposition);
+                }}
+                onMediaChange(mobileNav, function() {{
+                    expandTopbar();
+                    navDropdowns.forEach(function(item) {{
+                        closeNavDropdown(item);
+                        resetNavDropdownPosition(item.querySelector('.top-nav-dropdown-menu'));
+                    }});
+                }});
             }}
 
-            var topbar = document.querySelector('.topbar');
             if (topbar) {{
                 var lastScrollY = window.pageYOffset || 0;
+                var lastViewportHeight = window.innerHeight;
                 var topbarTicking = false;
                 var revealAbove = 120;
-                var scrollNoise = 6;
+                var condenseThreshold = 24;
+                var revealThreshold = 2;
                 var bottomDeadzone = 24;
 
-                function expandTopbar() {{
-                    topbar.classList.remove('topbar-condensed');
-                }}
                 function condenseTopbar() {{
                     if (topbar.classList.contains('topbar-condensed')) return;
+                    if (anyNavDropdownOpen()) return;
                     topbar.classList.add('topbar-condensed');
-                    navDropdowns.forEach(closeNavDropdown);
                 }}
                 function updateTopbar() {{
                     var raw = window.pageYOffset || 0;
                     var maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
                     var y = Math.min(Math.max(raw, 0), maxY);
+                    // Mobile browsers resize the viewport as their URL bar slides, which shifts the
+                    // scroll offset with no gesture behind it. Resync rather than read it as a swipe.
+                    if (window.innerHeight !== lastViewportHeight) {{
+                        lastViewportHeight = window.innerHeight;
+                        lastScrollY = y;
+                        return;
+                    }}
                     if (raw < 0 || raw > maxY) {{
                         lastScrollY = y;
                         return;
@@ -212,11 +288,20 @@ public static partial class LayoutProvider
                         lastScrollY = y;
                         return;
                     }}
-                    if (maxY - y < bottomDeadzone) return;
+                    if (anyNavDropdownOpen()) {{
+                        lastScrollY = y;
+                        return;
+                    }}
                     var delta = y - lastScrollY;
-                    if (Math.abs(delta) < scrollNoise) return;
-                    if (delta > 0) condenseTopbar();
-                    else expandTopbar();
+                    // Reveal eagerly, hide reluctantly: a nav that is missing costs more than one that lingers.
+                    if (delta <= -revealThreshold) {{
+                        expandTopbar();
+                        lastScrollY = y;
+                        return;
+                    }}
+                    if (maxY - y < bottomDeadzone) return;
+                    if (delta < condenseThreshold) return;
+                    condenseTopbar();
                     lastScrollY = y;
                 }}
 
@@ -229,23 +314,30 @@ public static partial class LayoutProvider
                     }});
                 }}, {{ passive: true }});
                 topbar.addEventListener('focusin', expandTopbar);
-                mobileNav.addEventListener('change', function() {{
+                // Reaching for the bar is a request for the nav, whether or not the nav is on screen yet.
+                topbar.addEventListener('pointerdown', expandTopbar);
+                window.addEventListener('pageshow', function() {{
+                    closeAllNavDropdowns();
                     expandTopbar();
-                    navDropdowns.forEach(function(item) {{
-                        closeNavDropdown(item);
-                        resetNavDropdownPosition(item.querySelector('.top-nav-dropdown-menu'));
-                    }});
+                    lastViewportHeight = window.innerHeight;
+                    lastScrollY = window.pageYOffset || 0;
+                }});
+                onMediaChange(mobileNav, function() {{
+                    lastViewportHeight = window.innerHeight;
                     lastScrollY = window.pageYOffset || 0;
                 }});
             }}
             if (navDropdowns.length) {{
-                document.addEventListener('click', function(e) {{
+                function closeNavDropdownsOutside(e) {{
                     navDropdowns.forEach(function(item) {{
                         if (item.classList.contains('open') && !item.contains(e.target)) closeNavDropdown(item);
                     }});
-                }});
+                }}
+                // Touch taps on non-interactive elements do not reliably produce a click, so watch both.
+                document.addEventListener('pointerdown', closeNavDropdownsOutside);
+                document.addEventListener('click', closeNavDropdownsOutside);
                 document.addEventListener('keydown', function(e) {{
-                    if (e.key === 'Escape') navDropdowns.forEach(closeNavDropdown);
+                    if (e.key === 'Escape') closeAllNavDropdowns();
                 }});
             }}
 
@@ -941,20 +1033,6 @@ public static partial class LayoutProvider
                 }});
             }}
 
-            document.querySelectorAll('.top-nav-item.has-dropdown').forEach(function(item) {{
-                var btn = item.querySelector('.top-nav-link[aria-expanded]');
-                if (!btn) return;
-                item.addEventListener('focusin', function() {{
-                    btn.setAttribute('aria-expanded', 'true');
-                }});
-                item.addEventListener('focusout', function() {{
-                    setTimeout(function() {{
-                        if (!item.matches(':focus-within')) btn.setAttribute('aria-expanded', 'false');
-                    }}, 0);
-                }});
-                item.addEventListener('mouseenter', function() {{ btn.setAttribute('aria-expanded', 'true'); }});
-                item.addEventListener('mouseleave', function() {{ btn.setAttribute('aria-expanded', 'false'); }});
-            }});
         }});
     </script>
 ";
