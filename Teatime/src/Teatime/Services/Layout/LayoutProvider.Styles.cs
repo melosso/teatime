@@ -1237,6 +1237,27 @@ public static partial class LayoutProvider
         .site-nav .top-nav-dropdown-link.here:hover {{
             background: var(--accent-light); color: var(--accent);
         }}
+        /* An open mobile menu is moved to <body> to escape the nav scroller's clip, so it can no
+           longer inherit any of the .site-nav rules above. Everything it needs is restated here. */
+        .top-nav-dropdown-menu.top-nav-portal {{
+            display: flex; flex-direction: column; gap: 0.2rem;
+            position: fixed; margin: 0; opacity: 1; visibility: visible; transform: none;
+            min-width: 160px; max-width: calc(100vw - 16px);
+            overflow-y: auto; overscroll-behavior: contain;
+            padding: 0.3rem;
+            background: var(--bg-color); border: 1px solid var(--border);
+            border-radius: 10px; box-shadow: var(--shadow-md);
+            z-index: 1050;
+        }}
+        .top-nav-portal .top-nav-dropdown-link {{
+            display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem;
+            padding: 0.6rem 0.7rem; border-radius: 7px;
+            font-size: 0.9rem; color: var(--text-color); text-decoration: none; white-space: nowrap;
+            min-height: 44px;
+        }}
+        .top-nav-portal .top-nav-dropdown-link.here {{
+            background: var(--accent-light); color: var(--accent); font-weight: 600;
+        }}
 
         .sidebar-left, .sidebar-right, .sidebar-overlay {{
             display: none !important;
@@ -2192,7 +2213,6 @@ public static partial class LayoutProvider
                 flex-wrap: nowrap;
                 overflow-x: auto;
                 overflow-y: hidden;
-                -webkit-overflow-scrolling: touch;
                 scrollbar-width: none;
                 overscroll-behavior-x: contain;
                 scroll-padding-inline: var(--topbar-pad);

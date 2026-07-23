@@ -131,11 +131,19 @@ public static partial class LayoutProvider
             }}
 
             var navDropdowns = Array.prototype.slice.call(document.querySelectorAll('.site-nav .top-nav-item.has-dropdown'));
+            navDropdowns.forEach(function(item) {{
+                // Cache it now: once the menu is portaled out, item.querySelector no longer finds it.
+                item.navMenu = item.querySelector('.top-nav-dropdown-menu');
+                item.navButton = item.querySelector('.top-nav-link');
+            }});
             function anyNavDropdownOpen() {{
                 for (var i = 0; i < navDropdowns.length; i++) {{
                     if (navDropdowns[i].classList.contains('open')) return true;
                 }}
                 return false;
+            }}
+            function navEventInsideDropdown(item, target) {{
+                return item.contains(target) || (item.navMenu && item.navMenu.contains(target));
             }}
             function resetNavDropdownPosition(menu) {{
                 if (!menu) return;
@@ -145,9 +153,25 @@ public static partial class LayoutProvider
                 menu.style.right = '';
                 menu.style.transform = '';
             }}
-            // In the scrolling mobile nav the menu would be clipped by the scroller, so pin it instead.
+            // The mobile nav strip is a horizontal scroller, and iOS WebKit clips position:fixed
+            // descendants of a scroller instead of anchoring them to the viewport -- the menu opens
+            // but paints inside a 40px-tall clip rect, so nothing is visible. Moving the menu to
+            // <body> while it is open is the only way out of that clip.
+            function portalNavMenu(item) {{
+                var menu = item.navMenu;
+                if (!menu || menu.parentNode === document.body) return;
+                menu.classList.add('top-nav-portal');
+                document.body.appendChild(menu);
+            }}
+            function restoreNavMenu(item) {{
+                var menu = item.navMenu;
+                if (!menu || menu.parentNode === item) return;
+                menu.classList.remove('top-nav-portal');
+                resetNavDropdownPosition(menu);
+                item.appendChild(menu);
+            }}
             function positionNavDropdown(item) {{
-                var menu = item.querySelector('.top-nav-dropdown-menu');
+                var menu = item.navMenu;
                 if (!menu) return;
                 if (!mobileNav.matches) {{
                     resetNavDropdownPosition(menu);
@@ -157,15 +181,14 @@ public static partial class LayoutProvider
                 menu.style.right = 'auto';
                 menu.style.transform = 'none';
                 var rect = item.getBoundingClientRect();
-                var parent = menu.offsetParent ? menu.offsetParent.getBoundingClientRect() : null;
-                var baseLeft = parent ? parent.left : 0;
-                var baseTop = parent ? parent.top : 0;
                 var vw = document.documentElement.clientWidth || window.innerWidth;
                 var vh = document.documentElement.clientHeight || window.innerHeight;
                 var left = Math.min(Math.max(8, rect.left), Math.max(8, vw - menu.offsetWidth - 8));
-                var top = Math.min(rect.bottom + 6, Math.max(8, vh - menu.offsetHeight - 8));
-                menu.style.left = (left - baseLeft) + 'px';
-                menu.style.top = (Math.max(top, rect.bottom + 6) - baseTop) + 'px';
+                var top = rect.bottom + 6;
+                // Portaled to <body>, so viewport coordinates apply directly with no offset parent.
+                menu.style.left = left + 'px';
+                menu.style.top = top + 'px';
+                menu.style.maxHeight = Math.max(120, vh - top - 8) + 'px';
             }}
             function repositionOpenNavDropdowns() {{
                 for (var i = 0; i < navDropdowns.length; i++) {{
@@ -174,8 +197,9 @@ public static partial class LayoutProvider
             }}
             function closeNavDropdown(item) {{
                 item.classList.remove('open');
-                var b = item.querySelector('.top-nav-link');
-                if (b) b.setAttribute('aria-expanded', 'false');
+                if (item.navButton) item.navButton.setAttribute('aria-expanded', 'false');
+                if (item.navMenu) item.navMenu.style.maxHeight = '';
+                restoreNavMenu(item);
             }}
             function closeAllNavDropdowns() {{
                 navDropdowns.forEach(closeNavDropdown);
@@ -184,19 +208,20 @@ public static partial class LayoutProvider
                 closeAllNavDropdowns();
                 // The trigger only exists while the bar is expanded, so never open into a collapsing bar.
                 expandTopbar();
-                item.classList.add('open');
-                btn.setAttribute('aria-expanded', 'true');
                 if (mobileNav.matches && siteNav) {{
                     // Nudge a half-scrolled trigger fully into view so the pinned menu lines up under it.
                     var navRect = siteNav.getBoundingClientRect();
                     var itemRect = item.getBoundingClientRect();
                     if (itemRect.left < navRect.left + 8) siteNav.scrollLeft -= (navRect.left + 8 - itemRect.left);
                     else if (itemRect.right > navRect.right - 8) siteNav.scrollLeft += (itemRect.right - (navRect.right - 8));
+                    portalNavMenu(item);
                 }}
+                item.classList.add('open');
+                btn.setAttribute('aria-expanded', 'true');
                 positionNavDropdown(item);
             }}
             navDropdowns.forEach(function(item) {{
-                var btn = item.querySelector('.top-nav-link');
+                var btn = item.navButton;
                 if (!btn) return;
                 btn.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
                 btn.addEventListener('click', function(e) {{
@@ -330,7 +355,7 @@ public static partial class LayoutProvider
             if (navDropdowns.length) {{
                 function closeNavDropdownsOutside(e) {{
                     navDropdowns.forEach(function(item) {{
-                        if (item.classList.contains('open') && !item.contains(e.target)) closeNavDropdown(item);
+                        if (item.classList.contains('open') && !navEventInsideDropdown(item, e.target)) closeNavDropdown(item);
                     }});
                 }}
                 // Touch taps on non-interactive elements do not reliably produce a click, so watch both.
