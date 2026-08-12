@@ -5,7 +5,7 @@
   "lang": "en",
   "locale": { "culture": "en-GB" },
   "theme": "default",
-  "structure": "editorial",
+  "structure": "default",
   "author": "Melosso",
   "favicon": "🍵",
   "scrollIndicator": true,
