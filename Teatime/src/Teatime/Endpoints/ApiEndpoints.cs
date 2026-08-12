@@ -1,0 +1,89 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Teatime.Configuration;
+using Teatime.Models;
+using Teatime.Services;
+using Teatime.Services.Extensions;
+using Teatime.Services.Rendering;
+
+namespace Teatime.Endpoints;
+
+internal static class ApiEndpoints
+{
+    public static IEndpointRouteBuilder MapApiEndpoints(this IEndpointRouteBuilder app)
+    {
+        var api = app.MapGroup("/api");
+        api.MapMethods("/search", HttpVerbs.GetAndHead, Search).RequireRateLimiting(RateLimitPolicies.Search);
+        api.MapMethods("/pages", HttpVerbs.GetAndHead, GetPages).RequireRateLimiting(RateLimitPolicies.Search);
+        api.MapMethods("/altcha", HttpVerbs.GetAndHead, GetChallenge).RequireRateLimiting(RateLimitPolicies.Search);
+        api.MapPost("/subscribe", Subscribe).RequireRateLimiting(RateLimitPolicies.Subscribe);
+        // NOT rate-limited; the hot-reload script polls this every few seconds
+        api.MapMethods("/build-version", HttpVerbs.GetAndHead, GetBuildVersion);
+        return app;
+    }
+
+    /// <summary>
+    /// Newsletter sign-up; the provider endpoint and its key stay server side, and the reply carries only a display message.
+    /// </summary>
+    internal static Ok<AltchaChallenge> GetChallenge(AltchaService altcha) =>
+        TypedResults.Ok(altcha.Create());
+
+    internal static async Task<IResult> Subscribe(
+        SubscribeRequest request, NewsletterService newsletter, AltchaService altcha, CancellationToken cancellationToken)
+    {
+        var l = Localization.Current;
+
+        if (!newsletter.IsEnabled)
+            return TypedResults.Json(new SubscribeResponse(false, l.NewsletterDisabled), statusCode: 404);
+
+        // A filled honeypot means a bot, which is thanked and quietly ignored.
+        if (!string.IsNullOrWhiteSpace(request.Website))
+            return TypedResults.Ok(new SubscribeResponse(true, l.NewsletterSubscribed));
+
+        if (!altcha.Verify(request.Altcha))
+            return TypedResults.Json(new SubscribeResponse(false, l.NewsletterVerification), statusCode: 400);
+
+        var result = await newsletter.SubscribeAsync(request.Email, request.Name, cancellationToken);
+
+        return result.Outcome switch
+        {
+            SubscribeOutcome.Subscribed => TypedResults.Ok(new SubscribeResponse(true, l.NewsletterSubscribed)),
+            SubscribeOutcome.AlreadySubscribed => TypedResults.Ok(new SubscribeResponse(true, l.NewsletterAlready)),
+            SubscribeOutcome.ConfirmationSent => TypedResults.Ok(new SubscribeResponse(true, l.NewsletterConfirm)),
+            SubscribeOutcome.InvalidEmail => TypedResults.Json(new SubscribeResponse(false, l.NewsletterInvalidEmail), statusCode: 400),
+            SubscribeOutcome.Disabled => TypedResults.Json(new SubscribeResponse(false, l.NewsletterDisabled), statusCode: 404),
+            _ => TypedResults.Json(new SubscribeResponse(false, l.NewsletterError), statusCode: 502),
+        };
+    }
+
+    internal static async Task<Ok<GroupedSearchResponse>> Search(
+        string? q, ContentService docs, AuthorService authors, PostService posts,
+        PageRequestSettings settings, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(q) || q.Length < 2)
+            return TypedResults.Ok(GroupedSearchResponse.Empty);
+
+        var postHits = docs.Search(q);
+        var view = await posts.GetViewAsync(cancellationToken);
+        var grouped = GroupedSearch.Build(q, postHits, authors.GetListed(), view.Tags, settings.BasePath);
+        return TypedResults.Ok(grouped);
+    }
+
+    // Public page metadata only; no OriginalRelativePath or other server file paths
+    internal static async Task<Ok<List<PageSummary>>> GetPages(ContentService docs, CancellationToken cancellationToken)
+    {
+        var pages = await docs.GetAllPagesAsync(cancellationToken);
+        var items = pages
+            .OrderBy(p => p.Path)
+            .Select(p => new PageSummary(p.Path, p.Title, p.Description, p.LastModified))
+            .ToList();
+        return TypedResults.Ok(items);
+    }
+
+    internal static Ok<BuildVersionResponse> GetBuildVersion(HttpContext context, ContentService docs)
+    {
+        // "no-store" not just "no-cache"; the hot-reload poll needs the live value every time.
+        context.Response.Headers.CacheControl = "no-store, no-cache, must-revalidate";
+        context.Response.Headers.Pragma = "no-cache";
+        return TypedResults.Ok(new BuildVersionResponse(docs.BuildVersion));
+    }
+}

@@ -1,0 +1,18 @@
+.env
+.*/
+*.md
+!/.github/
+!README.md
+!CONTRIBUTING.md
+!CONTRIBUTORS.md
+!CHANGELOG.md
+!content/**/*.md
+*.db
+*.db*
+[Bb]in/
+[Oo]bj/
+
+# Generated bookmark card cache + downloaded images
+Teatime/src/Teatime/wwwroot/bookmarks/
+# Serilog rolling file sink output
+logs/

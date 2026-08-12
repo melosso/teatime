@@ -1,0 +1,13 @@
+{
+  "extensions": {
+    "beacon": {
+      "enabled": true,
+      "url": "https://beacon-demo-api.melosso.com",
+      "bucket": "newsletter_en",
+      "permission": "newsletter",
+      "apiKey": "Beacon-Api-Key",
+      "language": "en",
+      "customFields": { "source": "newsletter", "site": "teatime" }
+    }
+  }
+}

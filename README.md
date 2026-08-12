@@ -1,0 +1,125 @@
+# 🍵 Teatime
+
+[![License](https://img.shields.io/badge/license-EUPL%201.2-blue)](LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/melosso/teatime)](https://github.com/melosso/teatime/commits/main)
+[![Docker](https://img.shields.io/badge/ghcr.io-melosso%2Fteatime-blue?logo=docker)](https://github.com/melosso/teatime/pkgs/container/teatime)
+
+Meet Teatime: a personal blog engine that's really just a folder of Markdown files. If you can write a `.md` file, you already have a fast, self-hosted blog with tags, an archive, and an RSS feed, ready to go.
+
+Teatime is built on the modern .NET stack, growing out of [Bark](https://github.com/melosso/bark), a fast Markdown documentation server. It inherits what Bark is good at: building pages in-memory. That means you can publish posts directly, with no build step and no extra dependencies.
+
+<div>
+      <p align="center"><strong>🔍 <a href="https://melosso.github.io/teatime/">See it in action!</a></strong></p>
+</div>
+
+![Screenshot of Teatime](.github/images/preview.webp)
+
+## How it works
+
+Your writing lives in a `content/` folder:
+
+```
+content/
+  posts/        your blog posts, one .md file each
+  pages/        standalone pages like About, served at /about
+  config.json   optional site settings
+  extensions.json  optional built-in extensions
+```
+
+A post is a Markdown file with a little front matter at the top:
+
+```markdown
+---
+title: Hello, Teatime
+date: 2026-07-01
+tags: [meta, dotnet]
+summary: A short line for the index and the feed.
+---
+
+Welcome to your new blog. You can write anything you like here.
+```
+
+To get going, all you only need is a `title` and a `date`. The `date` sets the order on your home page (newest first) and in the feed. You are welcome to add `tags`, a `summary`, a custom `slug`, or to mark a post as `draft: true` so it stays out of your listings until you are ready. Drafts remain visible while you run locally in Development, and are quietly held back everywhere else.
+
+Once a post is saved, it appears right away. Teatime watches your files and rebuilds in memory, so there is nothing to recompile.
+
+## Installation
+
+The quickest way to run Teatime is the published container image, which has everything bundled and ready.
+
+### Docker
+
+Create a `docker-compose.yml` next to your writing:
+
+```yaml
+services:
+  teatime:
+    image: ghcr.io/melosso/teatime:latest
+    container_name: teatime
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./content:/app/content
+    environment:
+      PublicBaseUrl: https://blog.example.com
+      AllowedHosts: blog.example.com
+```
+
+Your own `content/` folder, holding your `.md` files and an optional `config.json`, is mounted from the host, and `PublicBaseUrl` is set to the origin you serve from. With that in place, you can bring it up:
+
+```bash
+docker compose up -d
+```
+
+Your blog is then waiting at `http://localhost:8080`.
+
+Running locally only? The `environment:` block can be left out entirely. Without it, absolute URLs in your feed and sitemap fall back to whatever `Host` header the request carried, which is perfectly fine on localhost.
+
+> **Note:** On a public host that fallback is worth avoiding, since the `Host` header is supplied by the caller and a spoofed one would end up inside your feed links. Setting `PublicBaseUrl` and `AllowedHosts` keeps those URLs pinned to your own origin.
+
+### Windows and IIS
+
+If you would rather host on Windows, each release ships a ready to run build:
+
+1. Download the latest `*-Windows_x64.zip` from the [Releases](https://github.com/melosso/teatime/releases) page.
+2. Extract it into your site folder, for example `C:\inetpub\teatime`.
+3. Create an IIS site pointed at that folder, with the CLR version set to "No Managed Code".
+4. Make sure the [.NET 11 Hosting Bundle](https://dotnet.microsoft.com/download/dotnet/11.0) is installed.
+5. Start the site and browse to it.
+
+The zip already includes a `web.config` wired for in process hosting, so no manual edits are needed. A `*-Linux_x64.zip` build is attached to each release as well.
+
+## Writing
+
+Teatime renders your content through the same Markdig pipeline [Bark](https://github.com/melosso/bark) uses. If you would like a refresher on the syntax itself, the [Markdown Guide](https://www.markdownguide.org/) is a friendly and thorough place to start. You also get:
+
+- A chronological home page with pagination
+- Individual post pages, each with previous and next links
+- Tag pages (`/tags` and `/tags/your-tag`) and a year by year `/archive`
+- An RSS feed at `/feed.xml`, plus `/sitemap.xml` and `/robots.txt`
+- Full text search
+- Light and dark themes
+
+A few more, such as diagrams, math, and footnotes, come along with the pipeline. The [Markdown examples page](content/pages/examples/markdown.md) shows the syntax for each of them side by side with its output.
+
+## Configuring your site
+
+A `content/config.json` file is entirely optional. It lets you set details like your site title, description, and social links:
+
+```json
+{
+  "title": "Teatime",
+  "description": "A personal blog published with Teatime.",
+  "socialLinks": [
+    { "icon": "github", "url": "https://github.com/you" }
+  ]
+}
+```
+
+Analytics are kept in a separate optional file, `content/extensions.json`, where a provider such as Matomo, Plausible, or Medama can be enabled. A provider stays inactive until its settings verify, which is a convenient way to keep a half-finished configuration from reaching your readers. The Content Security Policy is widened for the provider you enable, as there is no need for a vendor snippet to be pasted into your theme by hand. The [Extensions guide](content/pages/extensions.md) will guide you through each provider and the fields it expects.
+
+Both your posts and your config are hot reloaded, so they can be adjusted while the server keeps running. Theme details, such as CSS variables and dark mode, are read from `appsettings.json` or environment variables instead, which keeps your content folder focused purely on writing. Should you prefer to keep the choice next to your content, a `theme` value in `config.json` works too, and the `--theme` flag overrides both for a quick look at an alternative.
+
+## License
+
+Please see [LICENSE](LICENSE) for the full terms.
