@@ -255,7 +255,7 @@ public sealed class Localization
 
     private static string ResolveCode(Config? config)
     {
-        var raw = config?.Locale?.Code ?? config?.Lang ?? "en";
+        var raw = Config.ResolveLocale(config)?.Code ?? "en";
         return IsValidCode(raw) ? raw.ToLowerInvariant() : "en";
     }
 

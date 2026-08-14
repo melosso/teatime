@@ -29,6 +29,33 @@ public sealed class ExtensionLoaderTests : IDisposable
     }
 
     [Fact]
+    public void DevFile_OverridesBaseFile()
+    {
+        File.WriteAllText(Path.Combine(_dir, ExtensionLoader.FileName),
+            """{ "extensions": { "matomo": { "enabled": true, "url": "https://base.example.com/", "site_id": "1" } } }""");
+        File.WriteAllText(Path.Combine(_dir, ExtensionLoader.FileName + ".dev"),
+            """{ "extensions": { "matomo": { "enabled": true, "url": "https://dev.example.com/", "site_id": "2" } } }""");
+
+        var set = ExtensionLoader.Load(_dir, NullLogger.Instance);
+
+        var matomo = Assert.Single(set.Active);
+        Assert.Contains("'2'", matomo.Scripts[0].Inline);
+    }
+
+    [Fact]
+    public void BrokenDevFile_FallsBackToBaseFile()
+    {
+        File.WriteAllText(Path.Combine(_dir, ExtensionLoader.FileName),
+            """{ "extensions": { "matomo": { "enabled": true, "url": "https://base.example.com/", "site_id": "1" } } }""");
+        File.WriteAllText(Path.Combine(_dir, ExtensionLoader.FileName + ".dev"), "{ not json");
+
+        var set = ExtensionLoader.Load(_dir, NullLogger.Instance);
+
+        var matomo = Assert.Single(set.Active);
+        Assert.Contains("'1'", matomo.Scripts[0].Inline);
+    }
+
+    [Fact]
     public void DisabledExtension_StaysInactive()
     {
         var set = Load("""

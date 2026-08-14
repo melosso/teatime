@@ -8,7 +8,8 @@ public static class StructureRegistry
     public static IReadOnlyList<ITeatimeStructure> All { get; } =
     [
         new DefaultStructure(),
-        new EditorialStructure()
+        new EditorialStructure(),
+        new CleanStructure()
     ];
 
     public static ITeatimeStructure Default { get; } = All[0];

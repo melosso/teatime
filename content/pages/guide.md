@@ -125,7 +125,7 @@ For your own, copy `en.json` to `{code}.json` and translate the values. Missing 
 
 ## 5. Customize the Look
 
-Teatime ships seven built-in themes. Naming one in `config.json` is the whole opt-in:
+Teatime ships nine built-in themes. Naming one in `config.json` is the whole opt-in:
 
 ```json [content/config.json]
 {
@@ -143,6 +143,8 @@ Teatime ships seven built-in themes. Naming one in `config.json` is the whole op
 | `laserwave` | Synthwave violet with a hot magenta accent. |
 | `signal-dark` | Deep charcoal and an amber accent. |
 | `limelight` | Pale off-white, a sage-lime accent with a cyan counterpart. |
+| `midnight` | White paper and bright blue by day; deep navy at night. |
+| `oled` | White paper and a true-black dark mode, so OLED screens turn every unlit pixel off. |
 
 Every theme adapts to a full light and dark palette, so the light/dark toggle behaves the same whichever you pick. The dark-sounding names are not dark-only: `signal-dark` has a paper-toned light mode that swaps its amber for bronze. An unrecognized name logs a warning and falls back to `default`, so a typo will never take your site down. The value hot-reloads with the rest of `config.json`, and [environment variables](/deploy/environment/) can override it per deployment.
 
@@ -157,8 +159,9 @@ Every theme adapts to a full light and dark palette, so the light/dark toggle be
 
 | Name | Shape |
 |---|---|
-| `default` | Teatime's own layout. Used when you set nothing. |
-| `editorial` | Magazine shape: a kicker tag, square bleed-width covers, a drop cap, and a single-row topbar with Subscribe. |
+| `default` | Teatime's own layout. |
+| `editorial` | Magazine shape: a more wide approach. |
+| `clean` | Text-only post list, centered navigation, and bold headings. |
 
 To pin one mode instead of following the reader's system, add `dark` or `light` to the same value:
 

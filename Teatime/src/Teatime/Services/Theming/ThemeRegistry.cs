@@ -14,7 +14,9 @@ public static class ThemeRegistry
         new SolarizedTheme(),
         new LaserwaveTheme(),
         new SignalDarkTheme(),
-        new LimelightTheme()
+        new LimelightTheme(),
+        new MidnightTheme(),
+        new OledTheme()
     ];
 
     public static ITeatimeTheme Default { get; } = All[0];

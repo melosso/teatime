@@ -1,5 +1,7 @@
 namespace Teatime.Models;
 
+using System.Text.Json.Serialization;
+
 public class Config
 {
     public string? Title { get; set; }
@@ -7,6 +9,18 @@ public class Config
     public string? Description { get; set; }
     public string? Lang { get; set; }
     public List<HeadTag>? Head { get; set; }
+
+    public static LocaleOptions? ResolveLocale(Config? config)
+    {
+        if (config is null || (config.Locale is null && config.Culture is null && config.Lang is null))
+            return null;
+
+        return new LocaleOptions
+        {
+            Culture = config.Locale?.Culture ?? config.Culture,
+            Code = config.Locale?.Code ?? config.Locale?.Lang ?? config.Lang
+        };
+    }
 
     /// <summary>Theme name, e.g. <c>"ocean"</c>. Unknown names fall back to the default theme.</summary>
     public string? Theme { get; set; }
@@ -47,7 +61,12 @@ public class Config
 
     public List<SocialLink>? SocialLinks { get; set; }
 
-    /// <summary>Locale settings: date culture and the UI string table. See <see cref="LocaleOptions"/>.</summary>
+    /// <summary>Root-level date culture (e.g. "en-GB"), merged with <c>locale.culture</c>.</summary>
+    public string? Culture { get; set; }
+
+    /// <summary>Locale settings: date culture and the UI string table. Accepts the object form
+    /// <c>{ "culture": "en-GB", "code": "en" }</c> or a bare code string <c>"en"</c>.</summary>
+    [JsonConverter(typeof(LocaleOptionsConverter))]
     public LocaleOptions? Locale { get; set; }
 
     /// <summary>Bookmark card rendering for standalone links. Off unless enabled. See <see cref="BookmarkOptions"/>.</summary>

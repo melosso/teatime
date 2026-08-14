@@ -94,10 +94,10 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
             _watcher.Deleted += OnFileChanged;
             _watcher.Renamed += OnFileRenamed;
 
-            // Root-level JSON only: config.json and extensions.json. Subdirectories stay out of scope.
+            // Root-level JSON only: config.json, extensions.json and their .dev overrides. Subdirectories stay out of scope.
             _configWatcher = new FileSystemWatcher(docsPath)
             {
-                Filter = "*.json",
+                Filter = "*.json*",
                 EnableRaisingEvents = true
             };
             _configWatcher.Changed += OnFileChanged;
@@ -163,15 +163,25 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
         _disposed = true;
     }
 
+    // Root JSON files that can affect a build. The watcher can only use wildcards, so the exact
+    // allow-list lives here: config.json/extensions.json and their .dev overrides, nothing else.
+    [GeneratedRegex(@"^(config|extensions)\.json(\.dev)?$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex WatchedJsonFileRegex();
+
     private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        _fileChannel.Writer.TryWrite(e);
+        if (IsWatchedJson(e.Name))
+            _fileChannel.Writer.TryWrite(e);
     }
 
     private void OnFileRenamed(object sender, RenamedEventArgs e)
     {
-        _fileChannel.Writer.TryWrite(e);
+        if (IsWatchedJson(e.Name) || IsWatchedJson(e.OldName))
+            _fileChannel.Writer.TryWrite(e);
     }
+
+    private static bool IsWatchedJson(string? fileName) =>
+        !string.IsNullOrEmpty(fileName) && WatchedJsonFileRegex().IsMatch(fileName);
 
     private async Task FileWatcherConsumerAsync(CancellationToken ct)
     {
@@ -242,8 +252,8 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
             ? new NewsletterAvailability(true, newsletter.CollectName)
             : NewsletterAvailability.None;
 
-        DateFormatter.Current = DateFormatter.From(config?.Locale);
-        TitleMonogram.Current = TitleMonogram.From(config?.Locale);
+        DateFormatter.Current = DateFormatter.From(Config.ResolveLocale(config));
+        TitleMonogram.Current = TitleMonogram.From(Config.ResolveLocale(config));
         Localization.Current = Localization.From(docsPath, config, _logger);
         _bookmarks?.Configure(config?.Bookmarks);
 
@@ -319,12 +329,12 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
             pages.Add(page);
         }
 
-        var configPath = Path.Combine(docsPath, "config.json");
+        var configPath = ExtensionLoader.ResolveJsonFile(docsPath, "config.json");
         if (File.Exists(configPath))
             hashInput.Append(await File.ReadAllTextAsync(configPath, cancellationToken));
 
         // Extension settings reach the rendered head, so an edit has to bump BuildVersion.
-        var extensionsPath = Path.Combine(docsPath, ExtensionLoader.FileName);
+        var extensionsPath = ExtensionLoader.ResolveJsonFile(docsPath, ExtensionLoader.FileName);
         if (File.Exists(extensionsPath))
             hashInput.Append(await File.ReadAllTextAsync(extensionsPath, cancellationToken));
 
@@ -495,7 +505,7 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
 
     private static Config? LoadConfig(string docsPath)
     {
-        var configPath = Path.Combine(docsPath, "config.json");
+        var configPath = ExtensionLoader.ResolveJsonFile(docsPath, "config.json");
         if (!File.Exists(configPath))
             return null;
 

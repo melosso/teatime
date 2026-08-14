@@ -10,6 +10,30 @@ public static partial class ExtensionLoader
 {
     public const string FileName = "extensions.json";
 
+    /// <summary>
+    /// Returns <c>NAME.json.dev</c> if valid; otherwise, falls back to <c>NAME.json</c>.
+    /// </summary>
+    internal static string ResolveJsonFile(string docsPath, string fileName)
+    {
+        var devPath = Path.Combine(docsPath, fileName + ".dev");
+        if (File.Exists(devPath) && ParsesAsJson(devPath))
+            return devPath;
+        return Path.Combine(docsPath, fileName);
+    }
+
+    private static bool ParsesAsJson(string path)
+    {
+        try
+        {
+            using var _ = JsonDocument.Parse(File.ReadAllText(path));
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     // Characters that would break out of the HTML attribute or JS string literal the URL lands in.
     private static readonly char[] UnsafeUrlChars = ['\'', '"', '<', '>', '\\', ' '];
 
@@ -17,7 +41,7 @@ public static partial class ExtensionLoader
 
     public static ExtensionSet Load(string docsPath, ILogger logger)
     {
-        var path = Path.Combine(docsPath, FileName);
+        var path = ResolveJsonFile(docsPath, FileName);
         if (!File.Exists(path))
             return ExtensionSet.Empty;
 

@@ -3,7 +3,7 @@
   "titleTemplate": ":title · Teatime",
   "description": "A personal blog published with Teatime.",
   "lang": "en",
-  "locale": { "culture": "en-GB" },
+  "culture": "en-GB",
   "theme": "default",
   "structure": "default",
   "author": "Melosso",

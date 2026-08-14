@@ -113,13 +113,13 @@ public sealed class BlogPageResponder
         var canonicalUrl = $"{pageOrigin}/{rawPath}";
 
         var contentHtml = view.ShowComments
-            ? view.ContentHtml + CommentEmbedRenderer.Build(extensions.Comments, nonce, canonicalUrl, config?.Lang)
+            ? view.ContentHtml + CommentEmbedRenderer.Build(extensions.Comments, nonce, canonicalUrl, Config.ResolveLocale(config)?.Code)
             : view.ContentHtml;
 
         var metaDescription = string.IsNullOrEmpty(view.Description) ? config?.Description : view.Description;
         var socialImageUrl = ResolveSocialImage(view.Image ?? config?.Image ?? config?.BrandImage, pageOrigin, basePath);
         var siteName = config?.Brand ?? config?.Title;
-        var locale = config?.Lang ?? "en";
+        var locale = Config.ResolveLocale(config)?.Code ?? "en";
         var modified = view.IsArticle ? view.Modified : null;
 
         var socialMetaHtml = SocialMetaRenderer.BuildSocialMeta(
@@ -142,7 +142,7 @@ public sealed class BlogPageResponder
             isHomePage: false,
             showScrollIndicator: config?.ScrollIndicator ?? ThemeProvider.ShowScrollIndicator(_theme),
             basePath: basePath,
-            lang: config?.Lang ?? "en",
+            lang: Config.ResolveLocale(config)?.Code ?? "en",
             headTagsHtml: HeadTagHtmlRenderer.BuildHeadTagsHtml(config?.Head)
                 + ExtensionHeadRenderer.Build(extensions, nonce),
             canonicalUrl: canonicalUrl,
@@ -176,7 +176,7 @@ public sealed class BlogPageResponder
             LayoutProvider.Get404Layout(
                 LayoutProvider.HtmlEncode,
                 _settings.BasePath,
-                config?.Lang ?? "en",
+                Config.ResolveLocale(config)?.Code ?? "en",
                 ThemeSelection.Resolve(_theme, _settings.CliTheme, config?.Theme).Theme));
     }
 }

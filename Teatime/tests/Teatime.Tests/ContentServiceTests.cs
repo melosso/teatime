@@ -172,6 +172,30 @@ public sealed class ContentServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task StartAsync_ConfigDev_OverridesConfig()
+    {
+        await File.WriteAllTextAsync(Path.Combine(_tempDir, "index.md"), "# Home\n");
+        await File.WriteAllTextAsync(Path.Combine(_tempDir, "config.json"), """{ "title": "base" }""");
+        await File.WriteAllTextAsync(Path.Combine(_tempDir, "config.json.dev"), """{ "title": "dev" }""");
+
+        await _service.StartAsync(CancellationToken.None);
+
+        Assert.Equal("dev", _service.SiteConfig?.Title);
+    }
+
+    [Fact]
+    public async Task StartAsync_BrokenConfigDev_FallsBackToConfig()
+    {
+        await File.WriteAllTextAsync(Path.Combine(_tempDir, "index.md"), "# Home\n");
+        await File.WriteAllTextAsync(Path.Combine(_tempDir, "config.json"), """{ "title": "base" }""");
+        await File.WriteAllTextAsync(Path.Combine(_tempDir, "config.json.dev"), "{ not json ");
+
+        await _service.StartAsync(CancellationToken.None);
+
+        Assert.Equal("base", _service.SiteConfig?.Title);
+    }
+
+    [Fact]
     public async Task StartAsync_PageWithPaginationFalse_ShowPaginationFalse()
     {
         await CreateTestFiles();

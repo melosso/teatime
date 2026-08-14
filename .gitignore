@@ -16,3 +16,6 @@
 Teatime/src/Teatime/wwwroot/bookmarks/
 # Serilog rolling file sink output
 logs/
+
+# Local .dev overrides; a valid *.json.dev wins over the committed *.json at runtime
+*.json.dev

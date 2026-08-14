@@ -98,7 +98,7 @@ internal static class SeoEndpoints
         var feedTitle = WebUtility.HtmlEncode(config?.Brand ?? config?.Title ?? "Teatime");
         var feedDesc = WebUtility.HtmlEncode(config?.Description ?? feedTitle);
         var feedLink = $"{baseUrl}{basePath}/";
-        var feedLang = WebUtility.HtmlEncode(config?.Lang ?? "en");
+        var feedLang = WebUtility.HtmlEncode(Config.ResolveLocale(config)?.Code ?? "en");
 
         var recent = view.Posts.Take(20).ToList();
         var lastBuildDate = recent.Count > 0
