@@ -263,6 +263,23 @@ public sealed class LayoutProviderTests
     }
 
     [Fact]
+    public void GetLayout_BlankBrandImage_RendersNoMark()
+    {
+        var html = LayoutProvider.GetLayout(
+            "Title", "<p>content</p>",
+            null,
+            brandImage: "");
+
+        var brandStart = html.IndexOf("class=\"brand\"", StringComparison.Ordinal);
+        var brandEnd = html.IndexOf("</a>", brandStart, StringComparison.Ordinal);
+        var brandHtml = html[brandStart..brandEnd];
+
+        Assert.DoesNotContain("brand-mark", brandHtml);
+        Assert.DoesNotContain("<img", brandHtml);
+        Assert.Contains(">Teatime</a>", html);
+    }
+
+    [Fact]
     public void GetLayout_FaviconRootRelative_WithBasePath()
     {
         var html = LayoutProvider.GetLayout(

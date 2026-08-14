@@ -363,8 +363,11 @@ public static partial class LayoutProvider
 
     private static string BuildBrandMark(string? brandImage, string basePath)
     {
-        if (string.IsNullOrWhiteSpace(brandImage))
+        // Undeclared keeps the default mark; declared-but-blank means "show no mark at all".
+        if (brandImage is null)
             return "<span class=\"brand-mark\" aria-hidden=\"true\">\U0001F375</span>";
+        if (string.IsNullOrWhiteSpace(brandImage))
+            return string.Empty;
 
         // Emoji or plain text mark; not a URL or path
         if (!brandImage.StartsWith('/')
