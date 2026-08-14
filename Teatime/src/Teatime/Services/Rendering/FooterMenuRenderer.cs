@@ -8,7 +8,8 @@ public static class FooterMenuRenderer
 {
     public static string? Build(IReadOnlyList<MenuLink>? menu, string basePath)
     {
-        if (menu is not { Count: > 0 }) return null;
+        // Undeclared (null) means "use defaults"; declared-but-empty means no footer links.
+        if (menu is null) return null;
 
         var sb = new StringBuilder();
         foreach (var item in menu)
@@ -21,7 +22,7 @@ public static class FooterMenuRenderer
             if (external || item.External) sb.Append(" target=\"_blank\" rel=\"noopener noreferrer\"");
             sb.Append('>').Append(LayoutProvider.HtmlEncode(item.Title!)).Append("</a>");
         }
-        return sb.Length > 0 ? sb.ToString() : null;
+        return sb.ToString();
     }
 
     private static bool IsExternal(string link) =>

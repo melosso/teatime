@@ -115,7 +115,7 @@ Enable the [integration][/extensions/] and add the subscription form:
 
 ```newsletter
 heading: Subscribe
-intro: New posts, straight to your inbox. Unsubscribe whenever you like.
+intro: New posts sent straight to your inbox. Unsubscribe whenever you like.
 consent: true
 ```
 

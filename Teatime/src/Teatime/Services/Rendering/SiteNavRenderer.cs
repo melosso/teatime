@@ -21,7 +21,8 @@ public static class SiteNavRenderer
         var sb = new StringBuilder();
         sb.Append("<div class=\"site-nav-wrap\"><nav class=\"site-nav\" aria-label=\"Primary\">");
 
-        if (config?.Menu is { Count: > 0 } menu)
+        // Undeclared (null) falls back to the default menu; declared-but-empty means no menu at all.
+        if (config?.Menu is { } menu)
         {
             foreach (var item in menu)
                 AppendEntry(sb, item, basePath, currentPath);

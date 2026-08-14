@@ -29,13 +29,14 @@ public sealed class CleanStructure : ITeatimeStructure
                         font-size: 1.25rem;
                         font-weight: 700;
                         letter-spacing: -0.02em;
+                        flex: 1 1 0;
                         margin-left: calc((100% - var(--measure-wide)) / 2);
                     }
                     .site-nav-wrap {
                         order: 2;
                         position: static;
                         width: auto;
-                        flex: 1 1 auto;
+                        flex: 0 1 auto;
                         justify-content: center;
                     }
                     .site-nav {
@@ -45,6 +46,8 @@ public sealed class CleanStructure : ITeatimeStructure
                     .masthead-actions {
                         order: 3;
                         position: static;
+                        flex: 1 1 0;
+                        justify-content: flex-end;
                         margin-right: calc((100% - var(--measure-wide)) / 2);
                     }
                 }
@@ -98,41 +101,6 @@ public sealed class CleanStructure : ITeatimeStructure
                 }
                 :root[data-theme="dark"] .content.reading > p:first-of-type {
                     color: color-mix(in srgb, var(--text-muted) 75%, var(--text-color));
-                }
-                .search-trigger {
-                    border: none;
-                    background: none;
-                    padding: 0.35rem;
-                    margin-left: 0;
-                }
-                .subscribe-trigger {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 36px;
-                    height: 36px;
-                    border-radius: 6px;
-                    border: none;
-                    background: transparent;
-                    color: var(--text-muted);
-                    cursor: pointer;
-                    flex-shrink: 0;
-                    padding: 0;
-                    font-size: 0;
-                    transition: color 0.15s ease, background-color 0.15s ease;
-                }
-                .subscribe-trigger::before {
-                    content: "";
-                    width: 18px;
-                    height: 18px;
-                    flex-shrink: 0;
-                    background-color: currentColor;
-                    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m3 7 9 6 9-6'/%3E%3C/svg%3E") center / contain no-repeat;
-                    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m3 7 9 6 9-6'/%3E%3C/svg%3E") center / contain no-repeat;
-                }
-                .subscribe-trigger:hover {
-                    color: var(--accent);
-                    background-color: var(--code-bg);
                 }
                 .tag-chip {
                     background: var(--code-bg);

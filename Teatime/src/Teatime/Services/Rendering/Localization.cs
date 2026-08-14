@@ -78,7 +78,7 @@ public sealed class Localization
         ["notFoundMessage"] = "The page you're looking for doesn't exist.",
         ["notFoundHome"] = "Return home",
         ["newsletterHeading"] = "Subscribe",
-        ["newsletterIntro"] = "New posts, straight to your inbox. Unsubscribe whenever you like.",
+        ["newsletterIntro"] = "New posts sent straight to your inbox. Unsubscribe whenever you like.",
         ["newsletterEmailLabel"] = "Email address",
         ["newsletterEmailPlaceholder"] = "you@example.com",
         ["newsletterNameLabel"] = "Name (optional)",

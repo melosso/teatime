@@ -55,6 +55,33 @@ public sealed class EditorialStructure : ITeatimeStructure
                 .post-header .post-meta {
                     border-bottom: 0;
                 }
+                .subscribe-trigger {
+                    width: auto;
+                    height: auto;
+                    max-width: 14rem;
+                    padding: 0.45rem 1.1rem;
+                    border: 1px solid var(--accent);
+                    border-radius: 999px;
+                    background-color: var(--accent);
+                    color: var(--bg-color);
+                    font-family: var(--font-sans);
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    line-height: 1.2;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    display: block;
+                    transition: opacity 0.15s ease;
+                }
+                .subscribe-trigger::before {
+                    display: none;
+                }
+                .subscribe-trigger:hover {
+                    color: var(--bg-color);
+                    background-color: var(--accent);
+                    opacity: 0.88;
+                }
                 .content.reading > p:first-of-type::first-letter {
                     float: left;
                     font-family: var(--font-display);

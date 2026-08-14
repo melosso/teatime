@@ -215,31 +215,6 @@ public static partial class LayoutProvider
             position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
             overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
         }}
-        .search-trigger {{
-            display: flex; align-items: center; gap: 0.55rem;
-            margin-left: 1rem; padding: 0.4rem 0.65rem;
-            border: 1px solid var(--search-border); border-radius: 8px;
-            background-color: var(--search-bg); color: var(--text-muted);
-            font-family: inherit; font-size: 0.85rem; cursor: pointer;
-            transition: border-color 0.15s ease, color 0.15s ease;
-        }}
-        .search-trigger:hover {{
-            border-color: var(--search-hover-border);
-            color: var(--text-color);
-        }}
-        .search-trigger svg {{
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-        }}
-        .search-trigger-kbd {{
-            font-family: var(--font-sans); font-size: 0.7rem;
-            font-weight: 400; letter-spacing: 0.02em;
-            border: 1px solid var(--border); border-radius: 4px;
-            padding: 0.1rem 0.35rem; background-color: var(--bg-color); color: var(--text-muted);
-            pointer-events: none;
-            user-select: none;
-        }}
         .search-overlay {{
             position: fixed; inset: 0; z-index: 1200;
             background-color: var(--overlay-bg);
@@ -1480,15 +1455,23 @@ public static partial class LayoutProvider
             position: absolute; top: 0.85rem; right: 0.85rem;
         }}
         .subscribe-trigger {{
-            display: inline-flex; align-items: center;
-            font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
-            color: var(--bg-color); background-color: var(--accent);
-            border: 1px solid var(--accent); border-radius: 999px;
-            padding: 0.45rem 1.1rem; cursor: pointer;
-            transition: opacity 0.15s ease;
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 6px; border: none;
+            background: transparent; color: var(--text-muted);
+            cursor: pointer; flex-shrink: 0; padding: 0;
+            font-size: 0;
+            transition: color 0.15s ease, background-color 0.15s ease;
+        }}
+        .subscribe-trigger::before {{
+            content: """";
+            width: 18px; height: 18px; flex-shrink: 0;
+            background-color: currentColor;
+            -webkit-mask: url(""data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m3 7 9 6 9-6'/%3E%3C/svg%3E"") center / contain no-repeat;
+            mask: url(""data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m3 7 9 6 9-6'/%3E%3C/svg%3E"") center / contain no-repeat;
         }}
         .subscribe-trigger:hover {{
-            opacity: 0.88;
+            color: var(--accent);
+            background-color: var(--code-bg);
         }}
         .subscribe-overlay {{
             position: fixed; inset: 0; z-index: 1200; background-color: var(--overlay-bg);

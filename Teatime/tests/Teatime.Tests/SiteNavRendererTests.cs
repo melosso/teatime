@@ -61,6 +61,29 @@ public sealed class SiteNavRendererTests
         Assert.DoesNotContain("top-nav-link active", html);
     }
 
+    [Fact]
+    public void EmptyMenu_DeclaredEmpty_RendersNoEntries()
+    {
+        var config = new Config { Menu = [] };
+
+        var html = SiteNavRenderer.Build(config, basePath: "", currentPath: "");
+
+        Assert.DoesNotContain("Posts", html);
+        Assert.DoesNotContain("Archive", html);
+        Assert.DoesNotContain("<a href", html);
+        Assert.Contains("site-nav", html);
+    }
+
+    [Fact]
+    public void NullMenu_RendersDefaults()
+    {
+        var html = SiteNavRenderer.Build(null, basePath: "", currentPath: "");
+
+        Assert.Contains(">Posts</a>", html);
+        Assert.Contains("Archive", html);
+        Assert.Contains("Tags", html);
+    }
+
     private static int CountOccurrences(string haystack, string needle)
     {
         var count = 0;

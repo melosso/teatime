@@ -187,7 +187,7 @@ Drop a `newsletter` block wherever you would like the form, in a post or on a pa
 ````markdown
 ```newsletter
 heading: Subscribe
-intro: New posts, straight to your inbox. Unsubscribe whenever you like.
+intro: New posts sent straight to your inbox. Unsubscribe whenever you like.
 button: Sign me up
 consent: true
 ```
@@ -217,7 +217,7 @@ heading:
   nl: Aanmelden
   de: Abonnieren
 intro:
-  en: New posts, straight to your inbox.
+  en: New posts sent straight to your inbox.
   nl: Nieuwe berichten, rechtstreeks in je inbox.
 consent:
   en: Yes, send me new posts by email.
@@ -233,7 +233,7 @@ Here is that example, live:
 
 ```newsletter
 heading: Subscribe
-intro: New posts, straight to your inbox. Unsubscribe whenever you like.
+intro: New posts sent straight to your inbox. Unsubscribe whenever you like.
 consent: true
 ```
 

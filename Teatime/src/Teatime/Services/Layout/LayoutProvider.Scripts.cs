@@ -497,7 +497,6 @@ public static partial class LayoutProvider
             window.addEventListener('scroll', updateScrollProgress);
 
             var searchTrigger = document.getElementById('search-trigger');
-            var searchTriggerKbd = document.getElementById('search-trigger-kbd');
             var searchOverlay = document.getElementById('search-overlay');
             var searchModalInput = document.getElementById('search-modal-input');
             var searchModalResults = document.getElementById('search-modal-results');
@@ -625,10 +624,6 @@ public static partial class LayoutProvider
                     return teatimeLoadSearchIndex().then(function(index) {{ return teatimeSearchStatic(index, query); }});
                 }}
                 return fetch('{basePath}/api/search?q=' + encodeURIComponent(query)).then(function(r) {{ return r.json(); }});
-            }}
-
-            if (searchTriggerKbd && /Mac|iPhone|iPad/.test(navigator.platform || '')) {{
-                searchTriggerKbd.textContent = '⌘K';
             }}
 
             function escapeHtml(value) {{
