@@ -626,11 +626,11 @@ public static partial class LayoutProvider
             background-color: var(--code-bg);
             border: 1px solid var(--border);
             border-radius: 8px;
+            overflow: hidden;
         }}
         .prose div[class^=""language-""] pre {{
             margin: 0; border: none; border-radius: 0; padding-top: 2rem;
         }}
-        /* Lang badge top-left; Copy/Download buttons (injected by JS) occupy top-right. */
         .prose div[class^=""language-""] .lang {{
             position: absolute; top: 0.6rem; left: 1rem; right: auto;
             font-size: 0.7rem; color: var(--text-muted);
@@ -650,7 +650,6 @@ public static partial class LayoutProvider
         .prose div[class^=""language-""].has-title pre {{
             padding-top: 0.75rem;
         }}
-        /* Token colors come from the grammar theme, the ground from --code-bg, so blocks sit on the active theme in both modes. */
         .shiki, .shiki span {{
             color: var(--shiki-light);
         }}
@@ -772,14 +771,12 @@ public static partial class LayoutProvider
         .prose details.custom-block[open] > :last-child {{
             margin-bottom: 0;
         }}
-        /* A details block holds real content, so its children keep the page's rhythm. */
         .prose details.custom-block > p:not(.custom-block-title) {{
             margin: 0.9rem 0;
         }}
         .prose .mermaid, .prose .nomnoml {{
             margin: 1.5rem 0;
         }}
-        /* code-group tabs */
         .prose .teatime-code-group {{
             margin: 1.5rem 0;
         }}
@@ -921,7 +918,7 @@ public static partial class LayoutProvider
         .markdown-alert > :last-child {{
             margin-bottom: 0;
         }}
-        /* Markdig lowercases unknown raw tags, so CSS on <badge> needs no extension; self-closing `<Badge/>` swallows the paragraph, always pair a closing tag. */
+        /* Markdig lowercases unknown tags, css <badge> needs no extension; self-closing `<Badge/>` swallows the paragraph as it requires a closing tag. */
         badge {{
             display: inline-flex; align-items: center; vertical-align: middle;
             margin: 0 0.3rem; padding: 0.15rem 0.55rem; border-radius: 6px;
@@ -1007,7 +1004,6 @@ public static partial class LayoutProvider
         .sidebar-overlay {{
             display: none;
         }}
-        /* Bump touch targets to 44px on coarse-pointer devices, not just by viewport width. */
         @media (hover: none) and (pointer: coarse) {{
             .icon-btn {{
                 width: 40px;
@@ -1160,7 +1156,6 @@ public static partial class LayoutProvider
         .site-nav .top-nav-dropdown-link.here:hover {{
             background: var(--accent-light); color: var(--accent);
         }}
-        /* A portaled menu no longer inherits the .site-nav rules above, so everything it needs is restated here. */
         .top-nav-dropdown-menu.top-nav-portal {{
             display: flex; flex-direction: column; gap: 0.2rem;
             position: fixed; margin: 0; opacity: 1; visibility: visible; transform: none;
