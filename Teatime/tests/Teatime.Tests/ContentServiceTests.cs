@@ -1,3 +1,5 @@
+using System.Reflection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging.Abstractions;
 using Teatime.Configuration;
 using Teatime.Models;
@@ -256,5 +258,51 @@ public sealed class ContentServiceTests : IDisposable
         var page = await _service.GetPageAsync("getting-started/installation");
         Assert.NotNull(page);
         Assert.Equal(new DateTime(2025, 6, 28), page!.LastModified);
+    }
+
+    // Regression test: a bookmark resolving in the background never touches a file on disk, so the
+    // rebuild it triggers must still bump BuildVersion - otherwise PostService/AuthorService's
+    // BuildVersion-gated caches keep serving the pre-resolution placeholder forever.
+    [Fact]
+    public async Task ForceRebuildAsync_BumpsBuildVersion_WhenOnlyBookmarkGenerationChanges()
+    {
+        await CreateTestFiles();
+
+        var webRoot = Path.Combine(_tempDir, "webroot");
+        Directory.CreateDirectory(webRoot);
+        using var bookmarks = new BookmarkService(
+            new DocsOptions { IsStaticExport = true },
+            new FakeEnv { WebRootPath = webRoot },
+            NullLogger<BookmarkService>.Instance);
+
+        var service = new ContentService(_options, _markdown, NullLogger<ContentService>.Instance, bookmarks);
+        try
+        {
+            await service.StartAsync(CancellationToken.None);
+            var versionBeforeResolve = service.BuildVersion;
+
+            // Simulate a bookmark finishing resolution without any markdown/config/asset change.
+            typeof(BookmarkService)
+                .GetField("_generation", BindingFlags.NonPublic | BindingFlags.Instance)!
+                .SetValue(bookmarks, 1L);
+
+            await service.ForceRebuildAsync(CancellationToken.None);
+
+            Assert.NotEqual(versionBeforeResolve, service.BuildVersion);
+        }
+        finally
+        {
+            service.Dispose();
+        }
+    }
+
+    private sealed class FakeEnv : IWebHostEnvironment
+    {
+        public string WebRootPath { get; set; } = Path.GetTempPath();
+        public IFileProvider WebRootFileProvider { get; set; } = null!;
+        public string ContentRootPath { get; set; } = Path.GetTempPath();
+        public IFileProvider ContentRootFileProvider { get; set; } = null!;
+        public string ApplicationName { get; set; } = "Test";
+        public string EnvironmentName { get; set; } = "Test";
     }
 }

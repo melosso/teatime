@@ -100,10 +100,10 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
                 Filter = "*.json*",
                 EnableRaisingEvents = true
             };
-            _configWatcher.Changed += OnFileChanged;
-            _configWatcher.Created += OnFileChanged;
-            _configWatcher.Deleted += OnFileChanged;
-            _configWatcher.Renamed += OnFileRenamed;
+            _configWatcher.Changed += OnConfigFileChanged;
+            _configWatcher.Created += OnConfigFileChanged;
+            _configWatcher.Deleted += OnConfigFileChanged;
+            _configWatcher.Renamed += OnConfigFileRenamed;
 
             var assetsPath = Path.Combine(docsPath, "assets");
             if (Directory.Exists(assetsPath))
@@ -163,18 +163,25 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
         _disposed = true;
     }
 
-    // Root JSON files that can affect a build. The watcher can only use wildcards, so the exact
-    // allow-list lives here: config.json/extensions.json and their .dev overrides, nothing else.
+    // Root JSON files allowed to affect a build (config.json, extensions.json, and .dev overrides).
     [GeneratedRegex(@"^(config|extensions)\.json(\.dev)?$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex WatchedJsonFileRegex();
 
-    private void OnFileChanged(object sender, FileSystemEventArgs e)
+    // Content, assets, and locale watchers use scoped filters, so all events are relevant.
+    private void OnFileChanged(object sender, FileSystemEventArgs e) =>
+        _fileChannel.Writer.TryWrite(e);
+
+    private void OnFileRenamed(object sender, RenamedEventArgs e) =>
+        _fileChannel.Writer.TryWrite(e);
+
+    // Restricts the broad root JSON watcher to only config.json, extensions.json, and their .dev overrides.
+    private void OnConfigFileChanged(object sender, FileSystemEventArgs e)
     {
         if (IsWatchedJson(e.Name))
             _fileChannel.Writer.TryWrite(e);
     }
 
-    private void OnFileRenamed(object sender, RenamedEventArgs e)
+    private void OnConfigFileRenamed(object sender, RenamedEventArgs e)
     {
         if (IsWatchedJson(e.Name) || IsWatchedJson(e.OldName))
             _fileChannel.Writer.TryWrite(e);
@@ -355,6 +362,10 @@ public sealed partial class ContentService : IHostedService, IExtensionSource, I
                          .Append(info.LastWriteTimeUtc.Ticks).Append('\0')
                          .Append(info.Length).Append('\0');
             }
+
+        // Includes the resolver's generation so late-resolving cards bust BuildVersion caches.
+        if (_bookmarks is not null)
+            hashInput.Append("bookmarks:").Append(_bookmarks.Generation).Append('\0');
 
         var contentHash = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(hashInput.ToString())));
 

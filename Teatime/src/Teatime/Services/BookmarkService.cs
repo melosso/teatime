@@ -32,9 +32,15 @@ public sealed partial class BookmarkService : IDisposable
 
     private volatile BookmarkOptions _options = new();
     private bool _disposed;
+    private long _generation;
 
     /// <summary>Invoked after a URL resolves so the content layer can re-render pages with the new card.</summary>
     public Action? RebuildRequested { get; set; }
+
+    /// <summary>
+    /// Bumped when a URL resolves, ensuring late resolution invalidates page caches.
+    /// </summary>
+    public long Generation => Interlocked.Read(ref _generation);
 
     public BookmarkService(DocsOptions docsOptions, IWebHostEnvironment env, ILogger<BookmarkService> logger)
     {
@@ -124,6 +130,7 @@ public sealed partial class BookmarkService : IDisposable
 
             var entry = await BuildEntryAsync(client, finalUri, html, cancellationToken);
             _cache[url] = entry;
+            Interlocked.Increment(ref _generation);
             await SaveCacheAsync(cancellationToken);
             _logger.LogInformation("Resolved bookmark {Url}", url);
             return true;
