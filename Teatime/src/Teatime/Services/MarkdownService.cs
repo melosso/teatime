@@ -91,6 +91,7 @@ public sealed partial class MarkdownService
         html = PrefixBodyContent(html, _basePath);
         html = MarkStandaloneBookmarks(html);
         html = AddExternalLinkAttributes(html);
+        html = RewriteAbbreviations(html);
         html = AddLazyLoading(html);
         html = WrapImageFigures(html);
 
@@ -238,6 +239,17 @@ public sealed partial class MarkdownService
 
     [GeneratedRegex(@"<a\s[^>]*href=""https?://[^""]*""[^>]*>", RegexOptions.IgnoreCase)]
     private static partial Regex ExternalLinkRegex();
+
+    // The browser's own abbr tooltip is hover-only, so touch never sees it, and it cannot be styled or
+    // suppressed. The expansion moves to data-tip for the CSS tooltip, tabindex lets a tap open it, and
+    // the visually hidden copy carries it to screen readers, which read a title attribute inconsistently.
+    private static string RewriteAbbreviations(string html) =>
+        AbbrTagRegex().Replace(html, m =>
+            $"<abbr tabindex=\"0\" data-tip=\"{m.Groups[1].Value}\">{m.Groups[2].Value}" +
+            $"<span class=\"sr-only\"> ({m.Groups[1].Value})</span></abbr>");
+
+    [GeneratedRegex(@"<abbr title=""([^""]*)"">(.*?)</abbr>", RegexOptions.Singleline)]
+    private static partial Regex AbbrTagRegex();
 
     // Content images default to lazy loading and async decoding unless the author set loading explicitly.
     private static string AddLazyLoading(string html) =>

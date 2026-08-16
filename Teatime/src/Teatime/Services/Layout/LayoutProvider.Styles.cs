@@ -504,6 +504,43 @@ public static partial class LayoutProvider
             border-radius: 6px; padding: 0.25rem 0.6rem; margin-left: -0.6rem;
             scroll-margin-top: calc(var(--topbar-height) + 1rem);
         }}
+        /* The browser's own abbr tooltip never opens on touch and cannot be styled, so MarkdownService
+           moves the expansion to data-tip and this bubble replaces it: hover on desktop, tap on touch. */
+        .prose abbr[data-tip] {{
+            position: relative;
+            text-decoration: underline dotted var(--text-muted);
+            text-decoration-thickness: 1px; text-underline-offset: 0.2em;
+            cursor: help; -webkit-tap-highlight-color: transparent;
+        }}
+        .prose abbr[data-tip]:focus {{
+            outline: none;
+        }}
+        .prose abbr[data-tip]:focus-visible {{
+            outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px;
+        }}
+        .prose abbr[data-tip]::after {{
+            content: attr(data-tip);
+            position: absolute; left: 50%; bottom: calc(100% + 0.45rem);
+            transform: translateX(-50%) translateY(0.2rem); z-index: 20;
+            width: max-content; max-width: min(15rem, 60vw);
+            padding: 0.4rem 0.6rem;
+            background-color: var(--sidebar-bg); color: var(--text-color);
+            border: 1px solid var(--border); border-radius: 6px;
+            box-shadow: var(--shadow-md);
+            font: 400 0.8rem/1.4 var(--font-sans);
+            text-align: center; text-decoration: none; white-space: normal;
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s;
+        }}
+        .prose abbr[data-tip]:hover::after,
+        .prose abbr[data-tip]:focus::after {{
+            opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+        }}
+        @media (prefers-reduced-motion: reduce) {{
+            .prose abbr[data-tip]::after {{
+                transition: none;
+            }}
+        }}
         @keyframes teatime-target-flash {{
             0%, 40% {{
                 background-color: var(--accent-light);

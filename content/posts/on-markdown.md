@@ -18,3 +18,10 @@ Markdown is the format that gets out of your way. It reads cleanly as plain sour
 | Code      | Yes       |
 
 Write it once, and you can render it anywhere.
+
+## Shorthand explains itself
+
+Jargon is fine as long as the reader can check it. Define an abbreviation once and every mention of it carries the long form, so a post can say YAML or SSG without stopping to spell either one out.
+
+*[YAML]: YAML Ain't Markup Language
+*[SSG]: Static Site Generator

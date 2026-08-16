@@ -356,6 +356,20 @@ $$
     }
 
     [Fact]
+    public void Parse_Abbreviation_RendersFocusableTagWithTooltipAndScreenReaderText()
+    {
+        var md = "The HTML spec.\n\n*[HTML]: Hyper Text Markup Language\n";
+
+        var result = _service.Parse(md);
+
+        Assert.Contains(
+            "<abbr tabindex=\"0\" data-tip=\"Hyper Text Markup Language\">HTML" +
+            "<span class=\"sr-only\"> (Hyper Text Markup Language)</span></abbr>",
+            result.Html);
+        Assert.DoesNotContain("<abbr title=", result.Html);
+    }
+
+    [Fact]
     public void ToPlainText_LinkMarkdown_ReturnsLinkText()
     {
         Assert.Equal("Redirects", MarkdownService.ToPlainText("[Redirects](#redirects)"));

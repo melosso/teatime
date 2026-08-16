@@ -88,6 +88,26 @@ pins:
 
 Leave `zoom` and `center` out and the map frames every pin for you. Maps use [OpenStreetMap](https://www.openstreetmap.org/copyright) tiles, which load from OpenStreetMap when a reader opens the page.
 
+## Abbreviations
+
+Define a term once and every mention of it on the page carries its explanation:
+
+````md
+The HTML spec is written by the WHATWG and rendered here over HTTP.
+
+*[HTML]: HyperText Markup Language
+*[WHATWG]: Web Hypertext Application Technology Working Group
+*[HTTP]: HyperText Transfer Protocol
+````
+
+The HTML spec is written by the WHATWG and rendered here over HTTP.
+
+*[HTML]: HyperText Markup Language
+*[WHATWG]: Web Hypertext Application Technology Working Group
+*[HTTP]: HyperText Transfer Protocol
+
+Definitions can sit anywhere in the file, so most writers keep them at the bottom with the footnotes. Terms show up with a dotted underline. On a desktop the explanation appears when you hover; on a phone, tap the term and it appears just above it.
+
 ## Definition lists, footnotes, and links
 
 Definition lists keep paired ideas tidy:

@@ -75,6 +75,13 @@ Inline code, like `dotnet run`, sits inside a sentence. A fenced block keeps its
 public static string Greet(string name) => $"Hello, {name}";
 ```
 
+## Abbreviations
+
+A defined term keeps its explanation with it, so a page can use CSS and RSS without a glossary. Hover it, or tap it on a phone.
+
+*[CSS]: Cascading Style Sheets
+*[RSS]: Really Simple Syndication
+
 ## Blockquote
 
 > I am putting myself to the fullest possible use, which is all I think that any conscious entity can ever hope to do.
