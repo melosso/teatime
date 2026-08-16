@@ -26,6 +26,15 @@ public sealed class SyntaxHighlightingTests
     [InlineData("kotlin")]
     [InlineData("toml")]
     [InlineData("terraform")]
+    [InlineData("yaml")]
+    [InlineData("yml")]
+    [InlineData("json")]
+    [InlineData("jsonb")]
+    [InlineData("xml")]
+    [InlineData("shell")]
+    [InlineData("console")]
+    [InlineData("tsql")]
+    [InlineData("dotenv")]
     public void Fence_KnownLanguage_ProducesColoredTokens(string lang)
     {
         var html = Service.ToHtml($"```{lang}\nvar x = \"hello\";\n```\n");
