@@ -219,7 +219,10 @@ public sealed partial class MarkdownService
         });
 
     private static bool UrlEqualsText(string href, string text) =>
-        string.Equals(href.TrimEnd('/'), text.TrimEnd('/'), StringComparison.Ordinal);
+        string.Equals(
+            Uri.UnescapeDataString(href).TrimEnd('/'),
+            WebUtility.HtmlDecode(text).TrimEnd('/'),
+            StringComparison.Ordinal);
 
     [GeneratedRegex(@"<p>\s*<a href=""(https?://[^""]+)"">(.*?)</a>\s*</p>", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
     private static partial Regex StandaloneLinkRegex();

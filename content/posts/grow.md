@@ -8,6 +8,8 @@ summary: A blog does not need much to start, and it does not need much to grow. 
 
 Most blogs do not fail for want of features. They fade because writing them stops feeling easy. So the first goal is not reach or polish. It is to keep the act of writing light enough that you come back to it next week.
 
+https://www.researchgate.net/publication/387179486_It's_the_AI's_fault_not_mine_Mind_perception_increases_blame_attribution_to_AI
+
 ## Start smaller than feels serious
 
 A single post is enough to begin. You do not need categories you have not used, or a design system for a site with three pages. Write the first thing, publish it, and let the shape of the blog follow the writing rather than lead it.

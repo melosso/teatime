@@ -34,6 +34,15 @@ public sealed class BookmarkPlaceholderTests
         var (html, _, _, _) = _service.Parse("See https://example.com today.\n");
         Assert.DoesNotContain("bookmark-embed", html);
     }
+
+    [Fact]
+    public void BareUrlWithApostrophes_BecomesPlaceholder()
+    {
+        var (html, _, _, _) = _service.Parse(
+            "https://www.researchgate.net/publication/387179486_It's_the_AI's_fault\n");
+
+        Assert.Contains("class=\"bookmark-embed\"", html);
+    }
 }
 
 public sealed class BookmarkCardRendererTests
@@ -101,6 +110,46 @@ public sealed class BookmarkSsrfTests
     [InlineData("2606:2800:220:1:248:1893:25c8:1946")]
     public void IsBlockedAddress_AllowsPublic(string ip) =>
         Assert.False(BookmarkService.IsBlockedAddress(IPAddress.Parse(ip)));
+}
+
+public sealed class BookmarkFailureFallbackTests
+{
+    [Theory]
+    [InlineData(HttpStatusCode.Unauthorized, true)]
+    [InlineData(HttpStatusCode.Forbidden, true)]
+    [InlineData(HttpStatusCode.NotFound, true)]
+    [InlineData(HttpStatusCode.Gone, true)]
+    [InlineData(HttpStatusCode.UnavailableForLegalReasons, true)]
+    [InlineData(HttpStatusCode.InternalServerError, false)]
+    [InlineData(HttpStatusCode.TooManyRequests, false)]
+    [InlineData(HttpStatusCode.OK, false)]
+    public void IsPermanentFailure_ClassifiesDeliberateBlocksOnly(HttpStatusCode status, bool expected) =>
+        Assert.Equal(expected, BookmarkService.IsPermanentFailure(status));
+
+    [Fact]
+    public void FallbackEntry_UsesHostAsTitleAndPublisher_WithNoMedia()
+    {
+        var entry = BookmarkService.FallbackEntry(new Uri("https://www.researchgate.net/publication/123"));
+
+        Assert.Equal("www.researchgate.net", entry.Title);
+        Assert.Equal("www.researchgate.net", entry.Publisher);
+        Assert.Null(entry.Description);
+        Assert.Null(entry.IconPath);
+        Assert.Null(entry.ThumbnailPath);
+        Assert.Null(entry.Author);
+    }
+
+    [Fact]
+    public void FallbackEntry_RendersAsCardWithLetterIcon()
+    {
+        var entry = BookmarkService.FallbackEntry(new Uri("https://www.researchgate.net/publication/123"));
+
+        var html = BookmarkCardRenderer.Render(entry, "");
+
+        Assert.Contains("kg-bookmark-card", html);
+        Assert.Contains("kg-bookmark-icon-fallback", html);
+        Assert.DoesNotContain("kg-bookmark-thumbnail", html);
+    }
 }
 
 public sealed class BookmarkServiceDisabledTests

@@ -122,10 +122,22 @@ public sealed partial class BookmarkService : IDisposable
             using var client = CreateGuardedClient();
 
             using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-                return false;
-
             var finalUri = response.RequestMessage?.RequestUri ?? uri;
+            if (!response.IsSuccessStatusCode)
+            {
+                if (!IsPermanentFailure(response.StatusCode))
+                {
+                    _logger.LogDebug("Bookmark {Url} returned {Status}; will retry", url, response.StatusCode);
+                    return false;
+                }
+
+                _cache[url] = FallbackEntry(finalUri);
+                Interlocked.Increment(ref _generation);
+                await SaveCacheAsync(cancellationToken);
+                _logger.LogInformation("Bookmark {Url} returned {Status}; using a fallback card", url, response.StatusCode);
+                return true;
+            }
+
             var html = await ReadCappedStringAsync(response, MaxHtmlBytes, cancellationToken);
 
             var entry = await BuildEntryAsync(client, finalUri, html, cancellationToken);
@@ -145,6 +157,22 @@ public sealed partial class BookmarkService : IDisposable
             return false;
         }
     }
+
+    internal static bool IsPermanentFailure(HttpStatusCode status) => status is
+        HttpStatusCode.Unauthorized or
+        HttpStatusCode.Forbidden or
+        HttpStatusCode.NotFound or
+        HttpStatusCode.Gone or
+        HttpStatusCode.UnavailableForLegalReasons;
+
+    internal static BookmarkCacheEntry FallbackEntry(Uri uri) => new(
+        Url: uri.ToString(),
+        Title: uri.Host,
+        Description: null,
+        IconPath: null,
+        ThumbnailPath: null,
+        Author: null,
+        Publisher: uri.Host);
 
     private async Task<BookmarkCacheEntry> BuildEntryAsync(
         HttpClient client, Uri baseUri, string html, CancellationToken cancellationToken)
