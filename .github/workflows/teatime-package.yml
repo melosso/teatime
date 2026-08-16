@@ -36,7 +36,9 @@ jobs:
         tags: |
           type=semver,pattern=v{{version}}
           type=semver,pattern=v{{major}}.{{minor}}
-          type=raw,value=latest,enable={{is_default_branch}}
+          # This workflow only runs on v* tags and manual dispatch, so every build is a release:
+          # is_default_branch is false on a tag ref, which left :latest stuck on the last main build.
+          type=raw,value=latest
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
