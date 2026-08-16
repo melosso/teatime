@@ -11,7 +11,7 @@ public sealed class CleanStructure : ITeatimeStructure
 
     public string ComponentCss => """
                 :root {
-                    font-size: 18.5px;
+                    font-size: 1.0rem;;
                     --measure: 700px;
                     --measure-wide: 760px;
                 }
@@ -91,7 +91,7 @@ public sealed class CleanStructure : ITeatimeStructure
                 }
                 .content.reading > p:first-of-type {
                     color: var(--text-muted);
-                    font-size: 1.25rem;
+                    font-size: 1.15rem;
                     line-height: 1.6;
                 }
                 @media (prefers-color-scheme: dark) {
