@@ -33,9 +33,10 @@ public static partial class LayoutProvider
             transition: background-color 0.15s ease, color 0.15s ease;
         }}
         #scroll-indicator {{
-            position: fixed; top: 0; left: 0; height: 3px;
-            background-color: var(--accent); width: 0%; z-index: 1101;
-            transition: width 0.15s ease;
+            position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+            background-color: var(--accent); z-index: 1101;
+            transform: scaleX(0); transform-origin: left;
+            transition: transform 0.15s ease;
         }}
         :focus-visible {{
             outline: 2px solid var(--accent);

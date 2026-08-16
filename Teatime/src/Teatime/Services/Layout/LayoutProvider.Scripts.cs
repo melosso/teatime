@@ -491,7 +491,7 @@ public static partial class LayoutProvider
                 var winScroll = document.documentElement.scrollTop || document.body.scrollTop;
                 var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 var scrolled = height > 0 ? (winScroll / height) * 100 : 0;
-                scrollIndicator.style.width = scrolled + '%';
+                scrollIndicator.style.transform = 'scaleX(' + (scrolled / 100) + ')';
             }}
 
             window.addEventListener('scroll', updateScrollProgress);
