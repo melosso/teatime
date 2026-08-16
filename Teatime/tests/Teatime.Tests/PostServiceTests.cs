@@ -76,6 +76,26 @@ public class PostServiceTests
         Assert.Contains(view.Tags, t => t is { Slug: "dot-net", Count: 2 });
     }
 
+    [Theory]
+    [InlineData(null, false)]
+    [InlineData(0, false)]
+    [InlineData(5, false)]
+    [InlineData(2, true)]
+    public void Paginate_ReportsTruncatedOnlyWhenLimitCutsThePool(int? limit, bool expectTruncated)
+    {
+        var pages = new List<DocumentationPage>
+        {
+            PostPage("a", new DateTime(2026, 1, 1)),
+            PostPage("b", new DateTime(2026, 1, 2)),
+            PostPage("c", new DateTime(2026, 1, 3)),
+        };
+        var posts = PostService.Build(pages, includeDrafts: false).Posts;
+
+        var (_, _, truncated) = PostService.Paginate(posts, page: 1, pageSize: 10, limit: limit);
+
+        Assert.Equal(expectTruncated, truncated);
+    }
+
     [Fact]
     public void FromPage_UsesSlugOverrideAndComputesUrl()
     {

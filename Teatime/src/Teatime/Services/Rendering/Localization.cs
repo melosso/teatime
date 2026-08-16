@@ -23,6 +23,7 @@ public sealed class Localization
         ["loadMore"] = "Load more posts",
         ["pagerNewer"] = "Newer",
         ["pagerOlder"] = "Older",
+        ["pagerMore"] = "View more",
         ["pagerStatus"] = "Page {0} of {1}",
         ["pagerAria"] = "Pagination",
         ["postNavPrevious"] = "Previous",
@@ -134,6 +135,7 @@ public sealed class Localization
     public string LoadMore => this["loadMore"];
     public string PagerNewer => this["pagerNewer"];
     public string PagerOlder => this["pagerOlder"];
+    public string PagerMore => this["pagerMore"];
     public string PagerStatus(int current, int total) => Format("pagerStatus", current, total);
     public string PagerAria => this["pagerAria"];
     public string PostNavPrevious => this["postNavPrevious"];

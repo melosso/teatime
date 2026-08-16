@@ -42,19 +42,26 @@ public static partial class PostListRenderer
         return $"<div class=\"load-more-wrap\"><button type=\"button\" class=\"load-more\" data-next=\"{nextUrl}\">{LayoutProvider.HtmlEncode(Localization.Current.LoadMore)}</button></div>";
     }
 
-    public static string BuildPager(int currentPage, int totalPages, string basePath)
+    public static string BuildPager(int currentPage, int totalPages, string basePath, string? archiveHref = null)
     {
-        if (totalPages <= 1) return string.Empty;
+        if (totalPages <= 1 && archiveHref is null) return string.Empty;
 
         var l = Localization.Current;
         var newer = currentPage > 1
             ? $"<a class=\"pager-newer\" rel=\"prev\" href=\"{PageHref(currentPage - 1, basePath)}\">← {LayoutProvider.HtmlEncode(l.PagerNewer)}</a>"
             : "<span></span>";
-        var older = currentPage < totalPages
-            ? $"<a class=\"pager-older\" rel=\"next\" href=\"{PageHref(currentPage + 1, basePath)}\">{LayoutProvider.HtmlEncode(l.PagerOlder)} →</a>"
-            : "<span></span>";
+        var older = (currentPage < totalPages, archiveHref) switch
+        {
+            (true, _) => $"<a class=\"pager-older\" rel=\"next\" href=\"{PageHref(currentPage + 1, basePath)}\">{LayoutProvider.HtmlEncode(l.PagerOlder)} →</a>",
+            (false, { } href) => $"<a class=\"pager-older pager-older--archive\" href=\"{href}\">{LayoutProvider.HtmlEncode(l.PagerMore)} →</a>",
+            _ => "<span></span>",
+        };
+        var status = totalPages > 1
+            ? $"<span class=\"pager-status\">{LayoutProvider.HtmlEncode(l.PagerStatus(currentPage, totalPages))}</span>"
+            : "<span class=\"pager-status\"></span>";
+        var navClass = totalPages > 1 ? "pager" : "pager pager--archive-only";
 
-        return $"<nav class=\"pager\" aria-label=\"{LayoutProvider.HtmlEncode(l.PagerAria)}\">{newer}<span class=\"pager-status\">{LayoutProvider.HtmlEncode(l.PagerStatus(currentPage, totalPages))}</span>{older}</nav>";
+        return $"<nav class=\"{navClass}\" aria-label=\"{LayoutProvider.HtmlEncode(l.PagerAria)}\">{newer}{status}{older}</nav>";
     }
 
     public static string BuildPostHeader(Post post, string basePath, string? author, string? authorImage, string? authorUrl)

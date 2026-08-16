@@ -29,7 +29,7 @@ public sealed class CleanStructure : ITeatimeStructure
                         font-size: 1.25rem;
                         font-weight: 700;
                         letter-spacing: -0.02em;
-                        flex: 1 1 0;
+                        flex: 0 0 auto;
                         margin-left: calc((100% - var(--measure-wide)) / 2);
                     }
                     .site-nav-wrap {
@@ -46,8 +46,7 @@ public sealed class CleanStructure : ITeatimeStructure
                     .masthead-actions {
                         order: 3;
                         position: static;
-                        flex: 1 1 0;
-                        justify-content: flex-end;
+                        flex: 0 0 auto;
                         margin-right: calc((100% - var(--measure-wide)) / 2);
                     }
                 }

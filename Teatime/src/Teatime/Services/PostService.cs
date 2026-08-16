@@ -54,14 +54,21 @@ public sealed class PostService
         return view.Posts.FirstOrDefault(p => p.Slug == normalized);
     }
 
-    public async Task<(IReadOnlyList<Post> Posts, int TotalPages)> GetPageAsync(
-        int page, int pageSize, CancellationToken cancellationToken = default, int? limit = null)
+    public async Task<(IReadOnlyList<Post> Posts, int TotalPages, bool Truncated)> GetPageAsync(
+        int page, int pageSize, int? limit = null, CancellationToken cancellationToken = default)
     {
         var view = await GetViewAsync(cancellationToken);
-        var count = limit is > 0 ? Math.Min(view.Posts.Count, limit.Value) : view.Posts.Count;
+        return Paginate(view.Posts, page, pageSize, limit);
+    }
+
+    public static (IReadOnlyList<Post> Posts, int TotalPages, bool Truncated) Paginate(
+        IReadOnlyList<Post> posts, int page, int pageSize, int? limit)
+    {
+        var count = limit is > 0 && limit < posts.Count ? limit.Value : posts.Count;
+        var truncated = count < posts.Count;
         var total = Math.Max(1, (int)Math.Ceiling(count / (double)pageSize));
-        var slice = view.Posts.Take(count).Skip((page - 1) * pageSize).Take(pageSize).ToList();
-        return (slice, total);
+        var slice = posts.Take(count).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        return (slice, total, truncated);
     }
 
     public async Task<IReadOnlyList<Post>> GetByTagAsync(string tagSlug, CancellationToken cancellationToken = default)

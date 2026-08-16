@@ -9,6 +9,13 @@ public static class FooterRenderer
     {
         var homeHref = basePath.Length == 0 ? "/" : $"{basePath}/";
 
+        var hasCustomNote = !string.IsNullOrWhiteSpace(config?.Footer);
+        var links = FooterMenuRenderer.Build(config?.FooterMenu, basePath)
+            ?? $"<a href=\"{basePath}/feed.xml\">RSS</a>\n        <a href=\"{homeHref}archive/\">Archive</a>";
+
+        if (!hasCustomNote && string.IsNullOrEmpty(links) && string.IsNullOrEmpty(socialLinksHtml))
+            return string.Empty;
+
         var note = config?.Footer?
             .Replace("{year}", DateTime.UtcNow.Year.ToString())
             .Replace("{author}", config.Author ?? string.Empty)
@@ -16,9 +23,6 @@ public static class FooterRenderer
         note = !string.IsNullOrEmpty(note)
             ? markdown.ToHtml(note).Replace("<p>", "").Replace("</p>", "").Trim()
             : $"© {DateTime.UtcNow.Year} {LayoutProvider.HtmlEncode(brandText)}";
-
-        var links = FooterMenuRenderer.Build(config?.FooterMenu, basePath)
-            ?? $"<a href=\"{basePath}/feed.xml\">RSS</a>\n        <a href=\"{homeHref}archive/\">Archive</a>";
 
         return $@"<footer class=""site-footer"">
         <span class=""site-footer-note"">{note}</span>

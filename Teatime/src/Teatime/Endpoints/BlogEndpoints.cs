@@ -92,7 +92,7 @@ internal static class BlogEndpoints
             return;
         }
 
-        var (slice, totalPages) = await posts.GetPageAsync(page, options.PageSize, ctx.RequestAborted, contentService.SiteConfig?.HomeLimit);
+        var (slice, totalPages, truncated) = await posts.GetPageAsync(page, options.PageSize, contentService.SiteConfig?.HomeLimit, ctx.RequestAborted);
         if (page > totalPages && page > 1)
         {
             await responder.Write404Async(ctx);
@@ -115,7 +115,10 @@ internal static class BlogEndpoints
         {
             content = PostListRenderer.BuildList(slice, basePath, showPreview: true);
         }
-        content += PostListRenderer.BuildPager(page, totalPages, basePath);
+        var archiveHref = page == totalPages && truncated && Models.ReservedRoutes.Archive.IsEnabled(contentService.SiteConfig)
+            ? UrlPaths.Href(basePath, Models.ReservedRoutes.Archive.Slug)
+            : null;
+        content += PostListRenderer.BuildPager(page, totalPages, basePath, archiveHref);
 
         var heading = page > 1 ? Localization.Current.HomeHeadingPaged(page) : Localization.Current.HomeHeadingLatest;
         content = $"<h1 class=\"sr-only\">{LayoutProvider.HtmlEncode(heading)}</h1>" + content;

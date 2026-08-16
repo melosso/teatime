@@ -1345,9 +1345,19 @@ public static partial class LayoutProvider
             border-top: 1px solid var(--border);
             font-size: 0.9rem;
         }}
+        .pager--archive-only {{
+            border-top: none;
+            margin-top: 0;
+        }}
         .pager a {{
             color: var(--accent);
             text-decoration: none;
+        }}
+        .pager .pager-older--archive {{
+            color: var(--text-muted);
+        }}
+        .pager .pager-older--archive:hover {{
+            color: var(--accent);
         }}
         .pager-status {{
             color: var(--text-muted);

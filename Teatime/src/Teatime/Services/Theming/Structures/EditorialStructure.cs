@@ -90,6 +90,16 @@ public sealed class EditorialStructure : ITeatimeStructure
                     font-weight: 700;
                     padding: 0.03em 0.09em 0 0;
                 }
+                .pager .pager-older--archive {
+                    color: var(--accent);
+                    text-transform: uppercase;
+                    font-weight: 700;
+                    letter-spacing: 0.04em;
+                    font-size: 0.75rem;
+                }
+                .pager .pager-older--archive:hover {
+                    text-decoration: underline;
+                }
                 @media (min-width: 621px) {
                     .topbar {
                         flex-direction: row;

@@ -3,6 +3,7 @@
   "loadMore": "加载更多文章",
   "pagerNewer": "较新的文章",
   "pagerOlder": "较旧的文章",
+  "pagerMore": "查看更多",
   "pagerStatus": "第 {0} 页，共 {1} 页",
   "pagerAria": "分页导航",
   "postNavPrevious": "上一篇",

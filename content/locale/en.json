@@ -3,6 +3,7 @@
   "loadMore": "Load more posts",
   "pagerNewer": "Newer",
   "pagerOlder": "Older",
+  "pagerMore": "View more",
   "pagerStatus": "Page {0} of {1}",
   "pagerAria": "Pagination",
   "postNavPrevious": "Previous",
