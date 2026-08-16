@@ -167,47 +167,20 @@ public static partial class LayoutProvider
         .brand img {{
             height: 22px; width: auto; vertical-align: middle; margin-right: 0.75rem;
         }}
-        .theme-toggle {{
-            position: relative; flex-shrink: 0; width: 48px; height: 28px;
-            border: 1px solid var(--border); border-radius: 999px; padding: 0;
-            background-color: var(--code-bg); cursor: pointer;
-            transition: background-color 0.15s ease, border-color 0.15s ease;
-        }}
-        .theme-toggle:hover {{
-            border-color: var(--accent);
-        }}
-        .theme-toggle-thumb {{
-            position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
-            border-radius: 50%; background-color: var(--bg-color);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }}
-        .theme-toggle-thumb svg {{
-            width: 13px;
-            height: 13px;
-            color: var(--accent);
-        }}
-        .theme-toggle-thumb .icon-moon {{
+        .theme-toggle .icon-moon {{
             display: none;
         }}
-        :root[data-theme=""dark""] .theme-toggle-thumb {{
-            transform: translateX(20px);
-        }}
-        :root[data-theme=""dark""] .theme-toggle-thumb .icon-sun {{
+        :root[data-theme=""dark""] .theme-toggle .icon-sun {{
             display: none;
         }}
-        :root[data-theme=""dark""] .theme-toggle-thumb .icon-moon {{
+        :root[data-theme=""dark""] .theme-toggle .icon-moon {{
             display: block;
         }}
         @media (prefers-color-scheme: dark) {{
-            :root:not([data-theme=""light""]) .theme-toggle-thumb {{
-                transform: translateX(20px);
-            }}
-            :root:not([data-theme=""light""]) .theme-toggle-thumb .icon-sun {{
+            :root:not([data-theme=""light""]) .theme-toggle .icon-sun {{
                 display: none;
             }}
-            :root:not([data-theme=""light""]) .theme-toggle-thumb .icon-moon {{
+            :root:not([data-theme=""light""]) .theme-toggle .icon-moon {{
                 display: block;
             }}
         }}
@@ -1045,10 +1018,6 @@ public static partial class LayoutProvider
             .icon-btn {{
                 width: 40px;
                 height: 40px;
-            }}
-            .theme-toggle::after {{
-                content: ""; position: absolute; left: 0; right: 0;
-                top: 50%; transform: translateY(-50%); height: 44px;
             }}
             .code-block-buttons {{
                 opacity: 1;
