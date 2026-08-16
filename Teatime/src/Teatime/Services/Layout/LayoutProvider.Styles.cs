@@ -1427,12 +1427,23 @@ public static partial class LayoutProvider
             display: none;
         }}
         .share-trigger {{
-            display: inline-flex; align-items: center; gap: 0.35rem; margin-left: auto;
+            display: inline-flex; align-items: center; gap: 0.35rem;
             font-family: var(--font-sans); font-size: 0.82rem; font-weight: 500;
             color: var(--text-muted); background: none;
             border: 1px solid var(--border); border-radius: 999px;
             padding: 0.25rem 0.75rem; cursor: pointer;
             transition: color 0.15s ease, border-color 0.15s ease;
+        }}
+        @media (min-width: 481px) {{
+            .share-trigger {{
+                margin-left: auto;
+            }}
+        }}
+        @media (max-width: 480px) {{
+            .share-trigger {{
+                flex-basis: 100%;
+                margin-top: 0.35rem;
+            }}
         }}
         .share-trigger:hover {{
             color: var(--accent);
