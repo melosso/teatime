@@ -1020,6 +1020,9 @@ public static partial class LayoutProvider
                 width: 40px;
                 height: 40px;
             }}
+            .share-trigger {{
+                padding: 0.65rem 0.9rem;
+            }}
             .code-block-buttons {{
                 opacity: 1;
             }}
@@ -1435,15 +1438,9 @@ public static partial class LayoutProvider
             padding: 0.25rem 0.75rem; cursor: pointer;
             transition: color 0.15s ease, border-color 0.15s ease;
         }}
-        @media (min-width: 481px) {{
+        @media (min-width: 621px) {{
             .share-trigger {{
                 margin-left: auto;
-            }}
-        }}
-        @media (max-width: 480px) {{
-            .share-trigger {{
-                flex-basis: 100%;
-                margin-top: 0.35rem;
             }}
         }}
         .share-trigger:hover {{
