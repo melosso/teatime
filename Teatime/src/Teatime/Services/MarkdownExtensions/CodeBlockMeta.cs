@@ -12,7 +12,8 @@ public sealed record CodeBlockMeta(
     IReadOnlySet<int> HighlightedLines,
     IReadOnlyList<string> WordHighlights)
 {
-    private static readonly Regex LangRegex = new(@"^[a-zA-Z0-9_-]+", RegexOptions.Compiled);
+    // '#' and '+' are part of the name: without them c#/f#/c++ truncate to the c and f grammars.
+    private static readonly Regex LangRegex = new(@"^[a-zA-Z0-9_+#.-]+", RegexOptions.Compiled);
     private static readonly Regex TitleRegex = new(@"\[(.*)\]", RegexOptions.Compiled);
     private static readonly Regex TitleStripRegex = new(@"\[.*\]", RegexOptions.Compiled);
     private static readonly Regex IconRegex = new(@"\s+icon:(\S+)$", RegexOptions.Compiled);

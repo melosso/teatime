@@ -129,13 +129,47 @@ public sealed class TextMateSyntaxHighlighter : ISyntaxHighlighter
         }, this);
     }
 
+    // Fence names TextMateSharp has no alias for. The first group is exact; the rest borrow the closest
+    // bundled grammar, which colors strings, comments and numbers right and misses some keywords.
+    private static readonly Dictionary<string, string> ExtraAliases = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["dotnet"] = "csharp",
+        ["net"] = "csharp",
+        ["vbnet"] = "vb",
+        ["vb.net"] = "vb",
+        ["docker-compose"] = "yaml",
+        ["yml"] = "yaml",
+
+        ["toml"] = "ini",
+        ["editorconfig"] = "ini",
+        ["kotlin"] = "java",
+        ["kt"] = "java",
+        ["scala"] = "java",
+        ["groovy"] = "java",
+        ["zig"] = "c",
+        ["proto"] = "cpp",
+        ["protobuf"] = "cpp",
+        ["graphql"] = "typescript",
+        ["gql"] = "typescript",
+        ["hcl"] = "ini",
+        ["terraform"] = "ini",
+        ["tf"] = "ini",
+        ["nginx"] = "ini"
+    };
+
     private string? ResolveLanguageId(string lang)
     {
         if (_languageIdsByAlias.Value.TryGetValue(lang, out var id))
             return id;
 
         var byExtension = _registryOptions.GetLanguageByExtension($".{lang}");
-        return byExtension?.Id;
+        if (byExtension is not null)
+            return byExtension.Id;
+
+        return ExtraAliases.TryGetValue(lang, out var fallback)
+            && _languageIdsByAlias.Value.TryGetValue(fallback, out var fallbackId)
+                ? fallbackId
+                : null;
     }
 
     private Dictionary<string, string> BuildLanguageAliasMap()
