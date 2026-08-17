@@ -51,6 +51,7 @@ These shape how a post appears in your listings, feed, and archive.
 | `slug`    | A friendlier URL, replacing the file name in the address              |
 | `draft`   | Set to `true` to hold a post out of listings, feeds, and the sitemap. Drafts stay visible while you run locally |
 | `sitemap` | Set to `false` to drop the post from `sitemap.xml` only. Unlike `draft`, it stays in listings, feeds, and search |
+| `noindex` | Set to `true` to keep the post live but ask search engines not to index it. Adds a `noindex` meta tag and header, and implies `sitemap: false`. To noindex a whole surface at once, set `noIndex: { posts: true }` in `content/config.json` instead of touching each post — `pages`, `tags`, and `archive` work the same way |
 
 ## Pages
 
@@ -65,6 +66,7 @@ Standalone pages under `content/pages/` understand a few extras of their own.
 | `enabled`                    | Set to `false` on a custom `tags`, `archive`, or `authors` page to turn that surface off |
 | `archiveColumns`             | Columns for a custom archive page's `{{archive}}` rows, rendered in the order you list them. Choose from `date`, `title`, `author` and `authorImage`, as in `[date, title, authorImage]`. Left out, you get `[date, title]`. An avatar carries the author's name as its hover title |
 | `sitemap`                    | Set to `false` to drop the page from `sitemap.xml`. The page stays live and searchable |
+| `noindex`                    | Set to `true` to keep the page live but ask search engines not to index it. Implies `sitemap: false` |
 
 ## Authors
 

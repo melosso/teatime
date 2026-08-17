@@ -158,7 +158,8 @@ internal static class BlogEndpoints
             IsArticle: true,
             ShowComments: true,
             Image: post.Cover,
-            Modified: post.Updated ?? post.Date));
+            Modified: post.Updated ?? post.Date,
+            NoIndex: post.NoIndex || (config?.NoIndex?.Posts ?? false)));
     }
 
     private static async Task RenderTagIndex(HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content)
@@ -183,7 +184,8 @@ internal static class BlogEndpoints
             Title: custom?.Title ?? route.Title,
             ContentHtml: html,
             Description: custom?.Description,
-            CanonicalPath: route.Slug));
+            CanonicalPath: route.Slug,
+            NoIndex: content.SiteConfig?.NoIndex?.Tags ?? false));
     }
 
     private static async Task RenderTag(string tag, HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content, DocsOptions options, int page)
@@ -213,7 +215,8 @@ internal static class BlogEndpoints
         await responder.WriteAsync(ctx, new BlogPageView(
             Title: page > 1 ? l.TaggedTitlePaged(tag, page) : l.TaggedTitle(tag),
             ContentHtml: html,
-            CanonicalPath: page > 1 ? $"tags/{slug}/page/{page}" : $"tags/{slug}"));
+            CanonicalPath: page > 1 ? $"tags/{slug}/page/{page}" : $"tags/{slug}",
+            NoIndex: content.SiteConfig?.NoIndex?.Tags ?? false));
     }
 
     private static async Task RenderArchive(HttpContext ctx, PostService posts, BlogPageResponder responder, ContentService content, AuthorService authorService)
@@ -239,7 +242,8 @@ internal static class BlogEndpoints
             Title: custom?.Title ?? route.Title,
             ContentHtml: html,
             Description: custom?.Description,
-            CanonicalPath: route.Slug));
+            CanonicalPath: route.Slug,
+            NoIndex: content.SiteConfig?.NoIndex?.Archive ?? false));
     }
 
     // A user-authored page owning title, description and heading, with {{name}} marking where the list goes.

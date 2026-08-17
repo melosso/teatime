@@ -21,6 +21,7 @@ public static partial class LayoutProvider
         long buildVersion = 0,
         string? favicon = null,
         string? description = null,
+        bool noIndex = false,
         bool isHomePage = false,
         bool showScrollIndicator = true,
         string basePath = "",
@@ -58,6 +59,7 @@ public static partial class LayoutProvider
         var descriptionHtml = !string.IsNullOrWhiteSpace(description)
             ? $"<meta name=\"description\" content=\"{HtmlEncode(description)}\">"
             : "";
+        var robotsHtml = noIndex ? "<meta name=\"robots\" content=\"noindex, follow\">" : "";
 
         var contentClass = isArticle ? "content reading prose" : "content";
         var dataPageAttr = string.IsNullOrEmpty(pageId) ? "" : $" data-page=\"{HtmlEncode(pageId)}\"";
@@ -113,6 +115,7 @@ public static partial class LayoutProvider
     <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
     <title>{HtmlEncode(title)}</title>
     {descriptionHtml}
+    {robotsHtml}
     {keywordsHtml}
     {canonicalLink}
     {socialMetaHtml}

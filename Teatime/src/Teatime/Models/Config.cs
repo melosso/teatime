@@ -59,6 +59,10 @@ public class Config
     /// <summary>Set false to disable the archive page entirely (it returns 404).</summary>
     public bool? Archive { get; set; }
 
+    /// <summary>Noindex whole surfaces site-wide, without touching front matter per page.
+    /// A page's own <c>noindex</c> front matter still applies when its surface here is off.</summary>
+    public NoIndexOptions? NoIndex { get; set; }
+
     public List<SocialLink>? SocialLinks { get; set; }
 
     /// <summary>Root-level date culture (e.g. "en-GB"), merged with <c>locale.culture</c>.</summary>
@@ -74,4 +78,20 @@ public class Config
 
     /// <summary>Hosts a front matter <c>redirect:</c> may send readers to off-site. Same-host redirects always work.</summary>
     public List<string>? RedirectHosts { get; set; }
+}
+
+/// <summary>Per-surface noindex switches for <see cref="Config.NoIndex"/>.</summary>
+public sealed class NoIndexOptions
+{
+    /// <summary>Noindex every post (and drop them from <c>sitemap.xml</c>).</summary>
+    public bool? Posts { get; set; }
+
+    /// <summary>Noindex every standalone page under <c>content/pages/</c> (and drop them from <c>sitemap.xml</c>).</summary>
+    public bool? Pages { get; set; }
+
+    /// <summary>Noindex the tag index and every <c>/tags/{tag}</c> page.</summary>
+    public bool? Tags { get; set; }
+
+    /// <summary>Noindex the archive page.</summary>
+    public bool? Archive { get; set; }
 }

@@ -25,7 +25,8 @@ public sealed record DocumentationPage(
     string? PageNext = null,
     string? PagePrev = null,
     DateTime? Updated = null,
-    bool InSitemap = true
+    bool InSitemap = true,
+    bool NoIndex = false
 )
 {
     public DocumentationPage(

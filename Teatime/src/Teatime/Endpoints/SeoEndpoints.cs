@@ -60,13 +60,14 @@ internal static class SeoEndpoints
         sb.AppendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
         sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, "")}</loc><priority>1.0</priority></url>");
 
-        foreach (var post in view.Posts.Where(p => p.InSitemap))
+        var noIndex = config?.NoIndex;
+        foreach (var post in view.Posts.Where(p => p.InSitemap && !p.NoIndex && !(noIndex?.Posts ?? false)))
         {
             var lastMod = (post.Updated ?? post.Date).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, post.Url)}</loc><lastmod>{lastMod}</lastmod><priority>0.8</priority></url>");
         }
 
-        foreach (var page in pages.Where(p => p.InSitemap && p.Path.StartsWith("pages/", StringComparison.Ordinal)))
+        foreach (var page in pages.Where(p => p.InSitemap && !p.NoIndex && !(noIndex?.Pages ?? false) && p.Path.StartsWith("pages/", StringComparison.Ordinal)))
         {
             var slug = page.Path["pages/".Length..];
             if (slug.Length == 0) continue;
@@ -82,8 +83,10 @@ internal static class SeoEndpoints
                 sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, author.Url)}</loc><priority>0.3</priority></url>");
         }
 
-        foreach (var route in new[] { ReservedRoutes.Tags, ReservedRoutes.Archive }.Where(r => r.IsEnabled(config)))
-            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, route.Slug)}</loc><priority>0.3</priority></url>");
+        if (ReservedRoutes.Tags.IsEnabled(config) && !(noIndex?.Tags ?? false))
+            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, ReservedRoutes.Tags.Slug)}</loc><priority>0.3</priority></url>");
+        if (ReservedRoutes.Archive.IsEnabled(config) && !(noIndex?.Archive ?? false))
+            sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, ReservedRoutes.Archive.Slug)}</loc><priority>0.3</priority></url>");
         sb.AppendLine("</urlset>");
         return TypedResults.Text(sb.ToString(), "application/xml", Encoding.UTF8);
     }

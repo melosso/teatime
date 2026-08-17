@@ -23,7 +23,8 @@ public sealed record MarkdownParseResult(
     IReadOnlyList<string>? ArchiveColumns = null,
     string? PageNext = null,
     string? PagePrev = null,
-    bool InSitemap = true)
+    bool InSitemap = true,
+    bool NoIndex = false)
 {
     public void Deconstruct(out string html, out string? title, out string? description, out List<HeadingInfo> headings)
     {

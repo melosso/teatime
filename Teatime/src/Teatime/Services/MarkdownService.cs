@@ -117,7 +117,8 @@ public sealed partial class MarkdownService
             frontMatter?.ArchiveColumns is { Count: > 0 } cols ? cols.AsReadOnly() : null,
             frontMatter?.PageNext,
             frontMatter?.PagePrev ?? frontMatter?.PagePrevious,
-            frontMatter?.Sitemap ?? true);
+            frontMatter?.Sitemap ?? true,
+            frontMatter?.NoIndex ?? false);
     }
 
     private static string AddHeadingAnchors(string html) =>

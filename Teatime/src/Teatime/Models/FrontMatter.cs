@@ -69,4 +69,10 @@ public sealed record FrontMatter
 
     /// <summary>Set <c>false</c> to drop this page from <c>sitemap.xml</c>. Page stays live and searchable.</summary>
     public bool? Sitemap { get; init; }
+
+    /// <summary>Set <c>true</c> to keep this page live but tell search engines not to index it
+    /// (<c>&lt;meta name="robots" content="noindex, follow"&gt;</c> + <c>X-Robots-Tag</c> header).
+    /// Also drops it from <c>sitemap.xml</c>.</summary>
+    [YamlMember(Alias = "noindex", ApplyNamingConventions = false)]
+    public bool? NoIndex { get; init; }
 }

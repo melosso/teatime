@@ -17,7 +17,8 @@ public sealed record BlogPageView(
     bool IsArticle = false,
     bool ShowComments = false,
     string? Image = null,
-    DateTime? Modified = null);
+    DateTime? Modified = null,
+    bool NoIndex = false);
 
 public sealed class BlogPageResponder
 {
@@ -82,6 +83,8 @@ public sealed class BlogPageResponder
         var etag = ComputeETag(pageOrigin, _content.BuildVersion, view.ContentHtml);
         context.Response.Headers.ETag = $"\"{etag}\"";
         context.Response.Headers.CacheControl = "no-cache";
+        if (view.NoIndex)
+            context.Response.Headers["X-Robots-Tag"] = "noindex, follow";
         if (_settings.PublicBaseUrl is null)
             context.Response.Headers.Vary = "Host";
 
@@ -139,6 +142,7 @@ public sealed class BlogPageResponder
             buildVersion: _content.BuildVersion,
             favicon: config?.Favicon,
             description: string.IsNullOrEmpty(view.Description) ? config?.Description : view.Description,
+            noIndex: view.NoIndex,
             isHomePage: false,
             showScrollIndicator: config?.ScrollIndicator ?? ThemeProvider.ShowScrollIndicator(_theme),
             basePath: basePath,

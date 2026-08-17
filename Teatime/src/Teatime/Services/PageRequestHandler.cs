@@ -76,7 +76,8 @@ public sealed class PageRequestHandler
             CanonicalPath: normalized,
             IsArticle: true,
             Image: page.Cover,
-            Modified: page.Updated ?? page.LastModified));
+            Modified: page.Updated ?? page.LastModified,
+            NoIndex: page.NoIndex || (_content.SiteConfig?.NoIndex?.Pages ?? false)));
     }
 
     // Opt-in: only pages with an explicit updated:/date: front matter show the stamp (never file mtime).
