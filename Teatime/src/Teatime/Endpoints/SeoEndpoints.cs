@@ -75,7 +75,7 @@ internal static class SeoEndpoints
             sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, slug)}</loc><lastmod>{lastMod}</lastmod><priority>0.5</priority></url>");
         }
 
-        var authors = authorService.GetListed();
+        var authors = (noIndex?.Authors ?? false) ? [] : authorService.GetListed();
         if (authors.Count > 0)
         {
             sb.AppendLine($"  <url><loc>{UrlPaths.Href(basePath, ReservedRoutes.Authors.Slug)}</loc><priority>0.3</priority></url>");

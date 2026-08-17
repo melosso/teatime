@@ -51,7 +51,7 @@ These shape how a post appears in your listings, feed, and archive.
 | `slug`    | A friendlier URL, replacing the file name in the address              |
 | `draft`   | Set to `true` to hold a post out of listings, feeds, and the sitemap. Drafts stay visible while you run locally |
 | `sitemap` | Set to `false` to drop the post from `sitemap.xml` only. Unlike `draft`, it stays in listings, feeds, and search |
-| `noindex` | Set to `true` to keep the post live but ask search engines not to index it. Adds a `noindex` meta tag and header, and implies `sitemap: false`. To noindex a whole surface at once, set `noIndex: { posts: true }` in `content/config.json` instead of touching each post — `pages`, `tags`, and `archive` work the same way |
+| `noindex` | Set to `true` to keep the post live but ask search engines not to index it. Adds a `noindex` meta tag and header, and implies `sitemap: false`. To noindex a whole surface at once, set `noIndex: { posts: true }` in `content/config.json` instead of touching each post — `pages`, `tags`, `archive`, and `authors` work the same way |
 
 ## Pages
 

@@ -23,10 +23,10 @@ internal static class BlogEndpoints
             RenderTag(tag, ctx, posts, responder, content, options, n));
         app.MapMethods("/archive", HttpVerbs.GetAndHead, RenderArchive);
         app.MapMethods("/authors", HttpVerbs.GetAndHead, RenderAuthorIndex);
-        app.MapMethods("/authors/{slug}", HttpVerbs.GetAndHead, (string slug, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options) =>
-            RenderAuthor(slug, ctx, authors, posts, responder, options, 1));
-        app.MapMethods("/authors/{slug}/page/{n:int}", HttpVerbs.GetAndHead, (string slug, int n, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options) =>
-            RenderAuthor(slug, ctx, authors, posts, responder, options, n));
+        app.MapMethods("/authors/{slug}", HttpVerbs.GetAndHead, (string slug, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options, ContentService content) =>
+            RenderAuthor(slug, ctx, authors, posts, responder, options, content, 1));
+        app.MapMethods("/authors/{slug}/page/{n:int}", HttpVerbs.GetAndHead, (string slug, int n, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options, ContentService content) =>
+            RenderAuthor(slug, ctx, authors, posts, responder, options, content, n));
         return app;
     }
 
@@ -51,10 +51,11 @@ internal static class BlogEndpoints
             Title: custom?.Title ?? route.Title,
             ContentHtml: html,
             Description: custom?.Description,
-            CanonicalPath: route.Slug));
+            CanonicalPath: route.Slug,
+            NoIndex: content.SiteConfig?.NoIndex?.Authors ?? false));
     }
 
-    private static async Task RenderAuthor(string slug, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options, int page)
+    private static async Task RenderAuthor(string slug, HttpContext ctx, AuthorService authors, PostService posts, BlogPageResponder responder, DocsOptions options, ContentService content, int page)
     {
         var author = authors.GetBySlug(slug);
         if (author is null || author.Hidden || page < 1)
@@ -81,7 +82,8 @@ internal static class BlogEndpoints
         await responder.WriteAsync(ctx, new BlogPageView(
             Title: page > 1 ? Localization.Current.AuthorPagedTitle(author.Name, page) : author.Name,
             ContentHtml: html,
-            CanonicalPath: page > 1 ? $"{author.Url}/page/{page}" : author.Url));
+            CanonicalPath: page > 1 ? $"{author.Url}/page/{page}" : author.Url,
+            NoIndex: content.SiteConfig?.NoIndex?.Authors ?? false));
     }
 
     private static async Task RenderHome(HttpContext ctx, PostService posts, BlogPageResponder responder, DocsOptions options, int page, ContentService contentService)

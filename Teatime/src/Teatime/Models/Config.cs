@@ -94,4 +94,7 @@ public sealed class NoIndexOptions
 
     /// <summary>Noindex the archive page.</summary>
     public bool? Archive { get; set; }
+
+    /// <summary>Noindex the author index and every individual author page.</summary>
+    public bool? Authors { get; set; }
 }
