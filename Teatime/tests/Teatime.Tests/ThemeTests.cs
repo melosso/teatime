@@ -245,7 +245,7 @@ public sealed partial class ThemeCssIntegrityTests
 {
     /// <summary>Set inline on the elements that read them, not by any theme.</summary>
     private static readonly string[] ExternallyDefined =
-        ["--shiki-light", "--shiki-dark", "--slug-hue"];
+        ["--shiki-light", "--shiki-dark", "--slug-hue", "--tip-shift"];
 
     public static TheoryData<string> ThemeNames() => [.. ThemeRegistry.All.Select(t => t.Name)];
 

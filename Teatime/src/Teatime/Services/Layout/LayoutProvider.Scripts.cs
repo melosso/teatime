@@ -1110,6 +1110,25 @@ public static partial class LayoutProvider
                 }});
             }}
 
+            // The tooltip is a ::after pseudo-element, which JS cannot measure, so this clamps against a
+            // safe upper-bound half-width (matches the CSS `max-width: min(15rem, 60vw)`) instead of the
+            // real rendered width. It can over-shift a short tip slightly, but never lets one overflow.
+            // ponytail: assumes a 16px root font for the 15rem bound; rescale here if a theme changes it.
+            function positionAbbrTip(e) {{
+                var abbr = e.target.closest && e.target.closest('abbr[data-tip]');
+                if (!abbr) return;
+                var vw = document.documentElement.clientWidth || window.innerWidth;
+                var half = Math.min(120, vw * 0.3);
+                var rect = abbr.getBoundingClientRect();
+                var center = rect.left + rect.width / 2;
+                var shift = 0;
+                if (center - half < 8) shift = 8 - (center - half);
+                else if (center + half > vw - 8) shift = (vw - 8) - (center + half);
+                abbr.style.setProperty('--tip-shift', shift + 'px');
+            }}
+            document.addEventListener('mouseover', positionAbbrTip);
+            document.addEventListener('focusin', positionAbbrTip);
+
         }});
     </script>
 ";
