@@ -43,9 +43,6 @@ public static partial class LayoutProvider
             : "";
 
         return $@"    <script{GetNonceAttr(nonce)}>
-        document.addEventListener('error', function(e) {{
-            if (e.target && e.target.classList && e.target.classList.contains('tab-icon')) e.target.remove();
-        }}, true);
         {themeSyncScript}
         document.addEventListener('DOMContentLoaded', function() {{
             var scrollIndicator = document.getElementById('scroll-indicator');
@@ -1110,10 +1107,6 @@ public static partial class LayoutProvider
                 }});
             }}
 
-            // The tooltip is a ::after pseudo-element, which JS cannot measure, so this clamps against a
-            // safe upper-bound half-width (matches the CSS `max-width: min(15rem, 60vw)`) instead of the
-            // real rendered width. It can over-shift a short tip slightly, but never lets one overflow.
-            // ponytail: assumes a 16px root font for the 15rem bound; rescale here if a theme changes it.
             function positionAbbrTip(e) {{
                 var abbr = e.target.closest && e.target.closest('abbr[data-tip]');
                 if (!abbr) return;

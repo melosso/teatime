@@ -154,7 +154,8 @@ public sealed partial class ContainerRenderer : HtmlObjectRenderer<CustomContain
 
         var iconBase = IsRootRelative(_icons.BaseUrl) ? PrefixBasePath(_icons.BaseUrl) : _icons.BaseUrl;
         var src = System.Net.WebUtility.HtmlEncode($"{iconBase}/{slug}.{_icons.Format}");
-        return $"<img src=\"{src}\" class=\"tab-icon\" alt=\"\" aria-hidden=\"true\" loading=\"lazy\">";
+        // A masked background instead of a filtered <img>: filter's raster pass blurs these small icons to a solid blob in dark mode.
+        return $"<span class=\"tab-icon\" style=\"--icon:url('{src}')\" aria-hidden=\"true\"></span>";
     }
 
     private static bool IsRootRelative(string url) =>

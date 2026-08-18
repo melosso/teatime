@@ -675,14 +675,6 @@ public static partial class LayoutProvider
         :root[data-theme=""dark""] .shiki, :root[data-theme=""dark""] .shiki span {{
             color: var(--shiki-dark);
         }}
-        @media (prefers-color-scheme: dark) {{
-            :root:not([data-theme=""light""]) .tab-icon {{
-                filter: brightness(0) invert(1);
-            }}
-        }}
-        :root[data-theme=""dark""] .tab-icon {{
-            filter: brightness(0) invert(1);
-        }}
         .prose .line {{
             display: inline-block;
             width: 100%;
@@ -803,9 +795,13 @@ public static partial class LayoutProvider
             cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
         }}
         .prose .teatime-code-group .tabs .tab-icon {{
+            display: inline-block;
             width: 14px;
             height: 14px;
             flex-shrink: 0;
+            background-color: currentColor;
+            -webkit-mask: var(--icon) center / contain no-repeat;
+            mask: var(--icon) center / contain no-repeat;
         }}
         .prose .teatime-code-group .blocks > div[class^=""language-""] {{
             display: none;

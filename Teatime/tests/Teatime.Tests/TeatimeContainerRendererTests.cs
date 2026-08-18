@@ -8,7 +8,7 @@ public sealed class ContainerRendererTests
     private const string CodeGroupMd = "::: code-group\n```sh [npm]\nnpm install\n```\n```sh [pnpm]\npnpm install\n```\n:::\n";
 
     [Fact]
-    public void CodeGroup_IconsEnabledByDefault_RendersImgWithSlugifiedTitle()
+    public void CodeGroup_IconsEnabledByDefault_RendersIconWithSlugifiedTitle()
     {
         var options = new CodeGroupIconOptions();
         var service = new MarkdownService(codeGroupIcons: options);
@@ -19,12 +19,12 @@ public sealed class ContainerRendererTests
     }
 
     [Fact]
-    public void CodeGroup_IconsDisabled_NoImgTag()
+    public void CodeGroup_IconsDisabled_NoTabIcon()
     {
         var options = new CodeGroupIconOptions { Enabled = false };
         var service = new MarkdownService(codeGroupIcons: options);
         var (html, _, _, _) = service.Parse(CodeGroupMd);
-        Assert.DoesNotContain("<img", html);
+        Assert.DoesNotContain("tab-icon", html);
     }
 
     [Fact]
