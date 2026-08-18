@@ -59,7 +59,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./content:/app/content
+      - ./content:/app/content:ro,Z
     environment:
       PublicBaseUrl: https://blog.example.com
       AllowedHosts: blog.example.com

@@ -15,7 +15,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./content:/app/content
+      - ./content:/app/content:ro,Z
 ```
 
 Mount your `content/` folder so your posts stay editable from the host, then bring it up:
