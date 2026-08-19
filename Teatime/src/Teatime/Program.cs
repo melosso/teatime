@@ -200,25 +200,8 @@ try
     AssetVersioning.Current = new AssetVersioning(assetsDir);
     if (Directory.Exists(assetsDir))
     {
-        var assetContentTypes = new FileExtensionContentTypeProvider(
-            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                [".webp"] = "image/webp",
-                [".png"] = "image/png",
-                [".jpg"] = "image/jpeg",
-                [".jpeg"] = "image/jpeg",
-                [".gif"] = "image/gif",
-                [".svg"] = "image/svg+xml",
-                [".avif"] = "image/avif",
-                [".ico"] = "image/x-icon",
-                [".pdf"] = "application/pdf",
-                [".txt"] = "text/plain",
-                [".woff2"] = "font/woff2",
-                [".woff"] = "font/woff",
-                [".mp4"] = "video/mp4",
-                [".webm"] = "video/webm",
-                [".mp3"] = "audio/mpeg",
-            });
+        var assetContentTypes = AssetContentTypes.Provider();
+
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(assetsDir),
