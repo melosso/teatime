@@ -25,7 +25,7 @@ public sealed class GitContentSyncService(GitSyncOptions options, string content
                 return;
             }
 
-            if (!await RunGitAsync(["clone", options.Url, contentRoot], Path.GetTempPath(), stoppingToken))
+            if (!await CloneIntoAsync(stoppingToken))
             {
                 logger.LogWarning("git clone of {Url} into {ContentRoot} failed; git sync is disabled", options.Url, contentRoot);
                 return;
@@ -45,6 +45,39 @@ public sealed class GitContentSyncService(GitSyncOptions options, string content
 
             await RunGitAsync(["pull", "--ff-only"], contentRoot, stoppingToken);
         }
+    }
+
+    private async Task<bool> CloneIntoAsync(CancellationToken ct)
+    {
+        Directory.CreateDirectory(contentRoot);
+        var scratch = Path.Combine(contentRoot, ".git-sync-tmp");
+        try { Directory.Delete(scratch, recursive: true); } catch (DirectoryNotFoundException) { }
+
+        if (!await RunGitAsync(["clone", options.Url!, scratch], Path.GetTempPath(), ct))
+            return false;
+
+        MergeMove(scratch, contentRoot);
+        return true;
+    }
+
+    private static void MergeMove(string source, string dest)
+    {
+        Directory.CreateDirectory(dest);
+        foreach (var entry in Directory.GetFileSystemEntries(source))
+        {
+            var target = Path.Combine(dest, Path.GetFileName(entry));
+            if (Directory.Exists(entry))
+            {
+                if (Directory.Exists(target)) MergeMove(entry, target);
+                else Directory.Move(entry, target);
+            }
+            else
+            {
+                if (File.Exists(target)) File.Delete(target);
+                File.Move(entry, target);
+            }
+        }
+        Directory.Delete(source);
     }
 
     private async Task<bool> RunGitAsync(string[] args, string workingDirectory, CancellationToken ct)
