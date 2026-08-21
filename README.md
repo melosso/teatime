@@ -77,6 +77,8 @@ Running locally only? The `environment:` block can be left out entirely. Without
 
 > **Note:** On a public host that fallback is worth avoiding, since the `Host` header is supplied by the caller and a spoofed one would end up inside your feed links. Setting `PublicBaseUrl` and `AllowedHosts` keeps those URLs pinned to your own origin.
 
+Keeping `content/` in sync with a Git remote is covered in [Git sync](content/pages/deploy/git.md).
+
 ### Windows and IIS
 
 If you would rather host on Windows, each release ships a ready to run build:
