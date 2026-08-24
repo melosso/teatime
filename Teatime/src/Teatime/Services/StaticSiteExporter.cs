@@ -36,6 +36,7 @@ public static class StaticSiteExporter
 
         var originPrefix = address.TrimEnd('/');
         var publicPrefix = string.IsNullOrEmpty(baseUrl) ? null : baseUrl.TrimEnd('/');
+        var basePath = app.Services.GetRequiredService<PageRequestSettings>().BasePath;
 
         // (requestPath, output-relative directory). Empty dir => outputDir/index.html
         var routes = new List<(string Request, string Dir)> { ("/", "") };
@@ -91,6 +92,11 @@ public static class StaticSiteExporter
                 await response.Content.ReadAsStringAsync(cancellationToken), response);
             if (publicPrefix is not null)
                 html = html.Replace(originPrefix, publicPrefix);
+            // rewrite teatime.css and teatime.js to page depth for file:// previews, while other assets stay absolute
+            var depth = dir.Length == 0 ? 0 : dir.Split('/').Length;
+            var relativePrefix = string.Concat(Enumerable.Repeat("../", depth));
+            html = html.Replace($"{basePath}/teatime.css", $"{relativePrefix}teatime.css")
+                       .Replace($"{basePath}/teatime.js", $"{relativePrefix}teatime.js");
             var targetFile = dir.Length == 0
                 ? Path.Combine(outputDir, "index.html")
                 : Path.Combine(outputDir, Path.Combine(dir.Split('/')), "index.html");
@@ -111,8 +117,15 @@ public static class StaticSiteExporter
             await notFoundResponse.Content.ReadAsStringAsync(cancellationToken), notFoundResponse);
         await File.WriteAllTextAsync(Path.Combine(outputDir, "404.html"), notFoundHtml, cancellationToken);
 
+        // written once at the output root so local disk previews find it at their relative depth.
+        foreach (var asset in new[] { "teatime.css", "teatime.js" })
+        {
+            using var assetResponse = await client.GetAsync($"/{asset}", cancellationToken);
+            var bytes = await assetResponse.Content.ReadAsByteArrayAsync(cancellationToken);
+            await File.WriteAllBytesAsync(Path.Combine(outputDir, asset), bytes, cancellationToken);
+        }
+
         // Search has no server on a static host, so ship the prebuilt index the client queries directly.
-        var basePath = app.Services.GetRequiredService<PageRequestSettings>().BasePath;
         var authorHits = authors
             .Select(a => new AuthorSearchHit(a.Name, a.Url, Layout.LayoutProvider.ResolveAssetUrl(a.Image, basePath)))
             .ToList();

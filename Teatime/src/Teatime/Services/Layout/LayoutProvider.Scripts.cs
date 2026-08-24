@@ -2,7 +2,19 @@ namespace Teatime.Services.Layout;
 
 public static partial class LayoutProvider
 {
-    private static string GetScripts(bool enableLiveReload, bool enableDarkMode, long buildVersion, string basePath, string? nonce = null, bool staticSearch = false)
+    private static GeneratedAsset? _jsAsset;
+
+    private static string GetScriptsTag(bool enableLiveReload, bool enableDarkMode, long buildVersion, string basePath, bool staticSearch = false)
+    {
+        var asset = GetScriptsAsset(enableLiveReload, enableDarkMode, buildVersion, basePath, staticSearch);
+        return $"<script defer src=\"{basePath}/teatime.js?v={asset.Version}\"></script>";
+    }
+
+    internal static GeneratedAsset GetScriptsAsset(bool enableLiveReload, bool enableDarkMode, long buildVersion, string basePath, bool staticSearch) =>
+        GetOrBuildAsset(ref _jsAsset, $"{enableLiveReload} {enableDarkMode} {buildVersion} {basePath} {staticSearch}",
+            () => BuildScriptsBody(enableLiveReload, enableDarkMode, buildVersion, basePath, staticSearch));
+
+    private static string BuildScriptsBody(bool enableLiveReload, bool enableDarkMode, long buildVersion, string basePath, bool staticSearch)
     {
         var l = Rendering.Localization.Current;
         // Non-toggle theme swaps (bfcache/other tab/OS flip) hit an already-painted page: suppress transitions or every element cross-fades.
@@ -42,7 +54,7 @@ public static partial class LayoutProvider
         prefersDark.addEventListener('change', syncThemeToggle);"
             : "";
 
-        return $@"    <script{GetNonceAttr(nonce)}>
+        return MinifyJs($@"
         {themeSyncScript}
         document.addEventListener('DOMContentLoaded', function() {{
             var scrollIndicator = document.getElementById('scroll-indicator');
@@ -1123,7 +1135,21 @@ public static partial class LayoutProvider
             document.addEventListener('focusin', positionAbbrTip);
 
         }});
-    </script>
-";
+");
+    }
+
+    // never joins lines, so a `//` comment still ends where the source newline says
+    private static string MinifyJs(string js)
+    {
+        var lines = js.Split('\n');
+        var kept = new List<string>(lines.Length);
+        foreach (var line in lines)
+        {
+            var trimmed = line.Trim();
+            if (trimmed.Length == 0 || trimmed.StartsWith("//", StringComparison.Ordinal))
+                continue;
+            kept.Add(trimmed);
+        }
+        return string.Join('\n', kept);
     }
 }

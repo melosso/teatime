@@ -105,7 +105,7 @@ public static partial class LayoutProvider
             ? $"<link rel=\"canonical\" href=\"{HtmlEncode(canonicalUrl)}\">"
             : string.Empty;
 
-        return $@"
+        return CollapseBlankLines($@"
 <!DOCTYPE html>
 <html lang=""{HtmlEncode(lang)}"" class=""theme-{HtmlEncode(activeTheme.Name)}""{forcedThemeAttr}>
 <head>
@@ -123,7 +123,7 @@ public static partial class LayoutProvider
     {rssDiscoveryHtml}
     {faviconHtml}
     {headTagsHtml}
-    {GetStyles(themeTokenCss, componentCss, basePath, nonce)}
+    {GetStylesLink(themeTokenCss, componentCss, basePath)}
     {themeCss}
     {customAssetsHtml}
     {(hasMath ? $"<link rel=\"stylesheet\" href=\"{basePath}/css/katex.min.css\">" : "")}
@@ -189,10 +189,10 @@ public static partial class LayoutProvider
         </article>
     </main>
     {footerHtml}
-    {GetScripts(enableLiveReload, enableDarkMode, buildVersion, basePath, nonce, staticSearch)}
+    {GetScriptsTag(enableLiveReload, enableDarkMode, buildVersion, basePath, staticSearch)}
     {(hasNewsletter || subscribeOverlayHtml.Length > 0 ? GetNewsletterAssets(basePath, nonce) : "")}
 </body>
-</html>";
+</html>");
     }
 
     public static string Get404Layout(
@@ -278,6 +278,37 @@ public static partial class LayoutProvider
 
     public static string HtmlEncode(string? value) =>
         value != null ? System.Net.WebUtility.HtmlEncode(value) : string.Empty;
+
+    internal sealed record GeneratedAsset(string Key, string Body, string Version);
+
+    // one mutable slot, not a dictionary keyed by build version, so long uptime with many hot-reloads can't leak
+    private static GeneratedAsset GetOrBuildAsset(ref GeneratedAsset? slot, string key, Func<string> build)
+    {
+        var current = slot;
+        if (current is not null && current.Key == key)
+            return current;
+
+        var body = build();
+        var version = Convert.ToHexStringLower(
+            System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(body)))[..10];
+        var next = new GeneratedAsset(key, body, version);
+        slot = next;
+        return next;
+    }
+
+    // collapses blank lines left by empty {placeholder}s, but never inside <article>...</article> where markdown code blocks can carry real blank lines
+    private static string CollapseBlankLines(string html)
+    {
+        var start = html.IndexOf("<article", StringComparison.Ordinal);
+        var end = html.IndexOf("</article>", StringComparison.Ordinal);
+        if (start < 0 || end < 0)
+            return CollapseBlankLinesRegex(html);
+        end += "</article>".Length;
+        return CollapseBlankLinesRegex(html[..start]) + html[start..end] + CollapseBlankLinesRegex(html[end..]);
+    }
+
+    private static string CollapseBlankLinesRegex(string s) =>
+        System.Text.RegularExpressions.Regex.Replace(s, @"(\r?\n[ \t]*)+\r?\n", "\n");
 
     public static string? ResolveAssetUrl(string? url, string basePath)
     {

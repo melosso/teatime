@@ -250,6 +250,7 @@ try
     app.MapApiEndpoints();
     app.MapSeoEndpoints();
     app.MapBlogEndpoints();
+    app.MapAssetEndpoints();
     app.MapContentEndpoints();
 
     if (exportDir != null)

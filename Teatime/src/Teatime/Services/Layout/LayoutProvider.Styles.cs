@@ -2,8 +2,17 @@ namespace Teatime.Services.Layout;
 
 public static partial class LayoutProvider
 {
-    /// <summary>Theme palette then component overrides, appended last so they win. One nonce'd style element, no second tag.</summary>
-    private static string GetStyles(string themeTokenCss, string themeComponentCss, string basePath, string? nonce = null) => $@"    <style{GetNonceAttr(nonce)}>
+    private static GeneratedAsset? _cssAsset;
+
+    private static string GetStylesLink(string themeTokenCss, string themeComponentCss, string basePath)
+    {
+        var asset = GetStylesAsset(themeTokenCss, themeComponentCss, basePath);
+        return $"<link rel=\"stylesheet\" href=\"{basePath}/teatime.css?v={asset.Version}\">";
+    }
+
+    internal static GeneratedAsset GetStylesAsset(string themeTokenCss, string themeComponentCss, string basePath) =>
+        GetOrBuildAsset(ref _cssAsset, themeTokenCss + " " + themeComponentCss + " " + basePath,
+            () => MinifyCss($@"
         @font-face {{
             font-family: ""Inter"";
             font-style: normal;
@@ -1137,7 +1146,7 @@ public static partial class LayoutProvider
             transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
         }}
         .site-nav .top-nav-dropdown-menu::before {{
-            content: ""; position: absolute; top: -0.9rem; left: 0; right: 0; height: 0.9rem;
+            content: """"; position: absolute; top: -0.9rem; left: 0; right: 0; height: 0.9rem;
         }}
         .site-nav .top-nav-item.has-dropdown.open .top-nav-dropdown-menu {{
             display: flex; opacity: 1; visibility: visible;
@@ -1393,7 +1402,7 @@ public static partial class LayoutProvider
             background: var(--sidebar-bg);
         }}
         .skeleton::after {{
-            content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+            content: """"; position: absolute; inset: 0; transform: translateX(-100%);
             background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 9%, transparent), transparent);
             animation: teatime-shimmer 1.4s ease-in-out infinite;
         }}
@@ -2239,7 +2248,7 @@ public static partial class LayoutProvider
                 transition: grid-template-rows 0.25s ease, opacity 0.2s ease, visibility 0.25s;
             }}
             .site-nav-wrap::before, .site-nav-wrap::after {{
-                content: "";
+                content: """";
                 position: absolute;
                 top: 0;
                 bottom: 0;
@@ -2466,6 +2475,10 @@ public static partial class LayoutProvider
             }}
         }}
 {themeComponentCss}
-</style>
-";
+"));
+
+    private static string MinifyCss(string css) =>
+        System.Text.RegularExpressions.Regex.Replace(
+            System.Text.RegularExpressions.Regex.Replace(css, @"/\*[\s\S]*?\*/", ""),
+            @"[ \t]*[\r\n]+[ \t]*|[ \t]{2,}", " ").Trim();
 }
