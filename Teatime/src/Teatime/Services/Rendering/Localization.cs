@@ -97,6 +97,11 @@ public sealed class Localization
         ["commentsLoading"] = "Loading the conversation",
         ["commentsNoScript"] = "Comments need JavaScript. Turn it on to read and reply.",
         ["newsletterVerification"] = "That did not pass our spam check. Please try again.",
+        ["altchaGateTitle"] = "Verifying you're human…",
+        ["altchaGateDetail"] = "Solving a quick challenge before showing this page.",
+        ["altchaGateErrorTitle"] = "Couldn't verify",
+        ["altchaGateErrorDetail"] = "Reload the page to try again.",
+        ["altchaGateNoScript"] = "JavaScript is required to continue.",
     };
 
     private readonly IReadOnlyDictionary<string, string> _map;
@@ -209,6 +214,11 @@ public sealed class Localization
     public string NewsletterVerification => this["newsletterVerification"];
     public string CommentsLoading => this["commentsLoading"];
     public string CommentsNoScript => this["commentsNoScript"];
+    public string AltchaGateTitle => this["altchaGateTitle"];
+    public string AltchaGateDetail => this["altchaGateDetail"];
+    public string AltchaGateErrorTitle => this["altchaGateErrorTitle"];
+    public string AltchaGateErrorDetail => this["altchaGateErrorDetail"];
+    public string AltchaGateNoScript => this["altchaGateNoScript"];
 
     // Overlays content/locale/{code}.json on the defaults. Missing file: silent. Corrupt/unknown keys: warn.
     public static Localization From(string docsPath, Config? config, ILogger logger)

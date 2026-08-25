@@ -44,6 +44,10 @@ try
     var proxyOptions = builder.Configuration.GetSection("Proxy").Get<ProxyOptions>() ?? new ProxyOptions();
     builder.Services.Configure<ForwardedHeadersOptions>(options => ForwardedHeaderSetup.Configure(options, proxyOptions));
 
+    var altchaOptions = builder.Configuration.GetSection("Altcha").Get<AltchaOptions>() ?? new AltchaOptions();
+    if (altchaOptions.Enabled)
+        builder.Services.AddAltchaGate(altchaOptions);
+
     var docsRootAbsolute = Path.GetFullPath(docsOptions.RootPath).Replace(Path.DirectorySeparatorChar, '/');
 
     // WebRootPath is null when wwwroot/ is missing (e.g. under test hosts); fall back to the conventional path
@@ -243,8 +247,14 @@ try
         });
     }
 
+    if (altchaOptions.Enabled && exportDir is null) // export crawl is first-party, not public traffic to gate
+        app.UseAltchaGate();
+
     app.UseRouting();
     app.UseRateLimiter();
+
+    if (altchaOptions.Enabled)
+        app.MapAltchaEndpoints();
 
     app.MapHealthEndpoints();
     app.MapApiEndpoints();
