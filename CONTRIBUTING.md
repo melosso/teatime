@@ -7,7 +7,7 @@ First off, thanks for taking the time to contribute! Please submit a PR with you
 Requires the [.NET 11 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/11.0).
 
 ```bash
-git clone https://github.com/melosso/teatime.git
+git clone https://github.com/hawkinslabdev/teatime.git
 cd teatime/Teatime
 dotnet restore
 dotnet watch --project src/Teatime

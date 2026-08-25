@@ -32,7 +32,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ghcr.io/melosso/teatime
+        images: ghcr.io/hawkinslabdev/teatime
         tags: |
           type=semver,pattern=v{{version}}
           type=semver,pattern=v{{major}}.{{minor}}

@@ -10,7 +10,7 @@ Teatime is built to be published as a containerized image, so it'll run anywhere
 ```yaml [docker-compose.yml]
 services:
   teatime:
-    image: ghcr.io/melosso/teatime:latest
+    image: ghcr.io/hawkinslabdev/teatime:latest
     container_name: teatime
     ports:
       - "8080:8080"

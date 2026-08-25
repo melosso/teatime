@@ -61,14 +61,14 @@ Only one newsletter extension can be active. Enabling two disables both and name
 
 ### Beacon
 
-[Beacon](https://github.com/melosso/beacon) is a small consent service. It records who agreed to what and gives each subscriber a link to manage their own preferences. This site talks to the demo instance:
+[Beacon](https://github.com/hawkinslabdev/beacon) is a small consent service. It records who agreed to what and gives each subscriber a link to manage their own preferences. This site talks to the demo instance:
 
 ```json [content/extensions.json]
 {
   "extensions": {
     "beacon": {
       "enabled": true,
-      "url": "https://beacon-demo-api.melosso.com",
+      "url": "https://beacon-demo-api.hawkinslabdev.com",
       "bucket": "newsletter_en",
       "permission": "newsletter",
       "apiKey": "Beacon-Api-Key",

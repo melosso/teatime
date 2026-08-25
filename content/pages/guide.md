@@ -81,7 +81,7 @@ With one command, the application will crawl every page, post, tag, archive, and
   ```bash [Docker]
   # A throwaway container, with the output folder mounted so the files land next to you
   docker run --rm -v "$PWD/content:/app/content" -v "$PWD/_site:/app/_site" \
-    ghcr.io/melosso/teatime:latest --export /app/_site --base-url https://example.com
+    ghcr.io/hawkinslabdev/teatime:latest --export /app/_site --base-url https://example.com
   ```
 
   ```bash [Windows]

@@ -2,7 +2,7 @@
   "extensions": {
     "beacon": {
       "enabled": true,
-      "url": "https://beacon-demo-api.melosso.com",
+      "url": "https://beacon-demo-api.hawkinslabdev.com",
       "bucket": "newsletter_en",
       "permission": "newsletter",
       "apiKey": "Beacon-Api-Key",

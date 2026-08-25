@@ -1,15 +1,15 @@
 # 🍵 Teatime
 
 [![License](https://img.shields.io/badge/license-EUPL%201.2-blue)](LICENSE)
-[![Last commit](https://img.shields.io/github/last-commit/melosso/teatime)](https://github.com/melosso/teatime/commits/main)
-[![Docker](https://img.shields.io/badge/ghcr.io-melosso%2Fteatime-blue?logo=docker)](https://github.com/melosso/teatime/pkgs/container/teatime)
+[![Last commit](https://img.shields.io/github/last-commit/hawkinslabdev/teatime)](https://github.com/hawkinslabdev/teatime/commits/main)
+[![Docker](https://img.shields.io/badge/ghcr.io-hawkinslabdev%2Fteatime-blue?logo=docker)](https://github.com/hawkinslabdev/teatime/pkgs/container/teatime)
 
 Meet Teatime: a personal blog engine that's really just a folder of Markdown files. If you can write a `.md` file, you already have a fast, self-hosted blog with tags, an archive, and an RSS feed, ready to go.
 
-Teatime is built on the modern .NET stack, growing out of [Bark](https://github.com/melosso/bark), a fast Markdown documentation server. It inherits what Bark is good at: building pages in-memory. That means you can publish posts directly, with no build step and no extra dependencies.
+Teatime is built on the modern .NET stack, growing out of [Bark](https://github.com/hawkinslabdev/bark), a fast Markdown documentation server. It inherits what Bark is good at: building pages in-memory. That means you can publish posts directly, with no build step and no extra dependencies.
 
 <div>
-      <p align="center"><strong>🔍 <a href="https://melosso.github.io/teatime/">See it in action!</a></strong></p>
+      <p align="center"><strong>🔍 <a href="https://hawkinslabdev.github.io/teatime/">See it in action!</a></strong></p>
 </div>
 
 ![Screenshot of Teatime](.github/images/preview.webp)
@@ -54,7 +54,7 @@ Create a `docker-compose.yml` next to your writing:
 ```yaml
 services:
   teatime:
-    image: ghcr.io/melosso/teatime:latest
+    image: ghcr.io/hawkinslabdev/teatime:latest
     container_name: teatime
     ports:
       - "8080:8080"
@@ -83,7 +83,7 @@ Keeping `content/` in sync with a Git remote is covered in [Git sync](content/pa
 
 If you would rather host on Windows, each release ships a ready to run build:
 
-1. Download the latest `*-Windows_x64.zip` from the [Releases](https://github.com/melosso/teatime/releases) page.
+1. Download the latest `*-Windows_x64.zip` from the [Releases](https://github.com/hawkinslabdev/teatime/releases) page.
 2. Extract it into your site folder, for example `C:\inetpub\teatime`.
 3. Create an IIS site pointed at that folder, with the CLR version set to "No Managed Code".
 4. Make sure the [.NET 11 Hosting Bundle](https://dotnet.microsoft.com/download/dotnet/11.0) is installed.
@@ -93,7 +93,7 @@ The zip already includes a `web.config` wired for in process hosting, so no manu
 
 ## Writing
 
-Teatime renders your content through the same Markdig pipeline [Bark](https://github.com/melosso/bark) uses. If you would like a refresher on the syntax itself, the [Markdown Guide](https://www.markdownguide.org/) is a friendly and thorough place to start. You also get:
+Teatime renders your content through the same Markdig pipeline [Bark](https://github.com/hawkinslabdev/bark) uses. If you would like a refresher on the syntax itself, the [Markdown Guide](https://www.markdownguide.org/) is a friendly and thorough place to start. You also get:
 
 - A chronological home page with pagination
 - Individual post pages, each with previous and next links

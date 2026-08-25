@@ -14,7 +14,7 @@ Create a `docker-compose.yml` next to your writing:
 ```yaml [docker-compose.yml]
 services:
   teatime:
-    image: ghcr.io/melosso/teatime:latest
+    image: ghcr.io/hawkinslabdev/teatime:latest
     container_name: teatime
     ports:
       - "8080:8080"
@@ -34,7 +34,7 @@ Your blog is then waiting at `http://localhost:8080`. For running it as a long l
 
 Each release ships a ready to run build for Windows:
 
-1. Download the latest `*-Windows_x64.zip` from the [Releases](https://github.com/melosso/teatime/releases){target="_blank" rel="noopener"} page.
+1. Download the latest `*-Windows_x64.zip` from the [Releases](https://github.com/hawkinslabdev/teatime/releases){target="_blank" rel="noopener"} page.
 2. Extract it into your site folder, for example `C:\inetpub\teatime`.
 3. Create an IIS site pointed at that folder, with the CLR version set to "No Managed Code".
 4. Make sure the [.NET 11 Hosting Bundle](https://dotnet.microsoft.com/download/dotnet/11.0){target="_blank" rel="noopener"} is installed.

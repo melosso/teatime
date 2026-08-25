@@ -17,7 +17,7 @@ Six levels exist, but a post rarely needs more than three. Use them to describe 
 
 #### A fourth-level heading
 
-A paragraph should carry its weight. It can hold a [link](https://github.com/melosso/teatime), a run of **bold** and *italic*, a ~~struck~~ correction, a bit of `inline code`, a footnote,[^note] and even x^2^ or H~2~O without losing the plot.
+A paragraph should carry its weight. It can hold a [link](https://github.com/hawkinslabdev/teatime), a run of **bold** and *italic*, a ~~struck~~ correction, a bit of `inline code`, a footnote,[^note] and even x^2^ or H~2~O without losing the plot.
 
 ## Media
 

@@ -251,7 +251,7 @@ public sealed partial class BookmarkService : IDisposable
             Timeout = TimeSpan.FromSeconds(Math.Clamp(_options.TimeoutSeconds, 1, 30)),
             DefaultRequestHeaders =
             {
-                { "User-Agent", "TeatimeBookmarks/1.0 (+https://github.com/melosso/teatime)" },
+                { "User-Agent", "TeatimeBookmarks/1.0 (+https://github.com/hawkinslabdev/teatime)" },
                 { "Accept", "text/html,application/xhtml+xml,image/*" }
             }
         };

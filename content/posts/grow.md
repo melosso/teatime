@@ -18,7 +18,7 @@ Teatime leans into this on purpose. A post is a file. There is no dashboard to l
 
 When your writing points outward, make the link worth following. A bare URL on its own line becomes a card that shows a reader where they are about to go before they click:
 
-https://github.com/melosso/teatime
+https://github.com/hawkinslabdev/teatime
 
 Small signposts like this add up. They make a post feel connected to the wider web instead of shouting into it, and they respect a reader's time by setting expectations up front.
 

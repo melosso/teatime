@@ -1,5 +1,5 @@
 ---
 title: GitHub
 description: Visit our source code on GitHub.
-redirect: https://github.com/melosso/teatime
+redirect: https://github.com/hawkinslabdev/teatime
 ---

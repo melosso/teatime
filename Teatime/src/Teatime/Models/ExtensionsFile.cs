@@ -63,7 +63,7 @@ public sealed class BeaconOptions
 {
     public bool Enabled { get; set; }
 
-    /// <summary>Base URL of the Beacon API, e.g. <c>https://beacon-api.melosso.com</c>.</summary>
+    /// <summary>Base URL of the Beacon API, e.g. <c>https://beacon-api.hawkinslabdev.com</c>.</summary>
     public string? Url { get; set; }
 
     /// <summary>Beacon bucket the sign-up writes to, e.g. <c>newsletter_en</c>.</summary>

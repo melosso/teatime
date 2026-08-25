@@ -257,12 +257,12 @@ public sealed class ExtensionLoaderTests : IDisposable
     public void Beacon_WithUrlBucketAndKey_Activates()
     {
         var set = Load("""
-            { "extensions": { "beacon": { "enabled": true, "url": "https://beacon-api.melosso.com",
+            { "extensions": { "beacon": { "enabled": true, "url": "https://beacon-api.hawkinslabdev.com",
               "bucket": "newsletter_en", "apiKey": "Beacon-Api-Key" } } }
             """);
 
         var beacon = ((BeaconProvider)set.Newsletter!);
-        Assert.Equal("https://beacon-api.melosso.com/api/tokens/generate", beacon.Endpoint.ToString());
+        Assert.Equal("https://beacon-api.hawkinslabdev.com/api/tokens/generate", beacon.Endpoint.ToString());
         Assert.Equal("newsletter_en", beacon.Bucket);
         Assert.Equal("newsletter", beacon.Permission);
         Assert.Equal("X-Api-Key", beacon.ApiKeyHeader);

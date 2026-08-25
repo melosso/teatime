@@ -1,9 +1,9 @@
 <Project>
   <PropertyGroup>
-    <Authors>Melosso</Authors>
+    <Authors>hawkinslabdev</Authors>
     <Product>Teatime</Product>
-    <PackageProjectUrl>https://github.com/melosso/teatime</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/melosso/teatime</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/hawkinslabdev/teatime</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/hawkinslabdev/teatime</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 

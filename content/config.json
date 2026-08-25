@@ -6,12 +6,12 @@
   "culture": "en-GB",
   "theme": "default",
   "structure": "default",
-  "author": "Melosso",
+  "author": "Author",
   "favicon": "🍵",
   "scrollIndicator": true,
   "bookmarks": { "enabled": true },
   "redirectHosts": ["github.com"],
-  "footer": "© {year} {author}. Brewed with [Teatime](https://github.com/melosso/teatime){target=\"_blank\" rel=\"noopener\"}.",
+  "footer": "© {year} {author}. Brewed with [Teatime](https://github.com/hawkinslabdev/teatime){target=\"_blank\" rel=\"noopener\"}.",
   "menu": [
     { "title": "Home", "path": "/" },
     { "title": "Tags", "path": "/tags/" },
@@ -24,17 +24,17 @@
         { "title": "Deploy", "path": "/deploy/" },
         { "title": "Plugins", "path": "/extensions/" },
         { "title": "Examples", "path": "/examples/" },
-        { "title": "GitHub", "path": "https://github.com/melosso/teatime", "external": true }
+        { "title": "GitHub", "path": "https://github.com/hawkinslabdev/teatime", "external": true }
       ]
     }
   ],
   "footerMenu": [
     { "title": "RSS", "path": "/feed.xml" },
     { "title": "Privacy", "path": "/privacy/" },
-    { "title": "License", "path": "https://github.com/melosso/teatime/blob/main/LICENSE", "external": true }
+    { "title": "License", "path": "https://github.com/hawkinslabdev/teatime/blob/main/LICENSE", "external": true }
   ],
   "socialLinks": [
-    { "icon": "github", "url": "https://github.com/melosso/teatime", "title": "GitHub" },
+    { "icon": "github", "url": "https://github.com/hawkinslabdev/teatime", "title": "GitHub" },
     { "icon": "mastodon", "url": "https://fosstodon.org/@example", "title": "Mastodon" }
   ]
 }

@@ -10,7 +10,7 @@ Teatime can clone and pull `content/` for you, entirely from env vars: no manual
 ```yaml [docker-compose.yml]
 services:
   teatime:
-    image: ghcr.io/melosso/teatime:latest
+    image: ghcr.io/hawkinslabdev/teatime:latest
     env_file: .env
     volumes:
       - ./content:/app/content:Z
