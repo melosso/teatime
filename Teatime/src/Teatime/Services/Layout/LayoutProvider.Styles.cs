@@ -26,11 +26,9 @@ public static partial class LayoutProvider
             padding: 0;
         }}
         html, body {{
-            /* `clip` not `hidden`: `hidden` makes body a scroll container and breaks sticky sidebars. */
             overflow-x: clip;
         }}
         html {{
-            /* Reserve the scrollbar gutter so centered content does not shift between pages that scroll and pages that do not. */
             scrollbar-gutter: stable;
         }}
         body {{
@@ -65,8 +63,6 @@ public static partial class LayoutProvider
         .no-theme-transition, .no-theme-transition * {{
             transition: none !important;
         }}
-        /* --topbar-height, --promo-bg and --promo-text live in ThemeDefaults with the rest of the tokens. */
-        /* z-index scale: overlay 1001 < topbar 1002 < drawer 1003 < skip-link 1100 < scroll-indicator 1101. */
         .icon-btn {{
             display: inline-flex; align-items: center; justify-content: center;
             width: 36px; height: 36px; border-radius: 6px; border: none;
@@ -385,12 +381,10 @@ public static partial class LayoutProvider
         .sidebar-group-summary:hover .sidebar-group-title {{
             background-color: var(--code-bg);
         }}
-        /* Only the caret should distinguish colapsible from static groups, not typography */
         .sidebar-group-title h2, .sidebar-group-title h3 {{
             font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
             color: var(--text-muted); font-weight: 600; flex: 1; margin: 0;
         }}
-        /* Ancestors get a color cue only; the background is reserved for the one active leaf. */
         .sidebar-group-title.has-active h2, .sidebar-group-title.has-active h3 {{
             color: var(--accent);
         }}
@@ -415,7 +409,6 @@ public static partial class LayoutProvider
         .sidebar-link {{
             margin-bottom: 0.1rem;
         }}
-        /* Direct children only, so items inside a group stay tightly packed. */
         .sidebar-tree > .sidebar-group + .sidebar-group,
         .sidebar-tree > .sidebar-group + .sidebar-link,
         .sidebar-tree > .sidebar-link + .sidebar-group,
@@ -487,8 +480,6 @@ public static partial class LayoutProvider
             border-radius: 6px; padding: 0.25rem 0.6rem; margin-left: -0.6rem;
             scroll-margin-top: calc(var(--topbar-height) + 1rem);
         }}
-        /* The browser's own abbr tooltip never opens on touch and cannot be styled, so MarkdownService
-           moves the expansion to data-tip and this bubble replaces it: hover on desktop, tap on touch. */
         .prose abbr[data-tip] {{
             position: relative;
             text-decoration: underline dotted var(--text-muted);
@@ -639,8 +630,8 @@ public static partial class LayoutProvider
         .prose h4 code, .prose h5 code, .prose h6 code {{
             background: none; padding: 0; border-radius: 0; font-size: inherit;
         }}
-        /* Fenced code block chrome */
         .prose div[class^=""language-""] {{
+            --line-start: 0;
             position: relative;
             margin: 1.5rem 0;
             background-color: var(--code-bg);
@@ -656,9 +647,6 @@ public static partial class LayoutProvider
             font-size: 0.7rem; color: var(--text-muted);
             font-family: var(--font-sans); text-transform: lowercase;
             user-select: none; z-index: 1;
-        }}
-        .prose div[class^=""language-""] button.copy {{
-            display: none;
         }}
         .prose div[class^=""language-""] .code-title {{
             padding: 0.6rem 1rem; font-size: 0.8rem; font-family: var(--font-mono);
@@ -684,14 +672,20 @@ public static partial class LayoutProvider
         :root[data-theme=""dark""] .shiki, :root[data-theme=""dark""] .shiki span {{
             color: var(--shiki-dark);
         }}
+        .prose div[class^=""language-""] pre code {{
+            display: block;
+            width: fit-content;
+            min-width: 100%;
+        }}
         .prose .line {{
             display: inline-block;
-            width: 100%;
+            min-width: 100%;
             min-height: 1.4em;
         }}
         .prose .line.highlighted {{
             background-color: var(--accent-light);
             margin: 0 -1.25rem; padding: 0 1.25rem;
+            width: calc(100% + 2.5rem);
             box-shadow: 2px 0 0 var(--accent) inset;
         }}
         .prose .line.highlighted.error {{
@@ -703,6 +697,7 @@ public static partial class LayoutProvider
         .prose .line.diff {{
             margin: 0 -1.25rem;
             padding: 0 1.25rem;
+            width: calc(100% + 2.5rem);
         }}
         .prose .line.diff.add {{
             background-color: color-mix(in srgb, var(--alert-tip) 15%, transparent);
@@ -721,14 +716,28 @@ public static partial class LayoutProvider
             filter: none;
         }}
         .prose .line-numbers-mode pre {{
-            padding-left: 2.5rem;
+            padding-left: 3.25rem;
         }}
-        .prose .line-numbers-wrapper {{
-            position: absolute; top: 3.5rem; left: 0; width: 2rem;
-            text-align: right; color: var(--text-muted); font-family: var(--font-mono);
-            font-size: 0.85rem; line-height: 1.6; user-select: none;
+        .prose .line-numbers-mode code {{
+            counter-reset: line-gutter var(--line-start, 0);
         }}
-        /* Custom containers: ::: tip / warning / danger / info / details */
+        .prose .line-numbers-mode .line.highlighted,
+        .prose .line-numbers-mode .line.diff {{
+            margin-left: -3.25rem;
+            padding-left: 3.25rem;
+            width: calc(100% + 4.5rem);
+        }}
+        .prose .line-numbers-mode .line::before {{
+            content: counter(line-gutter);
+            counter-increment: line-gutter;
+            display: inline-block;
+            width: 2rem;
+            margin-left: -3.25rem;
+            margin-right: 1.25rem;
+            text-align: right;
+            color: var(--text-muted);
+            user-select: none;
+        }}
         .prose .custom-block {{
             margin: 1rem 0; padding: 1rem !important; border-radius: 8px;
             line-height: 1.5; font-size: 0.95rem; color: var(--text-muted);
@@ -882,6 +891,18 @@ public static partial class LayoutProvider
         .code-block-buttons button.failed {{
             opacity: 0.5;
         }}
+        .code-block-buttons button:disabled {{
+            cursor: default;
+        }}
+        .code-block-buttons .spin {{
+            animation: code-btn-spin 0.7s linear infinite;
+        }}
+        @keyframes code-btn-spin {{
+            to {{ transform: rotate(360deg); }}
+        }}
+        @media (prefers-reduced-motion: reduce) {{
+            .code-block-buttons .spin {{ animation: none; }}
+        }}
         .markdown-alert {{
             padding: 0.75rem 1rem; margin: 1.5rem 0;
             border-left: 4px solid var(--accent);
@@ -934,7 +955,6 @@ public static partial class LayoutProvider
         .markdown-alert > :last-child {{
             margin-bottom: 0;
         }}
-        /* Markdig lowercases unknown tags, css <badge> needs no extension; self-closing `<Badge/>` swallows the paragraph as it requires a closing tag. */
         badge {{
             display: inline-flex; align-items: center; vertical-align: middle;
             margin: 0 0.3rem; padding: 0.15rem 0.55rem; border-radius: 6px;
@@ -1431,7 +1451,6 @@ public static partial class LayoutProvider
         .post-header {{
             margin-bottom: 0.5rem;
         }}
-        /* Off by default: only a theme that wants a kicker above the title shows this. */
         .post-kicker {{
             display: none;
         }}
@@ -1521,7 +1540,6 @@ public static partial class LayoutProvider
         .subscribe-modal-close {{
             position: absolute; top: 0.85rem; right: 0.85rem;
         }}
-        /* Reset the embedded-in-article chrome: the modal itself is already the card. */
         .subscribe-modal .teatime-newsletter {{
             margin: 0; padding: 0; border: 0; background: none;
         }}
@@ -2233,7 +2251,6 @@ public static partial class LayoutProvider
             .site-nav::-webkit-scrollbar {{
                 display: none;
             }}
-            /* No scroll snap here: settling after a tap can drag the trigger out from under the finger. */
             .site-nav > a, .site-nav > .top-nav-item {{
                 flex: 0 0 auto;
             }}
