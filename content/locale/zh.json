@@ -76,5 +76,10 @@
   "newsletterDisabled": "目前暂不接受订阅。",
   "newsletterVerification": "未能通过垃圾信息检查，请重试。",
   "commentsLoading": "正在加载评论",
-  "commentsNoScript": "评论需要 JavaScript。启用后即可阅读和回复。"
+  "commentsNoScript": "评论需要 JavaScript。启用后即可阅读和回复。",
+  "altchaGateTitle": "正在验证你是否为真人…",
+  "altchaGateDetail": "显示这个页面前先完成一次快速验证。",
+  "altchaGateErrorTitle": "验证失败",
+  "altchaGateErrorDetail": "请重新加载页面后再试。",
+  "altchaGateNoScript": "继续阅读需要启用 JavaScript。"
 }

@@ -76,5 +76,10 @@
   "newsletterDisabled": "Підписка наразі закрита.",
   "newsletterVerification": "Перевірку на спам не пройдено. Спробуйте ще раз.",
   "commentsLoading": "Завантаження обговорення",
-  "commentsNoScript": "Коментарі потребують JavaScript. Увімкніть його, щоб читати та відповідати."
+  "commentsNoScript": "Коментарі потребують JavaScript. Увімкніть його, щоб читати та відповідати.",
+  "altchaGateTitle": "Перевіряємо, що ви людина…",
+  "altchaGateDetail": "Розв'язуємо коротке завдання, перш ніж показати цю сторінку.",
+  "altchaGateErrorTitle": "Не вдалося перевірити",
+  "altchaGateErrorDetail": "Оновіть сторінку, щоб спробувати ще раз.",
+  "altchaGateNoScript": "Щоб продовжити, потрібен JavaScript."
 }

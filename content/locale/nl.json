@@ -76,5 +76,10 @@
   "newsletterDisabled": "Aanmeldingen zijn momenteel gesloten.",
   "newsletterVerification": "Dit kwam niet door onze spamcontrole. Probeer het opnieuw.",
   "commentsLoading": "Gesprek wordt geladen",
-  "commentsNoScript": "Reacties vereisen JavaScript. Schakel het in om te lezen en te reageren."
+  "commentsNoScript": "Reacties vereisen JavaScript. Schakel het in om te lezen en te reageren.",
+  "altchaGateTitle": "Even controleren of je een mens bent…",
+  "altchaGateDetail": "We lossen snel een controle op voordat deze pagina verschijnt.",
+  "altchaGateErrorTitle": "Controle mislukt",
+  "altchaGateErrorDetail": "Laad de pagina opnieuw om het nog eens te proberen.",
+  "altchaGateNoScript": "JavaScript is nodig om verder te gaan."
 }

@@ -76,5 +76,10 @@
   "newsletterDisabled": "Подписка сейчас закрыта.",
   "newsletterVerification": "Проверка на спам не пройдена. Попробуйте ещё раз.",
   "commentsLoading": "Загрузка обсуждения",
-  "commentsNoScript": "Для комментариев нужен JavaScript. Включите его, чтобы читать и отвечать."
+  "commentsNoScript": "Для комментариев нужен JavaScript. Включите его, чтобы читать и отвечать.",
+  "altchaGateTitle": "Проверяем, что вы человек…",
+  "altchaGateDetail": "Решаем короткую задачу, прежде чем показать эту страницу.",
+  "altchaGateErrorTitle": "Не удалось проверить",
+  "altchaGateErrorDetail": "Обновите страницу, чтобы попробовать еще раз.",
+  "altchaGateNoScript": "Для продолжения нужен JavaScript."
 }

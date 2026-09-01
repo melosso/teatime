@@ -76,5 +76,10 @@
   "newsletterDisabled": "Zapisy są obecnie zamknięte.",
   "newsletterVerification": "To nie przeszło naszej kontroli antyspamowej. Spróbuj ponownie.",
   "commentsLoading": "Wczytywanie rozmowy",
-  "commentsNoScript": "Komentarze wymagają JavaScriptu. Włącz go, aby czytać i odpowiadać."
+  "commentsNoScript": "Komentarze wymagają JavaScriptu. Włącz go, aby czytać i odpowiadać.",
+  "altchaGateTitle": "Sprawdzamy, czy jesteś człowiekiem…",
+  "altchaGateDetail": "Rozwiązujemy krótkie zadanie, zanim pokażemy tę stronę.",
+  "altchaGateErrorTitle": "Nie udało się zweryfikować",
+  "altchaGateErrorDetail": "Odśwież stronę, aby spróbować ponownie.",
+  "altchaGateNoScript": "Do dalszego czytania potrzebny jest JavaScript."
 }

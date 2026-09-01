@@ -76,5 +76,10 @@
   "newsletterDisabled": "Les inscriptions sont fermées pour le moment.",
   "newsletterVerification": "Cela n'a pas passé notre contrôle antispam. Veuillez réessayer.",
   "commentsLoading": "Chargement de la conversation",
-  "commentsNoScript": "Les commentaires nécessitent JavaScript. Activez-le pour lire et répondre."
+  "commentsNoScript": "Les commentaires nécessitent JavaScript. Activez-le pour lire et répondre.",
+  "altchaGateTitle": "Nous vérifions que vous êtes bien humain…",
+  "altchaGateDetail": "Nous résolvons une courte épreuve avant d'afficher cette page.",
+  "altchaGateErrorTitle": "Vérification impossible",
+  "altchaGateErrorDetail": "Rechargez la page pour réessayer.",
+  "altchaGateNoScript": "JavaScript est nécessaire pour continuer."
 }

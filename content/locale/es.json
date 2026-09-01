@@ -76,5 +76,10 @@
   "newsletterDisabled": "Las suscripciones están cerradas por ahora.",
   "newsletterVerification": "No ha pasado nuestra comprobación antispam. Inténtalo de nuevo.",
   "commentsLoading": "Cargando la conversación",
-  "commentsNoScript": "Los comentarios necesitan JavaScript. Actívalo para leer y responder."
+  "commentsNoScript": "Los comentarios necesitan JavaScript. Actívalo para leer y responder.",
+  "altchaGateTitle": "Comprobando que eres una persona…",
+  "altchaGateDetail": "Resolvemos una prueba rápida antes de mostrar esta página.",
+  "altchaGateErrorTitle": "No se pudo comprobar",
+  "altchaGateErrorDetail": "Vuelve a cargar la página para intentarlo de nuevo.",
+  "altchaGateNoScript": "Se necesita JavaScript para continuar."
 }

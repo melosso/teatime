@@ -76,5 +76,10 @@
   "newsletterDisabled": "Anmeldungen sind derzeit geschlossen.",
   "newsletterVerification": "Das hat unsere Spam-Prüfung nicht bestanden. Bitte versuche es erneut.",
   "commentsLoading": "Kommentare werden geladen",
-  "commentsNoScript": "Kommentare brauchen JavaScript. Schalte es ein, um zu lesen und zu antworten."
+  "commentsNoScript": "Kommentare brauchen JavaScript. Schalte es ein, um zu lesen und zu antworten.",
+  "altchaGateTitle": "Wir prüfen, ob du ein Mensch bist…",
+  "altchaGateDetail": "Wir lösen kurz eine Aufgabe, bevor diese Seite erscheint.",
+  "altchaGateErrorTitle": "Prüfung fehlgeschlagen",
+  "altchaGateErrorDetail": "Lade die Seite neu, um es erneut zu versuchen.",
+  "altchaGateNoScript": "JavaScript wird benötigt, um fortzufahren."
 }
